@@ -25,13 +25,13 @@ spec:
             - name: SINGLE_USER_CREDENTIALS_USERNAME
               value: "admin"
             - name: SINGLE_USER_CREDENTIALS_PASSWORD
-              value: "Nifi@mintpower2024!"
+              value: "CHANGE_ME"
             - name: NIFI_JVM_HEAP_INIT
               value: "2g"
             - name: NIFI_JVM_HEAP_MAX
               value: "4g"
             - name: NIFI_WEB_PROXY_HOST
-              value: "10.85.3.104:31443"
+              value: "<K3S_NODE_IP>:31443"
             - name: MINIO_ENDPOINT
               value: "http://minio.it.svc.cluster.local:9000"
             - name: MINIO_ACCESS_KEY

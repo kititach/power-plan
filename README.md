@@ -31,7 +31,7 @@
         │              (UI)│       │ OpenMAINT + PostgreSQL 15    │
         │                  │       └──────────────────────────────┘
         │
- opc.tcp://10.85.3.100:53530                   Traefik Ingress
+ opc.tcp://<OPC_SERVER_IP>:53530                   Traefik Ingress
                                                (*.mintpower.local)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
@@ -246,7 +246,7 @@ NiFi Edge ใช้ ExecuteGroovyScript + Eclipse Milo 0.6.12 อ่านข้
 
 ```groovy
 // endpoint ใน tools/opc_reader_final.groovy
-static final String OPC_ENDPOINT = "opc.tcp://10.85.3.100:53530/OPCUA/SimulationServer"
+static final String OPC_ENDPOINT = "opc.tcp://<OPC_SERVER_IP>:53530/OPCUA/SimulationServer"
 ```
 
 **Deploy script ไปยัง NiFi Edge:**
@@ -467,7 +467,7 @@ kubectl exec -n dmz kafka-cluster-broker-0 -- \
 
 # 3. InfluxDB รับข้อมูลอยู่ไหม
 kubectl exec -n it $(kubectl get pods -n it -l app=influxdb -o jsonpath='{.items[0].metadata.name}') -- \
-  sh -c 'influx query --token influx-super-secret-token-mintpower --org mintpower-org \
+  sh -c 'influx query --token CHANGE_ME --org mintpower-org \
   "from(bucket:\"opc-data\") |> range(start:-5m) |> filter(fn:(r)=>r[\"_field\"]==\"Temp_Boiler_01\") |> count()"'
 
 # 4. MinIO ไฟล์วันนี้

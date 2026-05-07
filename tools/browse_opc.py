@@ -7,7 +7,7 @@ browse_opc.py — Browse OPC UA tree จาก Prosys บน mintserver
 import asyncio
 import sys
 
-OPC_ENDPOINT = "opc.tcp://10.85.3.100:53530/OPCUA/SimulationServer"
+OPC_ENDPOINT = "opc.tcp://<OPC_SERVER_IP>:53530/OPCUA/SimulationServer"
 TARGET_NS    = 3   # Prosys simulation namespace
 
 async def browse():

@@ -15,9 +15,9 @@ import sys
 import argparse
 import time
 
-NIFI_URL  = "https://10.85.3.104:31444"
+NIFI_URL  = "https://<K3S_NODE_IP>:31444"
 NIFI_USER = "admin"
-NIFI_PASS = "Nifi@mintpower2024!"
+NIFI_PASS = "CHANGE_ME"
 
 DEFAULT_SCRIPT = "/home/mintpower/lab/k3s/tools/opc_reader_final.groovy"
 DEFAULT_GROOVY_ID = "fb9e2d81-019d-1000-f255-9b25076647d6"

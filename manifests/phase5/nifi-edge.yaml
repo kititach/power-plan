@@ -28,16 +28,16 @@ spec:
             - name: SINGLE_USER_CREDENTIALS_USERNAME
               value: "admin"
             - name: SINGLE_USER_CREDENTIALS_PASSWORD
-              value: "Nifi@mintpower2024!"
+              value: "CHANGE_ME"
             - name: NIFI_JVM_HEAP_INIT
               value: "1g"
             - name: NIFI_JVM_HEAP_MAX
               value: "2g"
             - name: NIFI_WEB_PROXY_HOST
-              value: "10.85.3.104:31444"
+              value: "<K3S_NODE_IP>:31444"
             # OPC Simulator address
             - name: OPC_SERVER_HOST
-              value: "10.85.3.100"
+              value: "<OPC_SERVER_IP>"
             # Kafka External address (NIFI Edge อยู่ใน cluster เดียวกัน)
             - name: KAFKA_BOOTSTRAP
               value: "kafka-cluster-kafka-bootstrap.dmz.svc.cluster.local:9092"

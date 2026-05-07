@@ -9,7 +9,7 @@
 ## ภาพรวมระบบ
 
 ```
-mintserver (10.85.3.100)          mintpower (10.85.3.104)
+mintserver (<OPC_SERVER_IP>)          mintpower (<K3S_NODE_IP>)
 ┌─────────────────────┐           ┌──────────────────────────────────┐
 │  Prosys OPC UA      │  opc.tcp  │  NiFi Edge (k3s, namespace: it)  │
 │  port 53530         │ ────────► │  ExecuteGroovyScript             │
@@ -157,11 +157,11 @@ GROOVY_ID="fb9e2d81-019d-1000-f255-9b25076647d6"
 
 > ถ้า pod restart และ ID เปลี่ยน ดูด้วย:
 > ```bash
-> NIFI_TOKEN=$(curl -sk -X POST https://10.85.3.104:31444/nifi-api/access/token \
+> NIFI_TOKEN=$(curl -sk -X POST https://<K3S_NODE_IP>:31444/nifi-api/access/token \
 >   -H "Content-Type: application/x-www-form-urlencoded" \
 >   -d "username=admin&password=Nifi%40mintpower2024%21" | tr -d '"')
 > curl -sk -H "Authorization: Bearer $NIFI_TOKEN" \
->   https://10.85.3.104:31444/nifi-api/flow/process-groups/root \
+>   https://<K3S_NODE_IP>:31444/nifi-api/flow/process-groups/root \
 >   | python3 -c "import json,sys; [print(p['id'], p['component']['name']) \
 >     for p in json.load(sys.stdin)['processGroupFlow']['flow']['processors']]"
 > ```
@@ -185,14 +185,14 @@ def nifi_req(token, method, path, data=None):
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
-    url = f"https://10.85.3.104:31444/nifi-api{path}"
+    url = f"https://<K3S_NODE_IP>:31444/nifi-api{path}"
     req = urllib.request.Request(url, data=json.dumps(data).encode() if data else None, method=method)
     req.add_header("Authorization", f"Bearer {token}")
     if data: req.add_header("Content-Type", "application/json")
     with urllib.request.urlopen(req, context=ctx) as r: return json.load(r)
 
 token = subprocess.run(
-    ["curl","-sk","-X","POST","https://10.85.3.104:31444/nifi-api/access/token",
+    ["curl","-sk","-X","POST","https://<K3S_NODE_IP>:31444/nifi-api/access/token",
      "-H","Content-Type: application/x-www-form-urlencoded",
      "-d","username=admin&password=Nifi%40mintpower2024%21"],
     capture_output=True, text=True).stdout.strip().strip('"')
@@ -241,12 +241,12 @@ kubectl logs -n it $NIFI_POD --since=2m | grep "\[OPC\]"
 ### 4.2 ดูสถิติ Processor
 
 ```bash
-NIFI_TOKEN=$(curl -sk -X POST https://10.85.3.104:31444/nifi-api/access/token \
+NIFI_TOKEN=$(curl -sk -X POST https://<K3S_NODE_IP>:31444/nifi-api/access/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=admin&password=Nifi%40mintpower2024%21" | tr -d '"')
 
 curl -sk -H "Authorization: Bearer $NIFI_TOKEN" \
-  "https://10.85.3.104:31444/nifi-api/flow/processors/fb9e2d81-019d-1000-f255-9b25076647d6/status" \
+  "https://<K3S_NODE_IP>:31444/nifi-api/flow/processors/fb9e2d81-019d-1000-f255-9b25076647d6/status" \
   | python3 -c "
 import json,sys
 s = json.load(sys.stdin)['processorStatus']['aggregateSnapshot']
@@ -300,9 +300,9 @@ print('tags sample:', list(d['tags'].items())[:3])
 
 | ค่า | ข้อมูล |
 |-----|---------|
-| URL | `https://10.85.3.104:31444` |
+| URL | `https://<K3S_NODE_IP>:31444` |
 | Username | `admin` |
-| Password | `Nifi@mintpower2024!` |
+| Password | `CHANGE_ME` |
 
 ### Kafka Bootstrap
 

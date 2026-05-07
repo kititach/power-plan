@@ -26,7 +26,7 @@ SERVER_NAME   = "OPC-UA Simulator — mintpower lab"
 NAMESPACE     = "urn:mintpower:opc-simulator"
 INTERVAL      = 2.0   # วินาที
 
-KAFKA_BROKERS = "10.85.3.104:32092"
+KAFKA_BROKERS = "<K3S_NODE_IP>:32092"
 KAFKA_TOPIC   = "opc-raw-data"
 SOURCE_ID     = "PlantA"
 DEVICE_ID     = "opc-sim-mintpower"

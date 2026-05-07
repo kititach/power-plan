@@ -12,7 +12,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn
 import org.apache.nifi.processor.io.OutputStreamCallback
 import groovy.json.JsonOutput
 
-@groovy.transform.Field static final String OPC_ENDPOINT = "opc.tcp://10.85.3.100:53530/OPCUA/SimulationServer"
+@groovy.transform.Field static final String OPC_ENDPOINT = "opc.tcp://<OPC_SERVER_IP>:53530/OPCUA/SimulationServer"
 @groovy.transform.Field static final String SOURCE_ID = "mintserver-prosys"
 @groovy.transform.Field static final String DEVICE_ID = "opc-prosys-300tags"
 

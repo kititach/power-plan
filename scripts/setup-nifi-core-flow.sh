@@ -259,7 +259,7 @@ sleep 70
 
 echo "▶ Verify — MinIO bucket opc-raw:"
 kubectl exec -n it deploy/minio -- mc ls local/opc-raw/ --recursive 2>/dev/null | head -20 || \
-  echo "  (ตรวจ MinIO UI: http://10.85.3.104:30901)"
+  echo "  (ตรวจ MinIO UI: http://<K3S_NODE_IP>:30901)"
 
 echo ""
 echo "▶ Verify — NiFi processor stats:"
@@ -270,7 +270,7 @@ import sys,json
 d=json.load(sys.stdin)
 status=d.get('status',{}).get('aggregateSnapshot',{})
 print(f\"  PutS3Object — flowFilesIn: {status.get('flowFilesIn','?')}, bytesWritten: {status.get('bytesWritten','?')}\")
-" 2>/dev/null || echo "  (check NiFi UI: https://10.85.3.104:31443/nifi)"
+" 2>/dev/null || echo "  (check NiFi UI: https://<K3S_NODE_IP>:31443/nifi)"
 
 echo ""
 echo "════════════════════════════════════════════"

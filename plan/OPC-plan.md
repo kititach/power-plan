@@ -9,7 +9,7 @@
 
 | รูปแบบ | Protocol | ตัวอย่าง |
 |---|---|---|
-| **ปัจจุบัน** | OPC UA TCP | `opc.tcp://10.85.3.100:53530/...` |
+| **ปัจจุบัน** | OPC UA TCP | `opc.tcp://<OPC_SERVER_IP>:53530/...` |
 | **Scenario A** | REST API (HTTP/HTTPS) | GET `/api/v1/tags`, OPC-UA REST Profile |
 | **Scenario B** | Pub/Sub via MQTT | MQTT Broker ← OPC Server publish |
 | **Scenario C** | Pub/Sub via OPC UA PubSub | OPC UA Part 14, MQTT transport |
@@ -74,7 +74,7 @@ OPC Server                 ┌──────────┐
 **ตัวอย่าง InvokeHTTP config:**
 ```
 HTTP Method    : GET
-Remote URL     : http://10.85.3.100:8080/api/v1/tags?device=boiler1
+Remote URL     : http://<OPC_SERVER_IP>:8080/api/v1/tags?device=boiler1
 Content-Type   : application/json
 Scheduling     : Timer driven, 2 sec
 

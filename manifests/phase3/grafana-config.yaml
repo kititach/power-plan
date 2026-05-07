@@ -20,7 +20,7 @@ data:
           defaultBucket: opc-data
           tlsSkipVerify: true
         secureJsonData:
-          token: influx-super-secret-token-mintpower
+          token: CHANGE_ME
         isDefault: true
         editable: true
 
@@ -33,12 +33,12 @@ metadata:
 data:
   grafana.ini: |
     [server]
-    domain = 10.85.3.104
-    root_url = http://10.85.3.104:30300
+    domain = <K3S_NODE_IP>
+    root_url = http://<K3S_NODE_IP>:30300
 
     [security]
     admin_user = admin
-    admin_password = Grafana@mintpower2024
+    admin_password = CHANGE_ME
 
     [auth.anonymous]
     enabled = false

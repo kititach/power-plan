@@ -187,5 +187,5 @@ Prosys OPC UA (mintserver:53530)
 | NiFi Core ConsumeKafka | อ่านจาก `opc-datalake` (ต้องแก้เป็น `opc-raw-data`) |
 | InfluxDB bucket | `opc-data` |
 | InfluxDB org | `mintpower-org` |
-| InfluxDB token | `influx-super-secret-token-mintpower` |
+| InfluxDB token | `CHANGE_ME` |
 | Kafka bootstrap | `kafka-cluster-kafka-bootstrap.dmz.svc.cluster.local:9092` |

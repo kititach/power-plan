@@ -17,7 +17,7 @@ Phase 4 of the OPC UA simulator pipeline is complete. The Groovy OPC UA reader r
 | NiFi Edge | 2.0.0 | k3s `it` namespace, NodePort 31444 |
 | Eclipse Milo | 0.6.12 | `/opt/nifi/nifi-current/data/milo-jars/` |
 | Guava | 33.3.1-jre | Same directory (added this session) |
-| Prosys OPC UA Sim Server | latest | mintserver (10.85.3.100:53530) |
+| Prosys OPC UA Sim Server | latest | mintserver (<OPC_SERVER_IP>:53530) |
 | Kafka | 3.x (Strimzi) | k3s `dmz` namespace |
 
 ---
@@ -31,8 +31,8 @@ Phase 4 of the OPC UA simulator pipeline is complete. The Groovy OPC UA reader r
 
 ### 2. OPC UA Endpoint Hostname Resolution (`UnknownHostException: mintserver`)
 - **Root cause:** Prosys server advertises endpoint with hostname `mintserver` in the `EndpointDescription`; NiFi pod could not resolve this hostname
-- **Fix:** Patched k3s deployment `nifi-edge` to add `hostAliases: [{ip: 10.85.3.100, hostnames: [mintserver]}]`
-- **Command:** `kubectl patch deployment nifi-edge -n it --type=json -p='[{"op":"add","path":"/spec/template/spec/hostAliases","value":[{"ip":"10.85.3.100","hostnames":["mintserver"]}]}]'`
+- **Fix:** Patched k3s deployment `nifi-edge` to add `hostAliases: [{ip: <OPC_SERVER_IP>, hostnames: [mintserver]}]`
+- **Command:** `kubectl patch deployment nifi-edge -n it --type=json -p='[{"op":"add","path":"/spec/template/spec/hostAliases","value":[{"ip":"<OPC_SERVER_IP>","hostnames":["mintserver"]}]}]'`
 
 ### 3. NiFi Flow Lost After Pod Restart
 - **Root cause:** NiFi stores `flow.json.gz` in `/opt/nifi/nifi-current/conf/` which is NOT on the PVC (PVC only mounts at `/opt/nifi/nifi-current/data/`)

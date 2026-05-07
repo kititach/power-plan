@@ -31,8 +31,8 @@
 
 | Service | URL / Port | Credentials |
 |---|---|---|
-| Grafana | http://localhost:30300 | admin / Grafana@mintpower2024 |
-| InfluxDB | http://localhost:30086 | token: `influx-super-secret-token-mintpower` |
+| Grafana | http://localhost:30300 | admin / CHANGE_ME |
+| InfluxDB | http://localhost:30086 | token: `CHANGE_ME` |
 | MinIO Console | http://localhost:30901 | ดู secret `minio-secret` |
 | NiFi Core | https://localhost:31443/nifi | — |
 | NiFi Edge | https://localhost:31444/nifi | — |
@@ -97,7 +97,7 @@ kubectl exec -n dmz kafka-cluster-broker-0 -- \
 
 # 3. InfluxDB รับข้อมูลอยู่ไหม (ดู 5 นาทีล่าสุด)
 kubectl exec -n it influxdb-657785f5b4-jhpfv -- \
-  sh -c 'influx query --token influx-super-secret-token-mintpower --org mintpower-org \
+  sh -c 'influx query --token CHANGE_ME --org mintpower-org \
   "from(bucket:\"opc-data\") |> range(start:-5m) \
   |> filter(fn:(r)=>r[\"_field\"]==\"Temp_Boiler_01\") |> count()"'
 
@@ -167,7 +167,7 @@ kubectl logs -n it <telegraf-pod> --tail=30
 
 # ตรวจ org/bucket (org ต้องเป็น "mintpower-org" ไม่ใช่ "mintpower")
 kubectl exec -n it <influxdb-pod> -- \
-  sh -c 'influx org list --token influx-super-secret-token-mintpower'
+  sh -c 'influx org list --token CHANGE_ME'
 
 # Restart Telegraf
 kubectl rollout restart deployment/telegraf -n it
@@ -211,7 +211,7 @@ kubectl exec -n dmz kafka-cluster-broker-0 -- \
 
 ```bash
 kubectl exec -n it <grafana-pod> -- \
-  grafana cli admin reset-admin-password 'Grafana@mintpower2024'
+  grafana cli admin reset-admin-password 'CHANGE_ME'
 ```
 
 ---

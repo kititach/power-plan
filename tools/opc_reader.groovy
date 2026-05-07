@@ -17,7 +17,7 @@ import groovy.json.JsonOutput
 // ── Config ────────────────────────────────────────────────────
 @groovy.transform.Field
 static final String OPC_ENDPOINT =
-    "opc.tcp://10.85.3.100:53530/OPCUA/SimulationServer"
+    "opc.tcp://<OPC_SERVER_IP>:53530/OPCUA/SimulationServer"
 
 @groovy.transform.Field
 static final String SOURCE_ID = "mintserver-prosys"

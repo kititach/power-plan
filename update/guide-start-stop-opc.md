@@ -8,7 +8,7 @@
 ## ภาพรวมระบบ
 
 ```
-mintserver (10.85.3.100)               mintpower (10.85.3.104 / k3s)
+mintserver (<OPC_SERVER_IP>)               mintpower (<K3S_NODE_IP> / k3s)
 ┌────────────────────────────┐         ┌──────────────────────────────┐
 │  Prosys OPC UA Sim Server  │──TCP──► │  NiFi Edge                   │
 │  port 53530                │         │  → ExecuteGroovyScript       │
@@ -30,8 +30,8 @@ mintserver (10.85.3.100)               mintpower (10.85.3.104 / k3s)
 ### SSH เข้า mintserver
 
 ```bash
-ssh demo@10.85.3.100
-# password: @123456789
+ssh demo@<OPC_SERVER_IP>
+# password: <SSH_PASSWORD>
 ```
 
 ### เริ่ม Prosys ผ่าน systemd
@@ -76,8 +76,8 @@ kubectl exec -n dmz kafka-cluster-broker-0 -c kafka -- bash -c \
 ### SSH เข้า mintserver
 
 ```bash
-ssh demo@10.85.3.100
-# password: @123456789
+ssh demo@<OPC_SERVER_IP>
+# password: <SSH_PASSWORD>
 ```
 
 ### หยุด Prosys ผ่าน systemd
@@ -131,14 +131,14 @@ def nifi_req(token, path):
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
-    req = urllib.request.Request(f"https://10.85.3.104:31444/nifi-api{path}")
+    req = urllib.request.Request(f"https://<K3S_NODE_IP>:31444/nifi-api{path}")
     req.add_header("Authorization", f"Bearer {token}")
     with urllib.request.urlopen(req, context=ctx) as r: return json.load(r)
 
 token = subprocess.run(
-    ["curl","-sk","-X","POST","https://10.85.3.104:31444/nifi-api/access/token",
+    ["curl","-sk","-X","POST","https://<K3S_NODE_IP>:31444/nifi-api/access/token",
      "-H","Content-Type: application/x-www-form-urlencoded",
-     "-d","username=admin&password=Nifi%40mintpower2024%21"],
+     "-d","username=admin&password=CHANGE_ME"],
     capture_output=True, text=True).stdout.strip().strip('"')
 
 GROOVY_ID = "fb9e2d81-019d-1000-f255-9b25076647d6"
@@ -171,7 +171,7 @@ kubectl logs -n it $NIFI_POD --since=1m | grep "\[OPC\]"
 | log ที่เห็น | ความหมาย |
 |------------|---------|
 | `[OPC] Connected ✓` | เชื่อมต่อสำเร็จ |
-| `Connection refused: /10.85.3.100:53530` | Prosys ไม่ได้รัน |
+| `Connection refused: /<OPC_SERVER_IP>:53530` | Prosys ไม่ได้รัน |
 | `[OPC] Read failed: timeout` | Prosys รันแต่ช้า/หนัก |
 
 ---
