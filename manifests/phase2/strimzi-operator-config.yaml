@@ -1,0 +1,11 @@
+# ============================================================
+# Strimzi Operator — Watch namespace: dmz
+# ============================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: strimzi-cluster-operator
+  namespace: dmz
+data:
+  # บอกให้ Operator จัดการเฉพาะ namespace dmz เท่านั้น
+  STRIMZI_NAMESPACE: "dmz"

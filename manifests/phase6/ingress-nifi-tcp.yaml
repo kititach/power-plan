@@ -1,0 +1,34 @@
+# ============================================================
+# TCP IngressRoute สำหรับ NIFI (HTTPS passthrough)
+# ============================================================
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: nifi-core-tcp
+  namespace: it
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HostSNI(`nifi-core.mintpower.local`)
+      services:
+        - name: nifi-core
+          port: 8443
+  tls:
+    passthrough: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: nifi-edge-tcp
+  namespace: it
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HostSNI(`nifi-edge.mintpower.local`)
+      services:
+        - name: nifi-edge
+          port: 8443
+  tls:
+    passthrough: true

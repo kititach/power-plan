@@ -1,0 +1,20 @@
+# ============================================================
+# Namespaces — DMZ Zone + IT Zone
+# ============================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dmz
+  labels:
+    zone: dmz
+    environment: production
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: it
+  labels:
+    zone: it
+    environment: production

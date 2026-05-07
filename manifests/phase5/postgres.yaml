@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-openmaint
+  namespace: it
+  labels:
+    app: postgres-openmaint
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-openmaint
+  template:
+    metadata:
+      labels:
+        app: postgres-openmaint
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "postgres"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: "0.5"
+            limits:
+              memory: 1Gi
+              cpu: "1"
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: pvc-openmaint
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-openmaint
+  namespace: it
+  labels:
+    app: postgres-openmaint
+spec:
+  selector:
+    app: postgres-openmaint
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432

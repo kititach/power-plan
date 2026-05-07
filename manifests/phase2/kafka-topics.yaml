@@ -1,0 +1,50 @@
+# ============================================================
+# Kafka Topics สำหรับ OT Data Pipeline
+# ============================================================
+
+# Topic หลัก — รับข้อมูลจาก OPC via NIFI Edge
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: opc-raw-data
+  namespace: dmz
+  labels:
+    strimzi.io/cluster: kafka-cluster
+spec:
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: 604800000      # เก็บ 7 วัน
+    segment.bytes: 536870912     # 512MB per segment
+
+---
+# Topic สำหรับ real-time metrics (Telegraf consume)
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: opc-metrics
+  namespace: dmz
+  labels:
+    strimzi.io/cluster: kafka-cluster
+spec:
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: 86400000       # เก็บ 1 วัน (real-time ไม่ต้องการนาน)
+    segment.bytes: 268435456     # 256MB per segment
+
+---
+# Topic สำหรับ data lake (NIFI Core consume)
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: opc-datalake
+  namespace: dmz
+  labels:
+    strimzi.io/cluster: kafka-cluster
+spec:
+  partitions: 3
+  replicas: 1
+  config:
+    retention.ms: 2592000000     # เก็บ 30 วัน
+    segment.bytes: 1073741824    # 1GB per segment

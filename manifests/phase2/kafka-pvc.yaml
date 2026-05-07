@@ -1,0 +1,18 @@
+# ============================================================
+# PVC — Kafka Data Storage (NVMe)
+# ============================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-kafka
+  namespace: dmz
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-nvme
+  resources:
+    requests:
+      storage: 50Gi
+  selector:
+    matchLabels:
+      app: kafka

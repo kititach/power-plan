@@ -1,0 +1,22 @@
+# ============================================================
+# Ingress สำหรับ DMZ Zone
+# ============================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-dmz
+  namespace: dmz
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+    - host: akhq.mintpower.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: akhq
+                port:
+                  number: 8080

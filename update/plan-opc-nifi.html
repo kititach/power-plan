@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แผนปรับระบบ OPC → NiFi Edge → Kafka</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;line-height:1.7}
+
+/* NAV */
+.sidenav{position:fixed;left:0;top:0;width:220px;height:100vh;background:#131820;border-right:1px solid #2d3748;overflow-y:auto;z-index:100;padding:20px 0}
+.sidenav .logo{padding:0 18px 16px;border-bottom:1px solid #2d3748;font-size:.85rem;font-weight:700;color:#63b3ed}
+.sidenav .logo small{display:block;font-size:.65rem;color:#4a5568;font-weight:400;margin-top:2px}
+.sidenav a{display:block;padding:7px 18px;font-size:.78rem;color:#a0aec0;border-left:3px solid transparent;transition:all .2s}
+.sidenav a:hover,.sidenav a.active{color:#e2e8f0;background:#1a2035;border-left-color:#63b3ed;text-decoration:none}
+.sidenav .nav-section{padding:12px 18px 4px;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#4a5568}
+
+.main{margin-left:220px;padding:40px 48px;max-width:1060px}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1a1f2e 0%,#16213e 100%);border:1px solid #2d3748;border-radius:14px;padding:28px 32px;margin-bottom:32px}
+.hero h1{font-size:1.75rem;font-weight:800;color:#f7fafc;margin-bottom:4px}
+.hero p{color:#718096;font-size:.9rem}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.hero-chip{background:#0d1117;border:1px solid #2d3748;border-radius:6px;padding:4px 12px;font-size:.75rem;color:#a0aec0;font-family:monospace}
+.hero-chip span{color:#63b3ed}
+
+/* HEADINGS */
+h2{font-size:1.15rem;font-weight:700;color:#f7fafc;margin:40px 0 16px;padding-bottom:8px;border-bottom:2px solid #2d3748}
+h3{font-size:.97rem;font-weight:600;color:#e2e8f0;margin:22px 0 10px}
+h4{font-size:.83rem;font-weight:600;color:#a0aec0;margin:14px 0 6px;text-transform:uppercase;letter-spacing:.8px}
+p{margin-bottom:12px;color:#cbd5e0;font-size:.88rem}
+section{scroll-margin-top:20px}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+.green{background:#1c3a2e;color:#68d391;border:1px solid #276749}
+.blue{background:#1a2a3e;color:#63b3ed;border:1px solid #2b4c7e}
+.yellow{background:#2d2010;color:#f6ad55;border:1px solid #744210}
+.red{background:#2d1515;color:#fc8181;border:1px solid #742020}
+.purple{background:#2a1f3d;color:#b794f4;border:1px solid #553c9a}
+.orange{background:#2d1f10;color:#fbd38d;border:1px solid #744210}
+
+/* CARDS */
+.card{background:#1a1f2e;border:1px solid #2d3748;border-radius:12px;padding:20px 24px;margin-bottom:20px}
+.card-grid{display:grid;gap:16px;margin-bottom:24px}
+.card-grid.two{grid-template-columns:1fr 1fr}
+.card-grid.three{grid-template-columns:1fr 1fr 1fr}
+
+/* CODE */
+pre,code{font-family:'Consolas','Courier New',monospace}
+pre{background:#0d1117;border:1px solid #2d3748;border-radius:8px;padding:16px 20px;font-size:.77rem;color:#a0aec0;overflow-x:auto;line-height:1.9;margin:10px 0 20px;position:relative}
+code{background:#1a1f2e;color:#b794f4;padding:1px 6px;border-radius:4px;font-size:.82rem}
+.copy-btn{position:absolute;top:10px;right:12px;background:#2d3748;color:#a0aec0;border:none;border-radius:4px;padding:3px 10px;font-size:.7rem;cursor:pointer;transition:background .2s}
+.copy-btn:hover{background:#4a5568;color:#f7fafc}
+.cmd{color:#68d391}
+.kw{color:#63b3ed}
+.str{color:#fbd38d}
+.cm{color:#4a5568;font-style:italic}
+.var{color:#fc8181}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:20px}
+th{text-align:left;padding:10px 14px;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#718096;border-bottom:1px solid #2d3748;background:#131820}
+td{padding:9px 14px;border-bottom:1px solid #1e2535;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1e2535}
+.mono{font-family:'Consolas',monospace;font-size:.78rem;color:#a0aec0}
+
+/* ALERT */
+.alert{border-radius:8px;padding:14px 18px;margin:12px 0 20px;font-size:.84rem;display:flex;gap:12px;align-items:flex-start}
+.alert-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.alert.tip{background:#1c3a2e;border:1px solid #276749;color:#68d391}
+.alert.warn{background:#2d2010;border:1px solid #744210;color:#f6ad55}
+.alert.danger{background:#2d1515;border:1px solid #742020;color:#fc8181}
+.alert.info{background:#1a2a3e;border:1px solid #2b4c7e;color:#63b3ed}
+
+/* TIMELINE / PHASE */
+.phase-block{border-left:3px solid #63b3ed;padding:14px 20px;margin:14px 0 24px;background:#131820;border-radius:0 10px 10px 0}
+.phase-block.phase1{border-color:#68d391}
+.phase-block.phase2{border-color:#63b3ed}
+.phase-block.phase3{border-color:#b794f4}
+.phase-block.phase4{border-color:#f6ad55}
+.phase-block.phase5{border-color:#fc8181}
+.phase-block.phase6{border-color:#68d391}
+.phase-label{font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:#4a5568;margin-bottom:4px}
+.phase-title{font-size:1rem;font-weight:700;color:#e2e8f0;margin-bottom:8px}
+.phase-time{float:right;font-size:.75rem;background:#0d1117;border:1px solid #2d3748;border-radius:4px;padding:2px 8px;color:#718096;font-family:monospace;margin-top:-22px}
+
+/* STEPS */
+.steps{margin:10px 0 18px;counter-reset:step}
+.step{display:flex;gap:14px;margin-bottom:14px;counter-increment:step}
+.step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:#63b3ed;color:#0f1117;font-weight:700;font-size:.76rem;display:flex;align-items:center;justify-content:center}
+.step-num::before{content:counter(step)}
+.step-body{flex:1;padding-top:3px;font-size:.84rem;color:#a0aec0}
+.step-body strong{color:#e2e8f0}
+
+/* COMPARE TABLE */
+.compare th{background:#131820}
+.compare .now{color:#fc8181}
+.compare .target{color:#68d391}
+
+/* FLOW DIAGRAM */
+.flow-box{background:#131820;border:1px solid #2d3748;border-radius:12px;padding:24px;margin-bottom:24px;font-family:monospace;font-size:.82rem;color:#a0aec0;line-height:2.2;overflow-x:auto}
+.flow-box .node-opc{color:#68d391;font-weight:700}
+.flow-box .node-nifi{color:#63b3ed;font-weight:700}
+.flow-box .node-kafka{color:#f6ad55;font-weight:700}
+.flow-box .node-influx{color:#b794f4;font-weight:700}
+.flow-box .node-minio{color:#fbd38d;font-weight:700}
+.flow-box .arrow{color:#4a5568}
+
+/* JAR TABLE */
+.jar-row td:first-child{font-family:monospace;color:#fbd38d;font-size:.78rem}
+.jar-row td:nth-child(2){font-family:monospace;color:#a0aec0;font-size:.75rem}
+
+/* IMPACT GRID */
+.impact-card{background:#1a1f2e;border-radius:10px;padding:16px 20px;font-size:.82rem}
+.impact-card h4{font-size:.75rem;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.impact-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #1e2535;font-size:.81rem}
+.impact-row:last-child{border-bottom:none}
+.ok{color:#68d391}
+.warn-c{color:#f6ad55}
+.bad{color:#fc8181}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#131820}
+::-webkit-scrollbar-thumb{background:#2d3748;border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- SIDE NAV -->
+<nav class="sidenav">
+  <div class="logo">🔧 แผนปรับ OPC Flow
+    <small>v1.0 · 2026-05-05</small>
+  </div>
+  <div class="nav-section">ภาพรวม</div>
+  <a href="#overview">สรุปและเป้าหมาย</a>
+  <a href="#architecture">Architecture เปรียบเทียบ</a>
+  <a href="#approach">แนวทางที่เลือก</a>
+  <div class="nav-section">ขั้นตอน</div>
+  <a href="#phase1">Phase 1 · Prosys 300 Tags</a>
+  <a href="#phase2">Phase 2 · Eclipse Milo JARs</a>
+  <a href="#phase3">Phase 3 · Copy JARs เข้า NiFi</a>
+  <a href="#phase4">Phase 4 · NiFi Flow Config</a>
+  <a href="#phase5">Phase 5 · Groovy Script</a>
+  <a href="#phase6">Phase 6 · Stop Python + Test</a>
+  <div class="nav-section">ข้อมูลอ้างอิง</div>
+  <a href="#impact">ผลกระทบ &amp; เวลา</a>
+  <a href="#nodeids">Browse Node IDs</a>
+  <a href="#troubleshoot">แก้ปัญหาที่อาจเจอ</a>
+  <a href="#rollback">Rollback Plan</a>
+</nav>
+
+<main class="main">
+
+<!-- HERO -->
+<section id="overview">
+<div class="hero">
+  <h1>แผนปรับระบบ OPC → NiFi Edge → Kafka</h1>
+  <p>ปรับโครงสร้างให้ตรงตาม Concept Architecture โดยใช้ NiFi Edge เป็น OPC UA Client จริงๆ แทน Python bridge</p>
+  <div class="hero-meta">
+    <div class="hero-chip">mintpower <span>10.85.3.104</span></div>
+    <div class="hero-chip">mintserver <span>10.85.3.100</span></div>
+    <div class="hero-chip">NiFi Edge <span>2.0.0</span></div>
+    <div class="hero-chip">Eclipse Milo <span>0.6.12</span></div>
+    <div class="hero-chip">วันที่ <span>2026-05-05</span></div>
+  </div>
+</div>
+
+<h2>เป้าหมายของแผนนี้</h2>
+<div class="card-grid three">
+  <div class="card">
+    <h4>🖥️ mintserver (10.85.3.100)</h4>
+    <p>เป็น <strong>OPC UA Source</strong> จริง<br>รัน Prosys Simulation Server<br>เพิ่มจาก 7 → 300 Tags</p>
+  </div>
+  <div class="card">
+    <h4>🔄 NiFi Edge (mintpower)</h4>
+    <p>อ่าน OPC UA โดยตรง<br>via <strong>Eclipse Milo JARs</strong><br>ส่งเข้า Kafka topic: opc-raw-data</p>
+  </div>
+  <div class="card">
+    <h4>📊 Pipeline ที่เหลือ</h4>
+    <p>Kafka → NiFi Core → MinIO<br>Telegraf → InfluxDB → Grafana<br><strong>ไม่เปลี่ยนแปลง</strong></p>
+  </div>
+</div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+<h2>Architecture เปรียบเทียบ</h2>
+
+<h3>ก่อน (ปัจจุบัน)</h3>
+<div class="flow-box">
+<span class="node-opc">mintpower: opc_server.py</span> <span class="arrow">──── Python asyncua (simulate ในตัว) ────</span> <span class="node-kafka">Kafka: opc-raw-data</span>
+                                   <span class="arrow">↑ ส่ง JSON ตรง via NodePort 32092</span>
+<span class="node-nifi">NiFi Edge</span> <span class="arrow">── ConsumeKafka ──→ PublishKafka(opc-metrics)</span>
+         <span class="arrow">                └──→ PublishKafka(opc-datalake)</span>
+<span style="color:#fc8181;font-size:.75rem">⚠ NiFi Edge ไม่ได้อ่าน OPC UA จริง เป็นแค่ Kafka fan-out</span>
+<span style="color:#fc8181;font-size:.75rem">⚠ mintserver:53530 ไม่ได้ถูกใช้งาน</span>
+</div>
+
+<h3>หลัง (เป้าหมาย)</h3>
+<div class="flow-box">
+<span class="node-opc">mintserver:53530</span> <span class="arrow">──── OPC UA Protocol (TCP) ────</span> <span class="node-nifi">NiFi Edge: ExecuteGroovyScript</span>
+<span class="arrow">             Prosys 300 tags                              ↓ Eclipse Milo JARs</span>
+                                                 <span class="node-kafka">Kafka: opc-raw-data</span>
+                                                          <span class="arrow">↓</span>
+<span class="node-nifi">NiFi Edge</span> <span class="arrow">── ConsumeKafka ──→ PublishKafka(opc-metrics)   ──→</span> <span class="node-influx">Telegraf → InfluxDB → Grafana</span>
+         <span class="arrow">                └──→ PublishKafka(opc-datalake) ──→</span> <span class="node-minio">NiFi Core → MinIO → Trino</span>
+</div>
+</section>
+
+<!-- APPROACH -->
+<section id="approach">
+<h2>แนวทางที่เลือก</h2>
+<div class="alert info">
+  <span class="alert-icon">ℹ️</span>
+  <div><strong>Eclipse Milo + ExecuteGroovyScript ใน NiFi 2.0.0</strong><br>
+  ไม่ต้องเปลี่ยน Docker image, ไม่ต้อง pull image ใหม่ (Airgap friendly)<br>
+  JARs ใส่ใน PVC ทนต่อการ restart, Module Directory ใน processor ชี้ JAR ได้โดยตรง</div>
+</div>
+
+<table>
+  <thead><tr><th>ตัวเลือก</th><th>เปลี่ยน Image?</th><th>Airgap</th><th>ง่าย</th><th>เลือก?</th></tr></thead>
+  <tbody>
+    <tr><td><strong>NiFi 2.0.0 + Milo JARs</strong></td><td class="ok">❌ ไม่ต้อง</td><td class="ok">✅✅</td><td class="warn-c">กลาง</td><td><span class="badge green">✅ เลือกใช้</span></td></tr>
+    <tr><td>NiFi 1.27.x + OPC NAR</td><td class="bad">✅ ต้องเปลี่ยน</td><td class="warn-c">⚠️</td><td class="ok">ง่าย</td><td><span class="badge" style="background:#1e2535;color:#4a5568;border:1px solid #2d3748">—</span></td></tr>
+    <tr><td>Telegraf OPC UA Input</td><td class="ok">❌ ไม่ต้อง</td><td class="ok">✅✅</td><td class="ok">ง่ายมาก</td><td><span class="badge" style="background:#1e2535;color:#4a5568;border:1px solid #2d3748">— (ไม่ผ่าน NiFi)</span></td></tr>
+    <tr><td>Python Bridge (opc_server_v2)</td><td class="ok">❌ ไม่ต้อง</td><td class="ok">✅✅</td><td class="ok">ง่าย</td><td><span class="badge" style="background:#1e2535;color:#4a5568;border:1px solid #2d3748">— (NiFi ยังไม่ใช้ OPC)</span></td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PHASE 1                                 -->
+<!-- ═══════════════════════════════════════ -->
+<section id="phase1">
+<h2>Phase 1 — เพิ่ม 300 Tags ใน Prosys บน mintserver</h2>
+
+<div class="phase-block phase1">
+  <div class="phase-label">Phase 1</div>
+  <div class="phase-title">เพิ่ม OPC UA Tags ใน Prosys Simulation Server</div>
+  <span class="phase-time">~45 นาที · mintserver</span>
+  <p style="font-size:.83rem;color:#718096;margin-top:8px">Prosys ไม่รองรับ batch add ผ่าน UI ต้องแก้ไฟล์ XML config โดยตรง แล้วรีสตาร์ท server</p>
+</div>
+
+<h3>1.1 SSH เข้า mintserver และหยุด Prosys</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cmd">ssh demo@10.85.3.100</span>
+<span class="cm"># หา PID ของ Prosys</span>
+<span class="cmd">ps aux | grep -i prosys</span>
+<span class="cmd">kill -9 &lt;PID&gt;</span>
+<span class="cm"># ยืนยันว่าหยุดแล้ว</span>
+<span class="cmd">ss -tlnp | grep 53530</span>   <span class="cm"># ต้องไม่มี output</span></pre>
+
+<h3>1.2 Script สร้าง 300-tag XML (รันบน mintpower)</h3>
+<p>สร้างไฟล์นี้บน mintpower แล้ว scp ไปรันบน mintserver</p>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cm">## /home/mintpower/lab/k3s/tools/gen_300tags.py</span>
+
+<span class="kw">TAG_GROUPS</span> = [
+    <span class="cm"># (prefix, count, unit, min_val, max_val)</span>
+    (<span class="str">"Temp_Boiler"</span>,   20, <span class="str">"degC"</span>,  60,  120),
+    (<span class="str">"Temp_HeatEx"</span>,   10, <span class="str">"degC"</span>,  40,   90),
+    (<span class="str">"Press_Line"</span>,    20, <span class="str">"bar"</span>,    2,   10),
+    (<span class="str">"Press_Tank"</span>,    10, <span class="str">"bar"</span>,    1,    8),
+    (<span class="str">"Flow_Main"</span>,     15, <span class="str">"L/min"</span>, 50,  200),
+    (<span class="str">"Flow_Branch"</span>,   15, <span class="str">"L/min"</span>, 10,   80),
+    (<span class="str">"Level_Tank"</span>,    20, <span class="str">"%"</span>,     20,   95),
+    (<span class="str">"Vibration_Pump"</span>,20, <span class="str">"mm/s"</span>,  0,   15),
+    (<span class="str">"Power_Motor"</span>,   20, <span class="str">"kW"</span>,    5,  150),
+    (<span class="str">"RPM_Motor"</span>,     20, <span class="str">"rpm"</span>, 800, 3000),
+    (<span class="str">"Humidity_Room"</span>, 10, <span class="str">"%"</span>,    30,   80),
+    (<span class="str">"Current_Drive"</span>, 20, <span class="str">"A"</span>,     5,   80),
+    (<span class="str">"Voltage_Bus"</span>,   10, <span class="str">"V"</span>,   380,  420),
+    (<span class="str">"CO2_Zone"</span>,      10, <span class="str">"ppm"</span>, 400, 1200),
+    (<span class="str">"Noise_Floor"</span>,   10, <span class="str">"dB"</span>,  40,   90),
+    (<span class="str">"Torque_Motor"</span>,  20, <span class="str">"Nm"</span>,  10,  500),
+    (<span class="str">"Temp_Ambient"</span>,  10, <span class="str">"degC"</span>, 20,  45),
+    (<span class="str">"Flow_Coolant"</span>,  10, <span class="str">"L/min"</span>,5,   50),
+    (<span class="str">"Press_Hydraulic"</span>,10,<span class="str">"bar"</span>, 50,  200),
+    (<span class="str">"Temp_Oil"</span>,      10, <span class="str">"degC"</span>, 40,  100),
+]  <span class="cm"># รวม = 300 tags</span>
+
+<span class="kw">START_ID</span> = 2001   <span class="cm"># NodeId เริ่มต้น (ns=3;i=2001)</span>
+nodes_xml = []
+sims_xml  = []
+idx = <span class="kw">START_ID</span>
+
+<span class="kw">for</span> prefix, count, unit, lo, hi <span class="kw">in TAG_GROUPS</span>:
+    <span class="kw">for</span> n <span class="kw">in range</span>(1, count+1):
+        name = <span class="str">f"</span>{prefix}<span class="str">_{n:02d}"</span>
+        mid  = (lo + hi) / 2
+        nodes_xml.append(<span class="str">f"""
+  &lt;UAVariable NodeId="ns=3;i={idx}" BrowseName="3:{name}"
+    DataType="Double" ValueRank="-1"&gt;
+    &lt;DisplayName&gt;{name}&lt;/DisplayName&gt;
+    &lt;Description&gt;{unit}&lt;/Description&gt;
+    &lt;Value&gt;&lt;uax:Double&gt;{mid}&lt;/uax:Double&gt;&lt;/Value&gt;
+  &lt;/UAVariable&gt;"""</span>)
+        sims_xml.append(<span class="str">f"""
+  &lt;ValueSimulation NodeId="ns=4;i={idx-START_ID+1}"&gt;
+    &lt;TargetNode&gt;ns=3;i={idx}&lt;/TargetNode&gt;
+    &lt;SimulationType&gt;Sinusoid&lt;/SimulationType&gt;
+    &lt;Amplitude&gt;{(hi-lo)/2}&lt;/Amplitude&gt;
+    &lt;Offset&gt;{mid}&lt;/Offset&gt;
+    &lt;Period&gt;30000&lt;/Period&gt;
+  &lt;/ValueSimulation&gt;"""</span>)
+        idx += 1
+
+<span class="kw">print</span>(<span class="str">"Nodes XML:"</span>)
+<span class="kw">print</span>(<span class="str">"\n"</span>.join(nodes_xml))
+<span class="kw">print</span>(<span class="str">"\n\nSimulations XML:"</span>)
+<span class="kw">print</span>(<span class="str">"\n"</span>.join(sims_xml))</pre>
+
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cm"># รันบน mintpower เพื่อสร้าง XML output</span>
+<span class="cmd">python3 /home/mintpower/lab/k3s/tools/gen_300tags.py > /tmp/tags_output.txt</span>
+<span class="cmd">scp /tmp/tags_output.txt demo@10.85.3.100:/tmp/</span></pre>
+
+<h3>1.3 แก้ไขไฟล์ Prosys XML บน mintserver</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cm"># บน mintserver</span>
+<span class="var">INST_FILE</span>=<span class="str">"/home/demo/.prosysopc/prosys-opc-ua-simulation-server/simconf/instances/Instances_idx_3.NodeSet2.xml"</span>
+<span class="var">SIM_FILE</span>=<span class="str">"/home/demo/.prosysopc/prosys-opc-ua-simulation-server/simconf/simulations/Simulations_idx_4.NodeSet2.xml"</span>
+
+<span class="cm"># Backup ก่อน</span>
+<span class="cmd">cp $INST_FILE ${INST_FILE}.bak</span>
+<span class="cmd">cp $SIM_FILE  ${SIM_FILE}.bak</span>
+
+<span class="cm"># เพิ่ม nodes ก่อน tag &lt;/UANodeSet&gt; ใน Instances file</span>
+<span class="cm"># วิธีใช้ sed insert หรือเปิด nano แล้ว paste</span>
+<span class="cmd">nano $INST_FILE</span>  <span class="cm"># paste Nodes XML จาก /tmp/tags_output.txt</span>
+
+<span class="cm"># เพิ่ม simulations ใน Simulations file</span>
+<span class="cmd">nano $SIM_FILE</span>   <span class="cm"># paste Simulations XML</span></pre>
+
+<h3>1.4 รัน Prosys อีกครั้งและตรวจสอบ</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cm"># หา script start ของ Prosys</span>
+<span class="cmd">find /home/demo /opt -name "*.sh" 2>/dev/null | grep -i prosys</span>
+<span class="cmd">ls ~/Desktop/ 2>/dev/null</span>
+
+<span class="cm"># รัน Prosys (ปกติใช้คำสั่ง java -jar หรือ shell script)</span>
+<span class="cmd">cd /path/to/prosys && ./start.sh &amp;</span>
+
+<span class="cm"># ตรวจว่า port 53530 เปิดแล้ว</span>
+<span class="cmd">ss -tlnp | grep 53530</span>
+
+<span class="cm"># ตรวจจาก mintpower ว่า connect ได้</span>
+<span class="cm"># (รันบน mintpower)</span>
+<span class="cmd">nc -zv 10.85.3.100 53530</span></pre>
+
+<div class="alert tip">
+  <span class="alert-icon">💡</span>
+  <div>ตรวจ Node ID จริงหลัง Prosys start โดยใช้ UaExpert หรือ Python browse ก่อนเขียน Groovy script เพราะ Prosys อาจ assign ID ต่างจากที่กำหนดในกรณีที่มี conflict</div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PHASE 2                                 -->
+<!-- ═══════════════════════════════════════ -->
+<section id="phase2">
+<h2>Phase 2 — เตรียม Eclipse Milo JAR Files</h2>
+
+<div class="phase-block phase2">
+  <div class="phase-label">Phase 2</div>
+  <div class="phase-title">Download Eclipse Milo JARs (บนเครื่องที่มี Internet)</div>
+  <span class="phase-time">~30 นาที</span>
+</div>
+
+<h3>JAR Files ที่ต้องการ</h3>
+<p>NiFi 2.0.0 มี Netty, BouncyCastle, Guava อยู่แล้ว ต้องการเพิ่มเฉพาะ Milo core:</p>
+
+<table class="jar-row">
+  <thead><tr><th>JAR File</th><th>Maven Coordinates</th><th>ขนาด ~</th></tr></thead>
+  <tbody>
+    <tr><td>sdk-client-0.6.12.jar</td><td>org.eclipse.milo:sdk-client:0.6.12</td><td>~45 KB</td></tr>
+    <tr><td>sdk-core-0.6.12.jar</td><td>org.eclipse.milo:sdk-core:0.6.12</td><td>~30 KB</td></tr>
+    <tr><td>stack-client-0.6.12.jar</td><td>org.eclipse.milo:stack-client:0.6.12</td><td>~180 KB</td></tr>
+    <tr><td>stack-core-0.6.12.jar</td><td>org.eclipse.milo:stack-core:0.6.12</td><td>~500 KB</td></tr>
+    <tr><td>netty-channel-fsm-0.7.jar</td><td>com.digitalpetri.netty:netty-channel-fsm:0.7</td><td>~20 KB</td></tr>
+    <tr><td>strict-machine-0.6.jar</td><td>com.digitalpetri.fsm:strict-machine:0.6</td><td>~15 KB</td></tr>
+    <tr><td>vavr-0.10.4.jar</td><td>io.vavr:vavr:0.10.4</td><td>~800 KB</td></tr>
+  </tbody>
+</table>
+
+<div class="alert warn">
+  <span class="alert-icon">⚠️</span>
+  <div>รวมทั้งหมด ~1.6 MB — ดาวน์โหลดบนเครื่องที่มี Internet แล้ว transfer มา mintpower ผ่าน USB / SCP</div>
+</div>
+
+<h3>วิธี A — ใช้ Maven (แนะนำ)</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cm"># สร้าง pom-milo.xml</span>
+<span class="cmd">cat &gt; /tmp/pom-milo.xml &lt;&lt;'EOF'</span>
+&lt;project&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+  &lt;groupId&gt;lab&lt;/groupId&gt;&lt;artifactId&gt;milo-dl&lt;/artifactId&gt;&lt;version&gt;1&lt;/version&gt;
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.eclipse.milo&lt;/groupId&gt;
+      &lt;artifactId&gt;sdk-client&lt;/artifactId&gt;
+      &lt;version&gt;0.6.12&lt;/version&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+&lt;/project&gt;
+EOF
+
+<span class="cmd">mkdir -p /tmp/milo-jars</span>
+<span class="cmd">mvn -f /tmp/pom-milo.xml dependency:copy-dependencies \</span>
+<span class="cmd">  -DoutputDirectory=/tmp/milo-jars \</span>
+<span class="cmd">  -DexcludeGroupIds=io.netty,org.bouncycastle,com.google.guava,org.slf4j</span>
+
+<span class="cmd">ls -lh /tmp/milo-jars/</span></pre>
+
+<h3>วิธี B — wget ทีละไฟล์</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="var">BASE</span>=<span class="str">"https://repo1.maven.org/maven2"</span>
+<span class="cmd">mkdir -p /tmp/milo-jars && cd /tmp/milo-jars</span>
+
+<span class="cmd">wget ${BASE}/org/eclipse/milo/sdk-client/0.6.12/sdk-client-0.6.12.jar</span>
+<span class="cmd">wget ${BASE}/org/eclipse/milo/sdk-core/0.6.12/sdk-core-0.6.12.jar</span>
+<span class="cmd">wget ${BASE}/org/eclipse/milo/stack-client/0.6.12/stack-client-0.6.12.jar</span>
+<span class="cmd">wget ${BASE}/org/eclipse/milo/stack-core/0.6.12/stack-core-0.6.12.jar</span>
+<span class="cmd">wget ${BASE}/com/digitalpetri/netty/netty-channel-fsm/0.7/netty-channel-fsm-0.7.jar</span>
+<span class="cmd">wget ${BASE}/com/digitalpetri/fsm/strict-machine/0.6/strict-machine-0.6.jar</span>
+<span class="cmd">wget ${BASE}/io/vavr/vavr/0.10.4/vavr-0.10.4.jar</span></pre>
+
+<h3>Transfer เข้า mintpower</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cm"># จากเครื่องที่มี internet ส่งมา mintpower</span>
+<span class="cmd">scp -r /tmp/milo-jars/ mintpower@10.85.3.104:/home/mintpower/lab/k3s/milo-jars/</span>
+
+<span class="cm"># หรือ copy ผ่าน USB แล้ว</span>
+<span class="cmd">cp -r /media/usb/milo-jars/ /home/mintpower/lab/k3s/milo-jars/</span></pre>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PHASE 3                                 -->
+<!-- ═══════════════════════════════════════ -->
+<section id="phase3">
+<h2>Phase 3 — Copy JARs เข้า NiFi Pod (PVC)</h2>
+
+<div class="phase-block phase3">
+  <div class="phase-label">Phase 3</div>
+  <div class="phase-title">นำ JARs ใส่ใน PVC ของ NiFi Edge — ทนต่อ Pod Restart</div>
+  <span class="phase-time">~10 นาที · mintpower</span>
+</div>
+
+<div class="alert info">
+  <span class="alert-icon">ℹ️</span>
+  <div>PVC <code>pvc-nifi-edge</code> mount อยู่ที่ <code>/opt/nifi/nifi-current/data/</code> ใน pod — วาง JARs ที่นั่น แล้วใช้ Module Directory ใน ExecuteGroovyScript ชี้ไป folder นั้น ไม่ต้องแตะ <code>/lib/</code> ของ NiFi</div>
+</div>
+
+<pre><button class="copy-btn" onclick="cp(this)">copy</button"><span class="cm"># หา pod name</span>
+<span class="var">NIFI_POD</span>=$(kubectl get pod -n it -l app=nifi-edge -o jsonpath='{.items[0].metadata.name}')
+<span class="cmd">echo $NIFI_POD</span>
+
+<span class="cm"># สร้าง folder ใน PVC</span>
+<span class="cmd">kubectl exec -n it $NIFI_POD -- mkdir -p /opt/nifi/nifi-current/data/milo-jars</span>
+
+<span class="cm"># Copy JARs ทุกไฟล์</span>
+<span class="cmd">for jar in /home/mintpower/lab/k3s/milo-jars/*.jar; do</span>
+<span class="cmd">  kubectl cp "$jar" it/$NIFI_POD:/opt/nifi/nifi-current/data/milo-jars/</span>
+<span class="cmd">  echo "✓ $(basename $jar)"</span>
+<span class="cmd">done</span>
+
+<span class="cm"># ตรวจว่าครบ</span>
+<span class="cmd">kubectl exec -n it $NIFI_POD -- ls -lh /opt/nifi/nifi-current/data/milo-jars/</span></pre>
+
+<div class="alert tip">
+  <span class="alert-icon">💡</span>
+  <div>JARs อยู่ใน PVC → restart pod กี่ครั้งก็ยังอยู่ ไม่ต้อง copy ใหม่</div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PHASE 4                                 -->
+<!-- ═══════════════════════════════════════ -->
+<section id="phase4">
+<h2>Phase 4 — ตั้งค่า NiFi Flow ใน UI</h2>
+
+<div class="phase-block phase4">
+  <div class="phase-label">Phase 4</div>
+  <div class="phase-title">สร้าง ExecuteGroovyScript + เชื่อม PublishKafka ใน NiFi Edge UI</div>
+  <span class="phase-time">~20 นาที · NiFi UI</span>
+</div>
+
+<h3>เข้า NiFi Edge UI</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button>URL:  https://10.85.3.104:31444/nifi
+User: admin
+Pass: Nifi@mintpower2024!</pre>
+
+<h3>Processor: ExecuteGroovyScript</h3>
+<table>
+  <thead><tr><th>Property</th><th>ค่าที่ตั้ง</th></tr></thead>
+  <tbody>
+    <tr><td>Name</td><td><code>Read OPC UA — Prosys mintserver</code></td></tr>
+    <tr><td>Scheduling Strategy</td><td><code>Timer driven</code></td></tr>
+    <tr><td>Run Schedule</td><td><code>2 sec</code></td></tr>
+    <tr><td>Script Engine</td><td><code>Groovy</code></td></tr>
+    <tr><td>Script Body</td><td>(วาง Groovy script จาก Phase 5)</td></tr>
+    <tr><td><strong>Module Directory</strong></td><td><code>/opt/nifi/nifi-current/data/milo-jars</code></td></tr>
+  </tbody>
+</table>
+
+<h3>Processor: PublishKafka (ใหม่)</h3>
+<table>
+  <thead><tr><th>Property</th><th>ค่าที่ตั้ง</th></tr></thead>
+  <tbody>
+    <tr><td>Name</td><td><code>Publish OPC → opc-raw-data</code></td></tr>
+    <tr><td>Kafka Brokers</td><td><code>kafka-cluster-kafka-bootstrap.dmz.svc.cluster.local:9092</code></td></tr>
+    <tr><td>Topic Name</td><td><code>opc-raw-data</code></td></tr>
+    <tr><td>Delivery Guarantee</td><td><code>Best Effort</code></td></tr>
+  </tbody>
+</table>
+
+<h3>Flow ใน NiFi Edge หลังปรับ</h3>
+<div class="flow-box">
+┌─────────────────────────────────────────────────────────────┐
+│                        NiFi Edge Flow                       │
+│                                                             │
+│  [Read OPC UA — Prosys] ──success──→ [Publish → opc-raw]  │
+│         timer: 2s                                           │
+│         failure → LogMessage / terminate                    │
+│                                                             │
+│  [ConsumeKafka: opc-raw-data]                              │
+│       ├──success──→ [PublishKafka: opc-metrics]            │
+│       └──success──→ [PublishKafka: opc-datalake]           │
+└─────────────────────────────────────────────────────────────┘
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PHASE 5 — GROOVY SCRIPT                 -->
+<!-- ═══════════════════════════════════════ -->
+<section id="phase5">
+<h2>Phase 5 — Groovy Script สำหรับ ExecuteGroovyScript</h2>
+
+<div class="phase-block phase3">
+  <div class="phase-label">Phase 5</div>
+  <div class="phase-title">OPC UA Client Script — อ่านค่าจาก Prosys และสร้าง FlowFile JSON</div>
+  <span class="phase-time">~20 นาที</span>
+</div>
+
+<div class="alert warn">
+  <span class="alert-icon">⚠️</span>
+  <div>แก้ <code>NODES</code> map ให้ตรงกับ Node ID จริงจาก Prosys (ดู Phase Browse ด้านล่าง) ก่อน deploy จริง</div>
+</div>
+
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cm">// ============================================================
+// OPC UA Reader — Eclipse Milo + NiFi ExecuteGroovyScript
+// อ่านข้อมูล Prosys บน mintserver ส่งเป็น JSON FlowFile
+// ============================================================</span>
+
+<span class="kw">import</span> org.eclipse.milo.opcua.sdk.client.OpcUaClient
+<span class="kw">import</span> org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig
+<span class="kw">import</span> org.eclipse.milo.opcua.stack.client.DiscoveryClient
+<span class="kw">import</span> org.eclipse.milo.opcua.stack.core.types.builtin.NodeId
+<span class="kw">import</span> org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText
+<span class="kw">import</span> org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn
+<span class="kw">import</span> org.apache.nifi.processor.io.OutputStreamCallback
+<span class="kw">import</span> groovy.json.JsonOutput
+
+<span class="cm">// ── Config ──────────────────────────────────────────</span>
+<span class="kw">@groovy.transform.Field</span>
+<span class="kw">static final</span> String OPC_ENDPOINT =
+    <span class="str">"opc.tcp://10.85.3.100:53530/OPCUA/SimulationServer"</span>
+
+<span class="kw">@groovy.transform.Field</span>
+<span class="kw">static final</span> String SOURCE_ID = <span class="str">"mintserver-prosys"</span>
+
+<span class="kw">@groovy.transform.Field</span>
+<span class="kw">static final</span> String DEVICE_ID = <span class="str">"opc-prosys-300tags"</span>
+
+<span class="cm">// ── Node IDs (แก้ตามค่าจริงจาก Prosys) ─────────────
+// Prosys default 7 tags (ns=3)</span>
+<span class="kw">@groovy.transform.Field</span>
+<span class="kw">static final</span> Map&lt;String, NodeId&gt; NODES = [
+    <span class="str">"Counter"</span>  : <span class="kw">new</span> NodeId(3, 1001),
+    <span class="str">"Random"</span>   : <span class="kw">new</span> NodeId(3, 1002),
+    <span class="str">"Sawtooth"</span> : <span class="kw">new</span> NodeId(3, 1003),
+    <span class="str">"Sinusoid"</span> : <span class="kw">new</span> NodeId(3, 1004),
+    <span class="str">"Square"</span>   : <span class="kw">new</span> NodeId(3, 1005),
+    <span class="str">"Triangle"</span> : <span class="kw">new</span> NodeId(3, 1006),
+    <span class="str">"Constant"</span> : <span class="kw">new</span> NodeId(3, 1007),
+    <span class="cm">// Custom 300 tags (เพิ่มหลัง browse NodeID จริง)</span>
+    <span class="cm">// "Temp_Boiler_01": new NodeId(3, 2001),</span>
+    <span class="cm">// "Temp_Boiler_02": new NodeId(3, 2002),</span>
+    <span class="cm">// ... ครบ 300 ...</span>
+]
+
+<span class="cm">// ── Static OPC Client (ไม่ reconnect ทุก 2 วิ) ───────</span>
+<span class="kw">@groovy.transform.Field</span>
+<span class="kw">static</span> OpcUaClient opcClient = <span class="kw">null</span>
+
+<span class="kw">@groovy.transform.Field</span>
+<span class="kw">static final</span> Object LOCK = <span class="kw">new</span> Object()
+
+<span class="kw">def</span> ensureConnected() {
+    synchronized (LOCK) {
+        <span class="kw">if</span> (opcClient == <span class="kw">null</span>) {
+            log.info(<span class="str">"Connecting to OPC UA: ${OPC_ENDPOINT}"</span>)
+            <span class="kw">def</span> endpoints = DiscoveryClient
+                .getEndpoints(OPC_ENDPOINT).get()
+            <span class="kw">def</span> config = OpcUaClientConfig.builder()
+                .setEndpoint(endpoints[0])
+                .setApplicationName(
+                    LocalizedText.english(<span class="str">"NiFi OPC Client"</span>))
+                .setApplicationUri(<span class="str">"urn:nifi:opc:client"</span>)
+                .build()
+            opcClient = OpcUaClient.create(config)
+            opcClient.connect().get()
+            log.info(<span class="str">"OPC UA connected ✓"</span>)
+        }
+    }
+}
+
+<span class="cm">// ── Main ──────────────────────────────────────────</span>
+<span class="kw">try</span> {
+    ensureConnected()
+
+    <span class="cm">// Batch read (เร็วกว่าอ่านทีละตัว)</span>
+    <span class="kw">def</span> nodeList = NODES.values().toList()
+    <span class="kw">def</span> values   = opcClient
+        .readValues(0.0, TimestampsToReturn.Both, nodeList).get()
+
+    <span class="kw">def</span> tags = [:]
+    NODES.eachWithIndex { entry, i -&gt;
+        <span class="kw">def</span> dv = values[i]
+        tags[entry.key] = dv?.statusCode?.isGood()
+            ? dv.getValue()?.getValue()
+            : <span class="kw">null</span>
+    }
+
+    <span class="kw">def</span> payload = [
+        timestamp : System.currentTimeMillis() / 1000.0,
+        source_id : SOURCE_ID,
+        device_id : DEVICE_ID,
+        tags      : tags
+    ]
+
+    <span class="kw">def</span> ff = session.create()
+    ff = session.write(ff, { out -&gt;
+        out.write(JsonOutput.toJson(payload).getBytes(<span class="str">"UTF-8"</span>))
+    } <span class="kw">as</span> OutputStreamCallback)
+    ff = session.putAttribute(ff, <span class="str">"mime.type"</span>, <span class="str">"application/json"</span>)
+    ff = session.putAttribute(ff, <span class="str">"tag.count"</span>, <span class="str">"${tags.size()}"</span>)
+    session.transfer(ff, REL_SUCCESS)
+
+} <span class="kw">catch</span> (Exception e) {
+    log.error(<span class="str">"OPC read error: ${e.message}"</span>, e)
+    synchronized (LOCK) { opcClient = <span class="kw">null</span> }   <span class="cm">// reset → reconnect</span>
+    <span class="kw">def</span> ff = session.create()
+    ff = session.putAttribute(ff, <span class="str">"error.message"</span>, e.message ?: <span class="str">"unknown"</span>)
+    session.transfer(ff, REL_FAILURE)
+}</pre>
+
+<h3>JSON Output ที่ได้ (ตัวอย่าง)</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button>{
+  <span class="kw">"timestamp"</span>: 1746441600.123,
+  <span class="kw">"source_id"</span>: <span class="str">"mintserver-prosys"</span>,
+  <span class="kw">"device_id"</span>: <span class="str">"opc-prosys-300tags"</span>,
+  <span class="kw">"tags"</span>: {
+    <span class="kw">"Counter"</span>:        42,
+    <span class="kw">"Random"</span>:         0.7341,
+    <span class="kw">"Sinusoid"</span>:       85.23,
+    <span class="kw">"Temp_Boiler_01"</span>: 94.7,
+    <span class="kw">"Press_Line_01"</span>:  6.21,
+    <span class="cm">// ... 300 tags ...</span>
+  }
+}</pre>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PHASE 6                                 -->
+<!-- ═══════════════════════════════════════ -->
+<section id="phase6">
+<h2>Phase 6 — หยุด Python Script และ Validate</h2>
+
+<div class="phase-block phase6">
+  <div class="phase-label">Phase 6</div>
+  <div class="phase-title">หยุด opc_server.py · ทดสอบ End-to-End</div>
+  <span class="phase-time">~30 นาที</span>
+</div>
+
+<h3>6.1 หยุด Python OPC Simulator</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cm"># หยุด service (ยังไม่ลบ — เผื่อ rollback)</span>
+<span class="cmd">sudo systemctl stop opc-simulator</span>
+<span class="cmd">sudo systemctl status opc-simulator   </span><span class="cm"># ต้องเห็น "inactive"</span>
+
+<span class="cm"># ถ้าทดสอบผ่านครบแล้ว ค่อย disable</span>
+<span class="cmd">sudo systemctl disable opc-simulator</span></pre>
+
+<h3>6.2 Start NiFi Flow ใน UI</h3>
+<div class="steps">
+  <div class="step"><div class="step-num"></div><div class="step-body">เปิด NiFi Edge UI → เข้า Process Group ที่ใส่ flow</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">คลิก <strong>Start</strong> ที่ processor <code>Read OPC UA — Prosys mintserver</code></div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">ดู Bulletin Board ใน UI ว่ามี error ไหม (icon ระฆัง)</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">ดู In/Out counter ของ processor ควรเพิ่มขึ้นทุก 2 วินาที</div></div>
+</div>
+
+<h3>6.3 ตรวจ Kafka มีข้อมูลเข้า</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cmd">kubectl exec -n dmz kafka-cluster-kafka-0 -- \
+  /opt/kafka/bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 \
+  --topic opc-raw-data \
+  --max-messages 3</span>
+
+<span class="cm"># ต้องเห็น JSON จาก source_id: "mintserver-prosys"</span></pre>
+
+<h3>6.4 ตรวจ InfluxDB และ Grafana</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button"><span class="cm"># ตรวจ Telegraf รับข้อมูลปกติ</span>
+<span class="cmd">kubectl logs -n it deploy/telegraf --tail=20 | grep -E "metric|error"</span>
+
+<span class="cm"># เปิด Grafana ตรวจว่า dashboard ยังแสดงผลต่อเนื่อง</span>
+<span class="cm"># http://10.85.3.104:30030</span></pre>
+
+<h3>6.5 ตรวจ MinIO มีไฟล์ใหม่เข้า</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cmd">kubectl exec -n it deploy/minio -- \
+  mc ls local/opc-raw/data/2026/05/ --recursive | tail -10</span></pre>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- IMPACT                                  -->
+<!-- ═══════════════════════════════════════ -->
+<section id="impact">
+<h2>ผลกระทบและเวลาที่ใช้</h2>
+
+<div class="card-grid two">
+  <div class="impact-card card">
+    <h4 style="color:#f6ad55">⏱ เวลารวม</h4>
+    <div class="impact-row"><span>Phase 1 — Prosys 300 tags</span><span class="warn-c">~45 นาที</span></div>
+    <div class="impact-row"><span>Phase 2 — Download JARs</span><span class="warn-c">~30 นาที</span></div>
+    <div class="impact-row"><span>Phase 3 — Copy JARs เข้า NiFi</span><span class="ok">~10 นาที</span></div>
+    <div class="impact-row"><span>Phase 4 — ตั้งค่า NiFi UI</span><span class="ok">~20 นาที</span></div>
+    <div class="impact-row"><span>Phase 5 — Groovy script + browse ID</span><span class="warn-c">~30 นาที</span></div>
+    <div class="impact-row"><span>Phase 6 — ทดสอบ + debug</span><span class="warn-c">~30 นาที</span></div>
+    <div class="impact-row" style="margin-top:6px;padding-top:8px;border-top:1px solid #4a5568">
+      <strong>รวมทั้งหมด</strong><span class="warn-c" style="font-weight:700">~2.5–3 ชั่วโมง</span></div>
+  </div>
+  <div class="impact-card card">
+    <h4 style="color:#68d391">✅ ผลกระทบต่อระบบ</h4>
+    <div class="impact-row"><span>NiFi Core → MinIO</span><span class="ok">ไม่กระทบ</span></div>
+    <div class="impact-row"><span>InfluxDB + Grafana</span><span class="ok">ไม่กระทบ</span></div>
+    <div class="impact-row"><span>Trino + MinIO</span><span class="ok">ไม่กระทบ</span></div>
+    <div class="impact-row"><span>OpenMAINT</span><span class="ok">ไม่กระทบ</span></div>
+    <div class="impact-row"><span>Kafka topics</span><span class="ok">ไม่กระทบ (คงเดิม)</span></div>
+    <div class="impact-row"><span>ข้อมูลขาดหาย</span><span class="warn-c">~3–5 นาที (ตอน stop Python)</span></div>
+  </div>
+</div>
+
+<h3>Resource ที่เพิ่มขึ้น (300 tags vs 12 tags)</h3>
+<table>
+  <thead><tr><th>เครื่อง / Component</th><th>เดิม (12 tags)</th><th>หลัง (300 tags)</th><th>เพิ่มขึ้น</th></tr></thead>
+  <tbody>
+    <tr><td>mintserver — Prosys RAM</td><td>~200 MB</td><td>~300 MB</td><td class="ok">+100 MB (RAM เหลือ 25 GB)</td></tr>
+    <tr><td>mintpower — NiFi Edge RAM</td><td>~1.5 GB</td><td>~1.7 GB</td><td class="ok">+200 MB (limit 2 GB)</td></tr>
+    <tr><td>Kafka throughput</td><td>~12 msg/2s</td><td>~300 fields/2s</td><td class="ok">payload ใหญ่ขึ้น ~25x</td></tr>
+    <tr><td>MinIO storage</td><td>~2 MB/day</td><td>~50 MB/day</td><td class="ok">disk เหลือ 400+ GB</td></tr>
+    <tr><td>InfluxDB write</td><td>12 fields/2s</td><td>300 fields/2s</td><td class="warn-c">เพิ่ม ~25x (ยังรับได้)</td></tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- NODE IDs                                -->
+<!-- ═══════════════════════════════════════ -->
+<section id="nodeids">
+<h2>Browse Node IDs จาก Prosys</h2>
+<p>ต้อง browse หา Node ID จริงก่อนใส่ใน Groovy script เพราะ Prosys อาจ assign ID ต่างจากที่กำหนดใน XML</p>
+
+<h3>วิธีที่ 1 — Python Script จาก mintpower</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cm"># /home/mintpower/lab/k3s/tools/browse_opc.py</span>
+<span class="kw">import</span> asyncio
+<span class="kw">from</span> asyncua <span class="kw">import</span> Client
+
+<span class="kw">async def</span> browse():
+    <span class="kw">async with</span> Client(<span class="str">"opc.tcp://10.85.3.100:53530/OPCUA/SimulationServer"</span>) <span class="kw">as</span> c:
+        <span class="cm"># Browse namespace 3 (simulation tags)</span>
+        ns = <span class="kw">await</span> c.get_namespace_index(<span class="str">"urn:prosys:ua:simserver"</span>)
+        root = c.get_node(<span class="str">"ns=0;i=84"</span>)
+
+        <span class="kw">async def</span> walk(node, depth=0):
+            <span class="kw">try</span>:
+                name = <span class="kw">await</span> node.read_browse_name()
+                nid  = node.nodeid
+                <span class="kw">if</span> nid.NamespaceIndex == 3:
+                    print(<span class="str">f"  ns={nid.NamespaceIndex};i={nid.Identifier}  →  {name.Name}"</span>)
+                <span class="kw">for</span> child <span class="kw">in await</span> node.get_children():
+                    <span class="kw">await</span> walk(child, depth+1)
+            <span class="kw">except</span>: <span class="kw">pass</span>
+
+        <span class="kw">await</span> walk(root)
+
+asyncio.run(browse())</pre>
+
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cmd">cd /home/mintpower/lab/k3s/opc-sim</span>
+<span class="cmd">source venv/bin/activate</span>
+<span class="cmd">python3 ../tools/browse_opc.py 2>/dev/null | head -50</span></pre>
+
+<h3>วิธีที่ 2 — UaExpert (Windows GUI)</h3>
+<div class="alert info">
+  <span class="alert-icon">🖥️</span>
+  <div>เชื่อมต่อ UaExpert ไปที่ <code>opc.tcp://10.85.3.100:53530/OPCUA/SimulationServer</code><br>
+  Browse tree → ดู Attributes panel → ดู NodeId ของแต่ละ tag แล้วนำมาใส่ใน Groovy script</div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- TROUBLESHOOT                            -->
+<!-- ═══════════════════════════════════════ -->
+<section id="troubleshoot">
+<h2>ปัญหาที่อาจเจอและวิธีแก้</h2>
+
+<table>
+  <thead><tr><th>อาการ</th><th>สาเหตุ</th><th>วิธีแก้</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>ClassNotFoundException</code> ใน NiFi log</td>
+      <td>JAR ขาด หรือ Module Directory path ผิด</td>
+      <td>ตรวจ path <code>/opt/nifi/nifi-current/data/milo-jars/</code> มีไฟล์ครบไหม, ตรวจ property Module Directory ใน processor</td>
+    </tr>
+    <tr>
+      <td>Connect timeout ไป mintserver</td>
+      <td>Prosys ไม่รัน หรือ firewall กัน port 53530</td>
+      <td><code>nc -zv 10.85.3.100 53530</code> จาก NiFi pod: <code>kubectl exec -n it $POD -- nc -zv 10.85.3.100 53530</code></td>
+    </tr>
+    <tr>
+      <td>Node ID ไม่เจอ / Bad Quality</td>
+      <td>NodeId ใน script ไม่ตรงกับ Prosys</td>
+      <td>รัน browse_opc.py แล้ว update NODES map ใน script</td>
+    </tr>
+    <tr>
+      <td>NiFi processor error ทุก 2 วิ</td>
+      <td>Script error / import ผิด</td>
+      <td>ดู NiFi Bulletin Board (icon ระฆัง) → copy error → แก้ script</td>
+    </tr>
+    <tr>
+      <td>Kafka ไม่มีข้อมูลใหม่</td>
+      <td>PublishKafka processor ยังไม่ start</td>
+      <td>Start processor ใน NiFi UI, ตรวจ Connection ระหว่าง processor</td>
+    </tr>
+    <tr>
+      <td>Groovy script import error (Milo version)</td>
+      <td>JAR เป็น version อื่นที่ API ต่างออกไป</td>
+      <td>ตรวจให้แน่ใจว่าใช้ <code>0.6.12</code> ครบทุกไฟล์, ไม่ใช้ 0.7.x ซึ่ง API เปลี่ยน</td>
+    </tr>
+    <tr>
+      <td>ข้อมูลซ้ำ (duplicate) ใน Kafka</td>
+      <td>opc_server.py ยังรันอยู่</td>
+      <td><code>sudo systemctl stop opc-simulator</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>คำสั่ง Debug ที่มีประโยชน์</h3>
+<pre><button class="copy-btn" onclick="cp(this)">copy</button"><span class="cm"># ดู NiFi log แบบ realtime</span>
+<span class="cmd">kubectl logs -n it $NIFI_POD -f | grep -E "OPC|Milo|Error|WARN"</span>
+
+<span class="cm"># ตรวจ JARs ใน pod</span>
+<span class="cmd">kubectl exec -n it $NIFI_POD -- ls /opt/nifi/nifi-current/data/milo-jars/</span>
+
+<span class="cm"># ตรวจ OPC port จาก NiFi pod</span>
+<span class="cmd">kubectl exec -n it $NIFI_POD -- sh -c "nc -zv 10.85.3.100 53530 && echo OK || echo FAILED"</span>
+
+<span class="cm"># ดู Kafka lag</span>
+<span class="cmd">kubectl exec -n dmz kafka-cluster-kafka-0 -- \
+  /opt/kafka/bin/kafka-consumer-groups.sh \
+  --bootstrap-server localhost:9092 \
+  --describe --all-groups</span>
+
+<span class="cm"># ตรวจ opc-simulator หยุดสนิท</span>
+<span class="cmd">sudo systemctl status opc-simulator</span></pre>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- ROLLBACK                                -->
+<!-- ═══════════════════════════════════════ -->
+<section id="rollback">
+<h2>Rollback Plan</h2>
+<div class="alert danger">
+  <span class="alert-icon">🔴</span>
+  <div>ถ้า NiFi OPC UA ไม่ทำงาน สามารถกลับไปใช้ Python bridge ได้ทันที ภายใน 2 นาที</div>
+</div>
+
+<pre><button class="copy-btn" onclick="cp(this)">copy</button><span class="cm"># Step 1: Stop NiFi processor ใน UI (คลิก Stop ที่ ExecuteGroovyScript)</span>
+
+<span class="cm"># Step 2: รัน Python OPC simulator กลับมา</span>
+<span class="cmd">sudo systemctl start opc-simulator</span>
+<span class="cmd">sudo systemctl status opc-simulator</span>
+
+<span class="cm"># Step 3: ตรวจ Kafka มีข้อมูลกลับมา</span>
+<span class="cmd">kubectl exec -n dmz kafka-cluster-kafka-0 -- \
+  /opt/kafka/bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 \
+  --topic opc-raw-data --max-messages 3</span>
+
+<span class="cm"># Step 4: Prosys XML — restore backup ถ้าจำเป็น</span>
+<span class="cm"># (บน mintserver)</span>
+<span class="cmd">cp /path/to/Instances_idx_3.NodeSet2.xml.bak \
+   /path/to/Instances_idx_3.NodeSet2.xml</span></pre>
+
+<div class="card-grid two">
+  <div class="card">
+    <h4>🔧 Files ที่แก้ไข</h4>
+    <ul style="font-size:.82rem;color:#a0aec0;padding-left:16px;line-height:2">
+      <li>mintserver: <code>Instances_idx_3.NodeSet2.xml</code></li>
+      <li>mintserver: <code>Simulations_idx_4.NodeSet2.xml</code></li>
+      <li>mintpower NiFi: Flow config (UI)</li>
+      <li>mintpower: <code>opc-simulator.service</code> (stop/disable)</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>📁 Files ใหม่ที่สร้าง</h4>
+    <ul style="font-size:.82rem;color:#a0aec0;padding-left:16px;line-height:2">
+      <li><code>/home/mintpower/lab/k3s/milo-jars/*.jar</code></li>
+      <li><code>/home/mintpower/lab/k3s/tools/gen_300tags.py</code></li>
+      <li><code>/home/mintpower/lab/k3s/tools/browse_opc.py</code></li>
+      <li>NiFi pod PVC: <code>data/milo-jars/*.jar</code></li>
+    </ul>
+  </div>
+</div>
+</section>
+
+</main>
+
+<script>
+// Copy button
+function cp(btn){
+  const code = btn.parentElement.innerText.replace('copy\n','');
+  navigator.clipboard.writeText(code).then(()=>{
+    btn.textContent='✓ copied';
+    setTimeout(()=>btn.textContent='copy',2000);
+  });
+}
+
+// Scrollspy
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.sidenav a');
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const a = document.querySelector(`.sidenav a[href="#${e.target.id}"]`);
+      if(a) a.classList.add('active');
+    }
+  });
+},{rootMargin:'-20% 0px -70% 0px'});
+sections.forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>

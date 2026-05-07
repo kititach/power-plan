@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: trino-partition-sync
+  namespace: it
+spec:
+  schedule: "5 0 * * *"
+  timeZone: "Asia/Bangkok"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: trino-sync
+            image: trinodb/trino:463
+            command:
+            - trino
+            - --server=http://trino.it.svc.cluster.local:8080
+            - --execute
+            - |
+              CALL minio.system.sync_partition_metadata(
+                schema_name => 'opc',
+                table_name  => 'sensor_data',
+                mode        => 'ADD'
+              );

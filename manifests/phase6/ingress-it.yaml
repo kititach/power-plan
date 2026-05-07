@@ -1,0 +1,89 @@
+# ============================================================
+# Ingress สำหรับ IT Zone — ทุก Service
+# ============================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-it
+  namespace: it
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+    # Grafana
+    - host: grafana.mintpower.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000
+    # InfluxDB
+    - host: influxdb.mintpower.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: influxdb
+                port:
+                  number: 8086
+    # MinIO UI
+    - host: minio.mintpower.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9001
+    # NIFI Core (HTTPS passthrough)
+    - host: nifi-core.mintpower.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nifi-core
+                port:
+                  number: 8443
+    # NIFI Edge (HTTPS passthrough)
+    - host: nifi-edge.mintpower.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nifi-edge
+                port:
+                  number: 8443
+    # Trino
+    - host: trino.mintpower.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: trino
+                port:
+                  number: 8080
+    # OpenMAINT
+    - host: openmaint.mintpower.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: openmaint
+                port:
+                  number: 8080

@@ -1,0 +1,44 @@
+# ============================================================
+# Grafana — Auto-provision InfluxDB datasource
+# ============================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: it
+data:
+  influxdb.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: InfluxDB-OPC
+        type: influxdb
+        access: proxy
+        url: http://influxdb.it.svc.cluster.local:8086
+        jsonData:
+          version: Flux
+          organization: mintpower-org
+          defaultBucket: opc-data
+          tlsSkipVerify: true
+        secureJsonData:
+          token: influx-super-secret-token-mintpower
+        isDefault: true
+        editable: true
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-ini
+  namespace: it
+data:
+  grafana.ini: |
+    [server]
+    domain = 10.85.3.104
+    root_url = http://10.85.3.104:30300
+
+    [security]
+    admin_user = admin
+    admin_password = Grafana@mintpower2024
+
+    [auth.anonymous]
+    enabled = false

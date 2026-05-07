@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-init
+  namespace: it
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: mc
+          image: quay.io/minio/mc:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              sleep 10
+              mc alias set myminio http://minio.it.svc.cluster.local:9000 \
+                $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
+              mc mb myminio/opc-raw --ignore-existing
+              mc mb myminio/opc-parquet --ignore-existing
+              mc mb myminio/opc-archive --ignore-existing
+              mc version enable myminio/opc-raw
+              mc version enable myminio/opc-parquet
+              mc ls myminio
+              echo "MinIO init completed"
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: root-user
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: root-password

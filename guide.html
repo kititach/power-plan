@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คู่มือ k3s Airgap Data Platform</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;line-height:1.7}
+a{color:#63b3ed;text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* NAV */
+.sidenav{position:fixed;left:0;top:0;width:220px;height:100vh;background:#131820;border-right:1px solid #2d3748;overflow-y:auto;z-index:100;padding:20px 0}
+.sidenav .logo{padding:0 18px 16px;border-bottom:1px solid #2d3748;font-size:.85rem;font-weight:700;color:#63b3ed}
+.sidenav a{display:block;padding:8px 18px;font-size:.78rem;color:#a0aec0;border-left:3px solid transparent;transition:all .2s}
+.sidenav a:hover,.sidenav a.active{color:#e2e8f0;background:#1a2035;border-left-color:#63b3ed;text-decoration:none}
+.sidenav .nav-section{padding:12px 18px 4px;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:#4a5568}
+
+.main{margin-left:220px;padding:40px 48px;max-width:1100px}
+
+/* HEADINGS */
+h1{font-size:1.8rem;font-weight:800;color:#f7fafc;margin-bottom:6px}
+h2{font-size:1.2rem;font-weight:700;color:#f7fafc;margin:40px 0 16px;padding-bottom:8px;border-bottom:2px solid #2d3748}
+h3{font-size:1rem;font-weight:600;color:#e2e8f0;margin:24px 0 10px}
+h4{font-size:.88rem;font-weight:600;color:#a0aec0;margin:16px 0 6px;text-transform:uppercase;letter-spacing:.8px}
+p{margin-bottom:12px;color:#cbd5e0}
+.subtitle{color:#718096;font-size:.9rem;margin-bottom:32px}
+
+/* CARDS */
+.card{background:#1a1f2e;border:1px solid #2d3748;border-radius:12px;padding:20px 24px;margin-bottom:20px}
+.card-grid{display:grid;gap:16px;margin-bottom:24px}
+.card-grid.two{grid-template-columns:1fr 1fr}
+.card-grid.three{grid-template-columns:1fr 1fr 1fr}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+.green{background:#1c3a2e;color:#68d391;border:1px solid #276749}
+.blue{background:#1a2a3e;color:#63b3ed;border:1px solid #2b4c7e}
+.yellow{background:#2d2010;color:#f6ad55;border:1px solid #744210}
+.red{background:#2d1515;color:#fc8181;border:1px solid #742020}
+.purple{background:#2a1f3d;color:#b794f4;border:1px solid #553c9a}
+.orange{background:#2d1f10;color:#fbd38d;border:1px solid #744210}
+
+/* ZONE TAGS */
+.zone{display:inline-block;padding:1px 8px;border-radius:4px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-left:6px}
+.zone-ot{background:#1c3a2e;color:#68d391}
+.zone-dmz{background:#2d2010;color:#f6ad55}
+.zone-it{background:#1a2a3e;color:#63b3ed}
+.zone-asset{background:#2a1f3d;color:#b794f4}
+
+/* CODE */
+pre,code{font-family:'Consolas','Courier New',monospace}
+pre{background:#0d1117;border:1px solid #2d3748;border-radius:8px;padding:16px 20px;font-size:.78rem;color:#a0aec0;overflow-x:auto;line-height:1.8;margin:10px 0 20px;position:relative}
+code{background:#1a1f2e;color:#b794f4;padding:1px 6px;border-radius:4px;font-size:.82rem}
+.cmd{color:#68d391}
+.kw{color:#63b3ed}
+.str{color:#fbd38d}
+.cm{color:#4a5568;font-style:italic}
+.copy-btn{position:absolute;top:10px;right:12px;background:#2d3748;color:#a0aec0;border:none;border-radius:4px;padding:3px 10px;font-size:.7rem;cursor:pointer;transition:background .2s}
+.copy-btn:hover{background:#4a5568;color:#f7fafc}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:.83rem;margin-bottom:20px}
+th{text-align:left;padding:10px 14px;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:#718096;border-bottom:1px solid #2d3748;background:#131820}
+td{padding:10px 14px;border-bottom:1px solid #1e2535;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1e2535}
+.mono{font-family:'Consolas',monospace;font-size:.78rem;color:#a0aec0}
+
+/* STEPS */
+.steps{counter-reset:step;margin:12px 0 20px}
+.step{display:flex;gap:16px;margin-bottom:16px;counter-increment:step}
+.step-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#63b3ed;color:#0f1117;font-weight:700;font-size:.78rem;display:flex;align-items:center;justify-content:center}
+.step-num::before{content:counter(step)}
+.step-body{flex:1;padding-top:4px}
+
+/* ALERT BOXES */
+.alert{border-radius:8px;padding:14px 18px;margin:12px 0 20px;font-size:.84rem;display:flex;gap:12px}
+.alert-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.alert.tip{background:#1c3a2e;border:1px solid #276749;color:#68d391}
+.alert.warn{background:#2d2010;border:1px solid #744210;color:#f6ad55}
+.alert.danger{background:#2d1515;border:1px solid #742020;color:#fc8181}
+.alert.info{background:#1a2a3e;border:1px solid #2b4c7e;color:#63b3ed}
+
+/* CREDS TABLE */
+.creds{width:100%;border-collapse:collapse;font-size:.82rem;margin:8px 0 20px}
+.creds th{background:#131820;padding:8px 14px;color:#718096;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #2d3748;text-align:left}
+.creds td{padding:10px 14px;border-bottom:1px solid #1e2535}
+.creds tr:last-child td{border-bottom:none}
+.creds .key{font-family:monospace;background:#0d1117;padding:2px 8px;border-radius:4px;color:#fbd38d;border:1px solid #2d3748}
+
+/* ANIMATED PIPELINE */
+.pipeline-wrap{background:#131820;border:1px solid #2d3748;border-radius:14px;padding:32px;margin-bottom:32px;overflow-x:auto}
+.pipeline-title{font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:#4a5568;margin-bottom:28px}
+
+.pipeline-svg-wrap{min-width:800px}
+svg.pipeline{width:100%;height:340px}
+
+/* Flow animation keyframes */
+@keyframes dash{to{stroke-dashoffset:-20}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(.95)}}
+@keyframes fadeInRight{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes slideData{0%{stroke-dashoffset:100}100%{stroke-dashoffset:0}}
+
+/* Block diagram boxes */
+.blk{cursor:pointer;transition:all .2s}
+.blk rect{rx:8;ry:8}
+.blk:hover rect{filter:brightness(1.3)}
+.blk text{font-family:'Segoe UI',sans-serif;fill:#e2e8f0;font-size:12px;font-weight:600;pointer-events:none}
+.blk .sub-text{font-size:9px;fill:#718096;font-weight:400}
+
+.flow-line{stroke-width:2;fill:none;stroke-dasharray:6 4}
+.flow-line.active{animation:dash 1s linear infinite}
+
+.data-dot{animation:blink 1.5s ease-in-out infinite}
+
+/* detail panel */
+.detail-panel{background:#1a1f2e;border:1px solid #4a5568;border-radius:10px;padding:18px 22px;margin-top:20px;display:none;animation:fadeInRight .3s ease}
+.detail-panel.show{display:block}
+.detail-panel h4{color:#63b3ed;margin-bottom:8px;font-size:.9rem}
+.detail-panel p{font-size:.82rem;color:#a0aec0;margin-bottom:6px}
+.detail-panel .dp-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.dp-chip{background:#0d1117;border:1px solid #2d3748;border-radius:6px;padding:4px 10px;font-size:.72rem;font-family:monospace;color:#b794f4}
+
+/* BLOCK DETAIL CARDS */
+.block-detail{border-left:3px solid #63b3ed;padding:12px 18px;margin:12px 0;background:#131820;border-radius:0 8px 8px 0}
+.block-detail.ot{border-color:#68d391}
+.block-detail.dmz{border-color:#f6ad55}
+.block-detail.it-mon{border-color:#63b3ed}
+.block-detail.it-lake{border-color:#b794f4}
+.block-detail.asset{border-color:#b794f4}
+
+/* TROUBLE ACCORDION */
+.accord{margin-bottom:10px}
+.accord-head{background:#1a1f2e;border:1px solid #2d3748;border-radius:8px;padding:12px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:.85rem;font-weight:600;transition:background .2s}
+.accord-head:hover{background:#1e2535}
+.accord-head .icon{transition:transform .3s;font-size:1rem}
+.accord-body{background:#131820;border:1px solid #2d3748;border-top:none;border-radius:0 0 8px 8px;padding:0 18px;max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s}
+.accord-body.open{max-height:600px;padding:16px 18px}
+
+/* CHECKLIST */
+.checklist{list-style:none;margin:8px 0}
+.checklist li{padding:6px 0;border-bottom:1px solid #1e2535;font-size:.83rem;display:flex;gap:10px;color:#a0aec0}
+.checklist li:last-child{border-bottom:none}
+.checklist li::before{content:"□";color:#4a5568;flex-shrink:0}
+
+/* METRIC ROW */
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1e2535;font-size:.83rem}
+.mrow:last-child{border-bottom:none}
+.mrow .ml{color:#a0aec0}
+.mrow .mv{color:#f7fafc;font-weight:600;font-family:monospace}
+.mrow .mv.g{color:#68d391}
+.mrow .mv.y{color:#f6ad55}
+.mrow .mv.r{color:#fc8181}
+
+/* PHASE TIMELINE */
+.timeline{position:relative;padding-left:32px;margin:16px 0}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:#2d3748}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-dot{position:absolute;left:-26px;top:4px;width:14px;height:14px;border-radius:50%;background:#63b3ed;border:2px solid #0f1117}
+.tl-dot.done{background:#68d391}
+.tl-label{font-size:.73rem;text-transform:uppercase;letter-spacing:1px;color:#718096;margin-bottom:2px}
+.tl-title{font-size:.9rem;font-weight:600;color:#e2e8f0;margin-bottom:4px}
+.tl-desc{font-size:.8rem;color:#718096}
+
+/* TIPS GRID */
+.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+.tip-card{border-radius:10px;padding:16px 18px;font-size:.82rem}
+.tip-card.tip{background:#1c3a2e;border:1px solid #276749;color:#a8d5a2}
+.tip-card.warn{background:#2d2010;border:1px solid #744210;color:#f0c070}
+.tip-card.better{background:#1a2a3e;border:1px solid #2b4c7e;color:#90c0ef}
+.tip-card h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;font-weight:700}
+.tip-card.tip h4{color:#68d391}
+.tip-card.warn h4{color:#f6ad55}
+.tip-card.better h4{color:#63b3ed}
+
+/* HEADER STRIP */
+.hero{background:linear-gradient(135deg,#1a1f2e 0%,#16213e 100%);border:1px solid #2d3748;border-radius:14px;padding:28px 32px;margin-bottom:32px}
+.hero h1{margin-bottom:4px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.hero-chip{background:#0d1117;border:1px solid #2d3748;border-radius:6px;padding:4px 12px;font-size:.75rem;color:#a0aec0;font-family:monospace}
+.hero-chip span{color:#63b3ed}
+
+/* SCROLLSPY ACTIVE */
+section{scroll-margin-top:20px}
+</style>
+</head>
+<body>
+
+<!-- SIDE NAV -->
+<nav class="sidenav">
+  <div class="logo">📡 k3s Data Platform</div>
+  <div class="nav-section">Overview</div>
+  <a href="#overview">ภาพรวมระบบ</a>
+  <a href="#pipeline-anim">Pipeline Animation</a>
+  <div class="nav-section">1 · บล็อก</div>
+  <a href="#block-opc">OPC Simulator</a>
+  <a href="#block-nifi-edge">NiFi Edge</a>
+  <a href="#block-kafka">Kafka (KRaft)</a>
+  <a href="#block-telegraf">Telegraf</a>
+  <a href="#block-influx">InfluxDB</a>
+  <a href="#block-grafana">Grafana</a>
+  <a href="#block-nifi-core">NiFi Core</a>
+  <a href="#block-minio">MinIO</a>
+  <a href="#block-trino">Trino</a>
+  <a href="#block-openmaint">OpenMAINT</a>
+  <div class="nav-section">2 · ติดตั้ง</div>
+  <a href="#install-prereq">Prerequisites</a>
+  <a href="#install-infra">Phase 1 — Infra</a>
+  <a href="#install-kafka">Phase 2 — Kafka</a>
+  <a href="#install-monitoring">Phase 3 — Monitoring</a>
+  <a href="#install-datalake">Phase 4 — Data Lake</a>
+  <a href="#install-edge">Phase 5 — Edge</a>
+  <a href="#install-ingress">Phase 6 — Ingress</a>
+  <div class="nav-section">3 · ใช้งาน</div>
+  <a href="#creds">Credentials</a>
+  <a href="#usage-grafana">Grafana</a>
+  <a href="#usage-akhq">AKHQ</a>
+  <a href="#usage-trino">Trino SQL</a>
+  <a href="#usage-minio">MinIO</a>
+  <a href="#usage-openmaint">OpenMAINT</a>
+  <div class="nav-section">4 · Troubleshoot</div>
+  <a href="#trouble">แก้ปัญหา</a>
+  <div class="nav-section">5 · Tips</div>
+  <a href="#tips">Tips &amp; คำแนะนำ</a>
+</nav>
+
+<main class="main">
+
+<!-- HERO -->
+<section id="overview">
+<div class="hero">
+  <h1>k3s Airgap Data Platform</h1>
+  <p class="subtitle">คู่มือฉบับสมบูรณ์ — สถาปัตยกรรม · การติดตั้ง · การใช้งาน · การแก้ปัญหา</p>
+  <div class="hero-meta">
+    <div class="hero-chip">Node: <span>mintpower</span></div>
+    <div class="hero-chip">k3s: <span>v1.31.4+k3s1</span></div>
+    <div class="hero-chip">OS: <span>Linux Mint 22.3</span></div>
+    <div class="hero-chip">Pods: <span>17/17</span></div>
+    <div class="hero-chip">อัปเดต: <span>2026-05-04</span></div>
+  </div>
+</div>
+
+<h2>ภาพรวมระบบ</h2>
+<p>ระบบนี้เป็น <strong>Industrial IoT Data Platform</strong> แบบ Airgap (ไม่ต้องใช้อินเทอร์เน็ต) ทำงานบน Kubernetes (k3s) single-node เพื่อเก็บ วิเคราะห์ และแสดงผลข้อมูลจาก Sensor อุตสาหกรรม 12 ตัว แบบ Real-time และเก็บใน Data Lake สำหรับการวิเคราะห์ระยะยาว</p>
+
+<div class="card-grid three">
+  <div class="card">
+    <h4>Real-time Monitoring</h4>
+    <p style="font-size:.82rem">OPC Simulator → Kafka → Telegraf → InfluxDB → Grafana<br>Refresh ทุก <strong>5 วินาที</strong></p>
+  </div>
+  <div class="card">
+    <h4>Data Lake &amp; Analytics</h4>
+    <p style="font-size:.82rem">Kafka → NiFi Core → MinIO → Trino<br>Partition by <strong>year/month/day</strong>, NDJSON format</p>
+  </div>
+  <div class="card">
+    <h4>Asset Management</h4>
+    <p style="font-size:.82rem">OpenMAINT CMMS บน PostgreSQL 15<br>ติดตาม <strong>อุปกรณ์ + Maintenance</strong></p>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ANIMATED PIPELINE                               -->
+<!-- ═══════════════════════════════════════════════ -->
+<section id="pipeline-anim">
+<h2>Pipeline Animation — Flow การทำงาน</h2>
+<p>คลิกที่บล็อกใดก็ได้เพื่อดูรายละเอียด</p>
+
+<div class="pipeline-wrap">
+  <div class="pipeline-title">DATA FLOW — REAL-TIME PATH &amp; DATA LAKE PATH</div>
+  <div class="pipeline-svg-wrap">
+<svg class="pipeline" viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Animated gradient for flow lines -->
+    <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#68d391;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#68d391;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#63b3ed;stop-opacity:0"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#68d391"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#63b3ed"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#b794f4"/>
+    </marker>
+  </defs>
+
+  <!-- Zone labels -->
+  <text x="60" y="22" fill="#276749" font-size="10" font-family="'Segoe UI',sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">OT ZONE</text>
+  <text x="250" y="22" fill="#744210" font-size="10" font-family="'Segoe UI',sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">DMZ</text>
+  <text x="560" y="22" fill="#2b4c7e" font-size="10" font-family="'Segoe UI',sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">IT ZONE</text>
+  <text x="830" y="22" fill="#553c9a" font-size="10" font-family="'Segoe UI',sans-serif" font-weight="700" text-anchor="middle" letter-spacing="1">ASSET MGMT</text>
+
+  <!-- Zone separators -->
+  <line x1="155" y1="30" x2="155" y2="290" stroke="#2d3748" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="330" y1="30" x2="330" y2="290" stroke="#2d3748" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="750" y1="30" x2="750" y2="290" stroke="#2d3748" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- ── OPC Simulator ── -->
+  <g class="blk" onclick="showDetail('opc')">
+    <rect x="10" y="40" width="120" height="54" fill="#1c3a2e" stroke="#276749" stroke-width="1.5" rx="8"/>
+    <text x="70" y="63" text-anchor="middle" fill="#68d391" font-size="12" font-family="'Segoe UI',sans-serif" font-weight="600">OPC Simulator</text>
+    <text x="70" y="79" text-anchor="middle" fill="#4a8a68" font-size="9" font-family="'Segoe UI',sans-serif">10.85.3.100 · 12 sensors</text>
+    <text x="70" y="90" text-anchor="middle" fill="#4a8a68" font-size="9" font-family="'Segoe UI',sans-serif">interval 2s</text>
+  </g>
+
+  <!-- ── NiFi Edge ── -->
+  <g class="blk" onclick="showDetail('nifi-edge')">
+    <rect x="10" y="130" width="120" height="44" fill="#1c3a2e" stroke="#276749" stroke-width="1.5" rx="8"/>
+    <text x="70" y="150" text-anchor="middle" fill="#68d391" font-size="12" font-family="'Segoe UI',sans-serif" font-weight="600">NiFi Edge</text>
+    <text x="70" y="165" text-anchor="middle" fill="#4a8a68" font-size="9" font-family="'Segoe UI',sans-serif">:31444 · fan-out</text>
+  </g>
+
+  <!-- OPC → NiFi Edge (vertical) -->
+  <line x1="70" y1="94" x2="70" y2="130" stroke="#68d391" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow)">
+    <animate attributeName="stroke-dashoffset" values="0;-16" dur=".8s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- ── Kafka ── -->
+  <g class="blk" onclick="showDetail('kafka')">
+    <rect x="170" y="112" width="120" height="54" fill="#2d2010" stroke="#744210" stroke-width="1.5" rx="8"/>
+    <text x="230" y="135" text-anchor="middle" fill="#f6ad55" font-size="12" font-family="'Segoe UI',sans-serif" font-weight="600">Kafka</text>
+    <text x="230" y="150" text-anchor="middle" fill="#8a6030" font-size="9" font-family="'Segoe UI',sans-serif">KRaft · 3 topics</text>
+    <text x="230" y="161" text-anchor="middle" fill="#8a6030" font-size="9" font-family="'Segoe UI',sans-serif">:32092</text>
+  </g>
+
+  <!-- NiFi Edge → Kafka -->
+  <line x1="130" y1="152" x2="170" y2="152" stroke="#68d391" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow)">
+    <animate attributeName="stroke-dashoffset" values="0;-16" dur=".8s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- ── AKHQ ── -->
+  <g class="blk" onclick="showDetail('akhq')">
+    <rect x="170" y="200" width="120" height="36" fill="#1a1f2e" stroke="#4a5568" stroke-width="1.5" rx="8"/>
+    <text x="230" y="218" text-anchor="middle" fill="#a0aec0" font-size="11" font-family="'Segoe UI',sans-serif" font-weight="600">AKHQ UI</text>
+    <text x="230" y="230" text-anchor="middle" fill="#4a5568" font-size="9" font-family="'Segoe UI',sans-serif">:30880</text>
+  </g>
+  <line x1="230" y1="166" x2="230" y2="200" stroke="#4a5568" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- Kafka fork → 2 paths -->
+  <!-- Path 1: opc-metrics → Telegraf -->
+  <path d="M290,135 L345,100" stroke="#63b3ed" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arrow-blue)">
+    <animate attributeName="stroke-dashoffset" values="0;-16" dur=".9s" repeatCount="indefinite"/>
+  </path>
+  <!-- Path 2: opc-datalake → NiFi Core -->
+  <path d="M290,155 L345,220" stroke="#b794f4" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arrow-purple)">
+    <animate attributeName="stroke-dashoffset" values="0;-16" dur=".9s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- Topic labels -->
+  <text x="310" y="94" fill="#63b3ed" font-size="8" font-family="monospace">opc-metrics</text>
+  <text x="302" y="200" fill="#b794f4" font-size="8" font-family="monospace">opc-datalake</text>
+
+  <!-- ═══ MONITORING PATH (upper) ═══ -->
+
+  <!-- ── Telegraf ── -->
+  <g class="blk" onclick="showDetail('telegraf')">
+    <rect x="345" y="70" width="100" height="44" fill="#1a2a3e" stroke="#2b4c7e" stroke-width="1.5" rx="8"/>
+    <text x="395" y="90" text-anchor="middle" fill="#63b3ed" font-size="12" font-family="'Segoe UI',sans-serif" font-weight="600">Telegraf</text>
+    <text x="395" y="105" text-anchor="middle" fill="#2b4c7e" font-size="9" font-family="'Segoe UI',sans-serif">Kafka consumer</text>
+  </g>
+
+  <!-- Telegraf → InfluxDB -->
+  <line x1="445" y1="92" x2="490" y2="92" stroke="#63b3ed" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-blue)">
+    <animate attributeName="stroke-dashoffset" values="0;-16" dur=".7s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- ── InfluxDB ── -->
+  <g class="blk" onclick="showDetail('influxdb')">
+    <rect x="490" y="70" width="100" height="44" fill="#1a2a3e" stroke="#2b4c7e" stroke-width="1.5" rx="8"/>
+    <text x="540" y="90" text-anchor="middle" fill="#63b3ed" font-size="12" font-family="'Segoe UI',sans-serif" font-weight="600">InfluxDB</text>
+    <text x="540" y="105" text-anchor="middle" fill="#2b4c7e" font-size="9" font-family="'Segoe UI',sans-serif">bucket: opc-data</text>
+  </g>
+
+  <!-- InfluxDB → Grafana -->
+  <line x1="590" y1="92" x2="635" y2="92" stroke="#63b3ed" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-blue)">
+    <animate attributeName="stroke-dashoffset" values="0;-16" dur=".7s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- ── Grafana ── -->
+  <g class="blk" onclick="showDetail('grafana')">
+    <rect x="635" y="58" width="110" height="60" fill="#1a2a3e" stroke="#2b4c7e" stroke-width="1.5" rx="8"/>
+    <text x="690" y="80" text-anchor="middle" fill="#63b3ed" font-size="12" font-family="'Segoe UI',sans-serif" font-weight="600">Grafana</text>
+    <text x="690" y="95" text-anchor="middle" fill="#2b4c7e" font-size="9" font-family="'Segoe UI',sans-serif">12 panels · 5s</text>
+    <text x="690" y="107" text-anchor="middle" fill="#2b4c7e" font-size="9" font-family="'Segoe UI',sans-serif">:30300</text>
+  </g>
+
+  <!-- ═══ DATA LAKE PATH (lower) ═══ -->
+
+  <!-- ── NiFi Core ── -->
+  <g class="blk" onclick="showDetail('nifi-core')">
+    <rect x="345" y="198" width="100" height="50" fill="#2a1f3d" stroke="#553c9a" stroke-width="1.5" rx="8"/>
+    <text x="395" y="220" text-anchor="middle" fill="#b794f4" font-size="12" font-family="'Segoe UI',sans-serif" font-weight="600">NiFi Core</text>
+    <text x="395" y="235" text-anchor="middle" fill="#553c9a" font-size="9" font-family="'Segoe UI',sans-serif">ConsumeKafka</text>
+    <text x="395" y="244" text-anchor="middle" fill="#553c9a" font-size="9" font-family="'Segoe UI',sans-serif">→ MergeRecord</text>
+  </g>
+
+  <!-- NiFi Core → MinIO -->
+  <line x1="445" y1="223" x2="490" y2="223" stroke="#b794f4" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-purple)">
+    <animate attributeName="stroke-dashoffset" values="0;-16" dur=".85s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- ── MinIO ── -->
+  <g class="blk" onclick="showDetail('minio')">
+    <rect x="490" y="200" width="100" height="50" fill="#2a1f3d" stroke="#553c9a" stroke-width="1.5" rx="8"/>
+    <text x="540" y="222" text-anchor="middle" fill="#b794f4" font-size="12" font-family="'Segoe UI',sans-serif" font-weight="600">MinIO</text>
+    <text x="540" y="237" text-anchor="middle" fill="#553c9a" font-size="9" font-family="'Segoe UI',sans-serif">bucket: opc-raw</text>
+    <text x="540" y="246" text-anchor="middle" fill="#553c9a" font-size="9" font-family="'Segoe UI',sans-serif">NDJSON · :30901</text>
+  </g>
+
+  <!-- MinIO → Trino -->
+  <line x1="590" y1="225" x2="635" y2="225" stroke="#b794f4" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-purple)">
+    <animate attributeName="stroke-dashoffset" values="0;-16" dur=".85s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- ── Trino ── -->
+  <g class="blk" onclick="showDetail('trino')">
+    <rect x="635" y="198" width="110" height="60" fill="#2a1f3d" stroke="#553c9a" stroke-width="1.5" rx="8"/>
+    <text x="690" y="222" text-anchor="middle" fill="#b794f4" font-size="12" font-family="'Segoe UI',sans-serif" font-weight="600">Trino</text>
+    <text x="690" y="237" text-anchor="middle" fill="#553c9a" font-size="9" font-family="'Segoe UI',sans-serif">SQL Analytics</text>
+    <text x="690" y="248" text-anchor="middle" fill="#553c9a" font-size="9" font-family="'Segoe UI',sans-serif">:30800</text>
+  </g>
+
+  <!-- ── OpenMAINT ── -->
+  <g class="blk" onclick="showDetail('openmaint')">
+    <rect x="762" y="112" width="120" height="54" fill="#2a1f3d" stroke="#553c9a" stroke-width="1.5" rx="8"/>
+    <text x="822" y="135" text-anchor="middle" fill="#b794f4" font-size="12" font-family="'Segoe UI',sans-serif" font-weight="600">OpenMAINT</text>
+    <text x="822" y="150" text-anchor="middle" fill="#553c9a" font-size="9" font-family="'Segoe UI',sans-serif">CMMS · :30885</text>
+    <text x="822" y="161" text-anchor="middle" fill="#553c9a" font-size="9" font-family="'Segoe UI',sans-serif">PostgreSQL 15</text>
+  </g>
+
+  <!-- Grafana connects to OpenMAINT with dashed (loose coupling) -->
+  <line x1="745" y1="88" x2="822" y2="112" stroke="#4a5568" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="778" y="98" fill="#4a5568" font-size="8" font-family="'Segoe UI',sans-serif">future</text>
+
+  <!-- Data dots animation (moving particles) -->
+  <circle r="4" fill="#68d391" opacity=".9">
+    <animateMotion dur="2s" repeatCount="indefinite" path="M70,94 L70,130 L130,152 L170,152"/>
+  </circle>
+  <circle r="3" fill="#63b3ed" opacity=".8">
+    <animateMotion dur="2.5s" repeatCount="indefinite" begin="0.3s" path="M290,135 L345,100 L445,92 L490,92 L590,92 L635,88"/>
+  </circle>
+  <circle r="3" fill="#b794f4" opacity=".8">
+    <animateMotion dur="3s" repeatCount="indefinite" begin="0.6s" path="M290,155 L345,220 L445,223 L490,223 L590,225 L635,225"/>
+  </circle>
+
+  <!-- Legend -->
+  <g transform="translate(10,280)">
+    <line x1="0" y1="8" x2="30" y2="8" stroke="#68d391" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="34" y="12" fill="#68d391" font-size="9" font-family="'Segoe UI',sans-serif">OT/Edge flow</text>
+    <line x1="130" y1="8" x2="160" y2="8" stroke="#63b3ed" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="164" y="12" fill="#63b3ed" font-size="9" font-family="'Segoe UI',sans-serif">Monitoring path</text>
+    <line x1="280" y1="8" x2="310" y2="8" stroke="#b794f4" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="314" y="12" fill="#b794f4" font-size="9" font-family="'Segoe UI',sans-serif">Data Lake path</text>
+  </g>
+</svg>
+  </div>
+</div>
+
+<!-- Detail panel (shown on block click) -->
+<div id="detail-panel" class="detail-panel">
+  <h4 id="dp-title"></h4>
+  <p id="dp-desc"></p>
+  <div id="dp-meta" class="dp-meta"></div>
+</div>
+
+<script>
+const details = {
+  opc:{title:"OPC Simulator — OT Zone",desc:"จำลอง PLC/OPC-UA Server ที่ IP 10.85.3.100 สร้างข้อมูล sensor 12 ตัวทุก 2 วินาที ได้แก่ Temp_Boiler1, Press_Line1, Flow_Main, RPM_Motor1, Power_Motor1 ฯลฯ ในรูปแบบ OPC-UA protocol",meta:["10.85.3.100","12 sensors","interval: 2s","OPC-UA protocol"]},
+  "nifi-edge":{title:"NiFi Edge — OT Zone",desc:"รับข้อมูลจาก OPC Simulator ผ่าน OPC-UA protocol แล้วแปลงเป็น JSON จากนั้น fan-out ส่งไปยัง Kafka 2 topic คือ opc-raw-data (ข้อมูลดิบ) และ split ไปยัง opc-metrics กับ opc-datalake",meta:["https://10.85.3.104:31444","admin/Nifi@mintpower2024!","fan-out: 2 topics","processor: ConsumeOPCUA→PublishKafka"]},
+  kafka:{title:"Kafka — DMZ Zone",desc:"Message Broker หลักของระบบ ทำงานในโหมด KRaft (ไม่ต้องใช้ ZooKeeper) มี 3 topics คือ opc-raw-data, opc-metrics, opc-datalake เก็บข้อมูลนาน 7 วัน ทนต่อการ restart",meta:["KRaft mode (no ZooKeeper)","3 topics","retention: 7d","external: :32092","~42K messages total"]},
+  akhq:{title:"AKHQ — Kafka UI",desc:"Web UI สำหรับดูสถานะ Kafka topics, consumer groups, message offsets และ consumer lag ไม่มี authentication (เฉพาะ internal network)",meta:[":30880","No auth required","Consumer LAG monitoring","Topic offset viewer"]},
+  telegraf:{title:"Telegraf — IT Zone",desc:"Consumer ของ topic opc-metrics อ่านข้อมูล JSON จาก Kafka แล้วแปลงเป็น InfluxDB Line Protocol เขียนลง InfluxDB ทุก batch มี consumer-group: telegraf-opc-consumer",meta:["consumer: telegraf-opc-consumer","topic: opc-metrics","LAG ≈ 5","Top CPU: 500m cores"]},
+  influxdb:{title:"InfluxDB — IT Zone",desc:"Time-series database เก็บข้อมูล sensor ที่ผ่าน Telegraf มาแล้ว ใช้ bucket opc-data มีข้อมูล ~1,793 records ใน 1 ชั่วโมง รองรับ Flux query language",meta:[":30086","admin/Influx@mintpower2024","bucket: opc-data","~1,793 records/hr","PV: 50Gi"]},
+  grafana:{title:"Grafana — IT Zone",desc:"Dashboard แสดงผล real-time มี 12 panels แสดง sensor ทุกตัว refresh ทุก 5 วินาที data source เชื่อมกับ InfluxDB ผ่าน Flux query",meta:[":30300","admin/Grafana@mintpower2024","12 panels","refresh: 5s","uid: ffl0uchin1hxcc"]},
+  "nifi-core":{title:"NiFi Core — IT Zone",desc:"Consumer ของ topic opc-datalake ทำหน้าที่ batch ข้อมูลด้วย MergeRecord (ทุก 100 records) แล้ว PutS3Object ไปยัง MinIO แบบ partitioned path ตาม year/month/day",meta:["https://10.85.3.104:31443","consumer: nifi-core-consumer","LAG ≈ 2","MergeRecord 100 records","RAM: 2,001Mi (largest)"]},
+  minio:{title:"MinIO — IT Zone",desc:"Object Storage คล้าย AWS S3 เก็บไฟล์ NDJSON ที่ NiFi Core ส่งมา แบ่ง partition ตาม year/month/day มี 13 files วันนี้ รวม 379 KiB Trino อ่านข้อมูลผ่าน S3 API",meta:[":30901","minioadmin/Minio@mintpower2024","bucket: opc-raw","path: data/year=/month=/day=/","13 files today · 379 KiB","PV: 100Gi"]},
+  trino:{title:"Trino — IT Zone",desc:"Distributed SQL Query Engine อ่านข้อมูลจาก MinIO โดยตรงผ่าน catalog: minio ตาราง minio.opc.sensor_data เป็น Hive partitioned table รองรับ SQL มาตรฐาน ANSI",meta:[":30800","catalog: minio","table: minio.opc.sensor_data","partitioned: year/month/day","414 records today"]},
+  openmaint:{title:"OpenMAINT — Asset Management",desc:"CMMS (Computerized Maintenance Management System) สำหรับจัดการสินทรัพย์และ maintenance ทำงานบน CMDBuild 3.4.1-d และ PostgreSQL 15 เชื่อมกับระบบ IoT ในอนาคต",meta:[":30885/cmdbuild","admin/admin","CMDBuild 3.4.1-d","PostgreSQL 15","PV: 20Gi"]}
+};
+function showDetail(id){
+  const d=details[id];if(!d)return;
+  document.getElementById('dp-title').textContent=d.title;
+  document.getElementById('dp-desc').textContent=d.desc;
+  const meta=document.getElementById('dp-meta');
+  meta.innerHTML=d.meta.map(m=>`<span class="dp-chip">${m}</span>`).join('');
+  const panel=document.getElementById('detail-panel');
+  panel.classList.add('show');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+</script>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 1: BLOCK DETAILS                        -->
+<!-- ═══════════════════════════════════════════════ -->
+<h2 id="block-opc">1. อธิบายแต่ละบล็อก</h2>
+
+<div class="block-detail ot" id="block-opc-detail">
+  <h3>🏭 OPC Simulator <span class="zone zone-ot">OT Zone</span></h3>
+  <p>จำลอง <strong>OPC-UA Server</strong> ที่ IP <code>10.85.3.100</code> ทำหน้าที่เสมือน PLC ที่ติดตั้งใน Plant จริง สร้างข้อมูล sensor 12 ตัวทุก <strong>2 วินาที</strong></p>
+  <table>
+    <tr><th>Sensor</th><th>ค่าจำลอง</th><th>หน่วย</th></tr>
+    <tr><td>Temp_Boiler1</td><td>75–95</td><td>°C</td></tr>
+    <tr><td>Press_Line1</td><td>4.5–6.5</td><td>bar</td></tr>
+    <tr><td>Flow_Main</td><td>120–180</td><td>L/min</td></tr>
+    <tr><td>RPM_Motor1</td><td>1400–1500</td><td>RPM</td></tr>
+    <tr><td>Power_Motor1</td><td>18–22</td><td>kW</td></tr>
+    <tr><td colspan="3" style="color:#4a5568;font-size:.78rem">... และอีก 7 sensors</td></tr>
+  </table>
+</div>
+
+<div class="block-detail ot" id="block-nifi-edge">
+  <h3>🔀 NiFi Edge <span class="zone zone-ot">OT Zone</span> — Port :31444</h3>
+  <p>รับข้อมูลจาก OPC Simulator แล้วทำ <strong>fan-out</strong> ส่งไปยัง Kafka 2 topic พร้อมกัน</p>
+  <div class="card-grid two">
+    <div class="card" style="padding:14px">
+      <h4>Flow ใน NiFi Edge</h4>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-dot done"></div><div class="tl-label">Input</div><div class="tl-title">ConsumeOPCUA</div><div class="tl-desc">Subscribe OPC-UA nodes ทุก 2s</div></div>
+        <div class="tl-item"><div class="tl-dot done"></div><div class="tl-label">Transform</div><div class="tl-title">ConvertOpcUaToJson</div><div class="tl-desc">แปลง OPC value → JSON</div></div>
+        <div class="tl-item"><div class="tl-dot done"></div><div class="tl-label">Route</div><div class="tl-title">RouteOnAttribute</div><div class="tl-desc">แยกเส้นทาง 2 paths</div></div>
+        <div class="tl-item"><div class="tl-dot done"></div><div class="tl-label">Output</div><div class="tl-title">PublishKafka ×2</div><div class="tl-desc">→ opc-metrics &amp; opc-datalake</div></div>
+      </div>
+    </div>
+    <div class="card" style="padding:14px">
+      <h4>Topics ที่ส่งข้อมูล</h4>
+      <div class="mrow"><span class="ml">opc-raw-data</span><span class="mv g">ข้อมูลดิบทั้งหมด</span></div>
+      <div class="mrow"><span class="ml">opc-metrics</span><span class="mv" style="color:#63b3ed">→ Telegraf</span></div>
+      <div class="mrow"><span class="ml">opc-datalake</span><span class="mv" style="color:#b794f4">→ NiFi Core</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="block-detail dmz" id="block-kafka">
+  <h3>📨 Kafka (KRaft) <span class="zone zone-dmz">DMZ Zone</span> — Port :32092</h3>
+  <p>Message Broker หลักที่คั่นระหว่าง OT Zone กับ IT Zone เพื่อความปลอดภัยและ <strong>buffer</strong> ข้อมูล ทำงานในโหมด <strong>KRaft</strong> (ไม่ต้องใช้ ZooKeeper แยก)</p>
+  <table>
+    <tr><th>Topic</th><th>Messages</th><th>Consumer</th><th>LAG</th></tr>
+    <tr><td><code>opc-raw-data</code></td><td>~40,760</td><td>—</td><td>—</td></tr>
+    <tr><td><code>opc-metrics</code></td><td>~42,368</td><td>telegraf-opc-consumer</td><td>≈ 5</td></tr>
+    <tr><td><code>opc-datalake</code></td><td>~42,362</td><td>nifi-core-consumer</td><td>≈ 2</td></tr>
+  </table>
+  <div class="alert info"><div class="alert-icon">ℹ️</div><div>LAG ≈ 5 หมายถึง Telegraf consume ช้ากว่า producer 5 messages — ถือว่าปกติมาก หาก LAG เพิ่มต่อเนื่องให้ตรวจสอบ Telegraf pod</div></div>
+</div>
+
+<div class="block-detail it-mon" id="block-telegraf">
+  <h3>📊 Telegraf <span class="zone zone-it">IT Zone</span></h3>
+  <p>Agent ที่ consume topic <code>opc-metrics</code> แล้วแปลงข้อมูล JSON → InfluxDB Line Protocol และเขียนลง InfluxDB อัตโนมัติ ไม่มี UI ใช้การ monitor ผ่าน logs</p>
+  <pre><span class="cm"># Telegraf config สำคัญ</span>
+[[<span class="kw">inputs</span>.kafka_consumer]]
+  brokers = [<span class="str">"kafka.dmz.svc:9092"</span>]
+  topics = [<span class="str">"opc-metrics"</span>]
+  consumer_group = <span class="str">"telegraf-opc-consumer"</span>
+  data_format = <span class="str">"json"</span>
+
+[[<span class="kw">outputs</span>.influxdb_v2]]
+  urls = [<span class="str">"http://influxdb.it.svc:8086"</span>]
+  token = <span class="str">"$INFLUX_TOKEN"</span>
+  bucket = <span class="str">"opc-data"</span></pre>
+</div>
+
+<div class="block-detail it-mon" id="block-influx">
+  <h3>🗄️ InfluxDB <span class="zone zone-it">IT Zone</span> — Port :30086</h3>
+  <p>Time-series database รับข้อมูลจาก Telegraf เก็บใน <strong>bucket: opc-data</strong> รองรับ Flux Query Language สำหรับ Grafana</p>
+  <div class="mrow"><span class="ml">Records (1hr)</span><span class="mv g">1,793</span></div>
+  <div class="mrow"><span class="ml">PersistentVolume</span><span class="mv g">50Gi · Bound</span></div>
+  <div class="mrow"><span class="ml">Retention</span><span class="mv">ไม่จำกัด (ตั้ง policy เองได้)</span></div>
+</div>
+
+<div class="block-detail it-mon" id="block-grafana">
+  <h3>📈 Grafana <span class="zone zone-it">IT Zone</span> — Port :30300</h3>
+  <p>Dashboard แสดงผล real-time มี <strong>12 panels</strong> refresh ทุก 5 วินาที เชื่อมกับ InfluxDB ผ่าน Flux query</p>
+  <div class="card-grid two">
+    <div class="card" style="padding:14px">
+      <h4>Dashboard Panels</h4>
+      <div class="mrow"><span class="ml">Temperature panels</span><span class="mv">Boiler1, Boiler2, Coolant</span></div>
+      <div class="mrow"><span class="ml">Pressure panels</span><span class="mv">Line1, Line2</span></div>
+      <div class="mrow"><span class="ml">Flow panels</span><span class="mv">Main, Secondary</span></div>
+      <div class="mrow"><span class="ml">Motor panels</span><span class="mv">RPM, Power, Current</span></div>
+    </div>
+    <div class="card" style="padding:14px">
+      <h4>Grafana Config</h4>
+      <div class="mrow"><span class="ml">Dashboard UID</span><span class="mv mono" style="font-size:.72rem">ffl0uchin1hxcc</span></div>
+      <div class="mrow"><span class="ml">Data source</span><span class="mv">InfluxDB (Flux)</span></div>
+      <div class="mrow"><span class="ml">Auto-refresh</span><span class="mv g">5 seconds</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="block-detail it-lake" id="block-nifi-core">
+  <h3>🔧 NiFi Core <span class="zone zone-it">IT Zone</span> — Port :31443</h3>
+  <p>Consumer ของ <code>opc-datalake</code> ทำหน้าที่ batch + save ข้อมูลลง MinIO แบบ partitioned</p>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot done"></div><div class="tl-label">Step 1</div><div class="tl-title">ConsumeKafkaRecord</div><div class="tl-desc">อ่านจาก topic opc-datalake</div></div>
+    <div class="tl-item"><div class="tl-dot done"></div><div class="tl-label">Step 2</div><div class="tl-title">MergeRecord</div><div class="tl-desc">รวม 100 records เป็นไฟล์เดียว</div></div>
+    <div class="tl-item"><div class="tl-dot done"></div><div class="tl-label">Step 3</div><div class="tl-title">UpdateAttribute</div><div class="tl-desc">ตั้ง path: data/year=YYYY/month=MM/day=DD/</div></div>
+    <div class="tl-item"><div class="tl-dot done"></div><div class="tl-label">Step 4</div><div class="tl-title">PutS3Object</div><div class="tl-desc">เขียนไฟล์ NDJSON ลง MinIO (S3 API)</div></div>
+  </div>
+  <div class="alert warn"><div class="alert-icon">⚠️</div><div>NiFi Core ใช้ RAM สูงสุดในระบบ ≈ 2,001Mi หากพบ OOMKilled ให้เพิ่ม memory limit หรือลด MergeRecord batch size</div></div>
+</div>
+
+<div class="block-detail it-lake" id="block-minio">
+  <h3>🪣 MinIO <span class="zone zone-it">IT Zone</span> — Port :30901</h3>
+  <p>Object Storage เข้ากันได้กับ AWS S3 API เก็บไฟล์ NDJSON แบบ Hive-style partitioning</p>
+  <pre>opc-raw/
+└── data/
+    └── year=2026/
+        └── month=05/
+            └── day=04/
+                ├── part-0001.ndjson  (100 records)
+                ├── part-0002.ndjson
+                └── ...  ← 13 files วันนี้</pre>
+</div>
+
+<div class="block-detail it-lake" id="block-trino">
+  <h3>⚡ Trino <span class="zone zone-it">IT Zone</span> — Port :30800</h3>
+  <p>Distributed SQL Query Engine อ่านข้อมูลจาก MinIO โดยตรง ไม่ต้อง ingest ข้อมูลใหม่ ใช้ SQL มาตรฐาน</p>
+  <pre><span class="cm">-- ตัวอย่าง query วิเคราะห์ข้อมูล</span>
+<span class="kw">SELECT</span> year, month, day, <span class="fn">COUNT</span>(*) records
+<span class="kw">FROM</span> minio.opc.sensor_data
+<span class="kw">GROUP BY</span> <span class="kw">ALL ORDER BY</span> year, month, day;</pre>
+</div>
+
+<div class="block-detail asset" id="block-openmaint">
+  <h3>🏗️ OpenMAINT <span class="zone zone-asset">Asset Mgmt</span> — Port :30885</h3>
+  <p>CMMS (Computerized Maintenance Management System) ใช้จัดการ Asset, Work Order, Preventive Maintenance ทำงานบน CMDBuild 3.4.1-d + PostgreSQL 15</p>
+  <div class="card-grid two">
+    <div class="card" style="padding:14px">
+      <h4>ความสามารถ</h4>
+      <ul class="checklist">
+        <li>Asset Registry (อุปกรณ์ทุกชิ้น)</li>
+        <li>Work Order Management</li>
+        <li>Preventive Maintenance Schedule</li>
+        <li>Spare Parts Inventory</li>
+        <li>Maintenance History</li>
+      </ul>
+    </div>
+    <div class="card" style="padding:14px">
+      <h4>Tech Stack</h4>
+      <div class="mrow"><span class="ml">Frontend</span><span class="mv">CMDBuild 3.4.1-d</span></div>
+      <div class="mrow"><span class="ml">Backend</span><span class="mv">Java / Tomcat</span></div>
+      <div class="mrow"><span class="ml">Database</span><span class="mv">PostgreSQL 15</span></div>
+      <div class="mrow"><span class="ml">URL path</span><span class="mv mono">/cmdbuild</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 2: INSTALLATION                         -->
+<!-- ═══════════════════════════════════════════════ -->
+<h2 id="install-prereq">2. ขั้นตอนการติดตั้ง Services ทั้งหมด</h2>
+
+<div class="alert info"><div class="alert-icon">ℹ️</div><div><strong>Airgap Mode:</strong> ระบบนี้ไม่มีการเชื่อมต่ออินเทอร์เน็ต ต้อง load Docker images จาก local registry หรือ tar file และใช้ YAML manifests ที่เตรียมไว้ล่วงหน้าทั้งหมด</div></div>
+
+<h3 id="install-prereq">Prerequisites</h3>
+<div class="steps">
+  <div class="step"><div class="step-num"></div><div class="step-body">
+    <strong>ติดตั้ง k3s แบบ airgap</strong>
+    <pre><span class="cm"># Download k3s binary + images ล่วงหน้า แล้ว copy ไปยัง server</span>
+<span class="cmd">sudo mkdir -p /var/lib/rancher/k3s/agent/images/
+sudo cp k3s-airgap-images-amd64.tar.zst /var/lib/rancher/k3s/agent/images/
+sudo cp k3s /usr/local/bin/k3s
+sudo chmod +x /usr/local/bin/k3s</span>
+
+<span class="cm"># รัน k3s installer (offline mode)</span>
+<span class="cmd">INSTALL_K3S_SKIP_DOWNLOAD=true \
+  INSTALL_K3S_EXEC="--disable traefik" \
+  ./install.sh</span>
+
+<span class="cm"># ตรวจสอบ</span>
+<span class="cmd">kubectl get nodes</span>
+<span class="cm"># NAME        STATUS   ROLES                  AGE</span>
+<span class="cm"># mintpower   Ready    control-plane,master   1m</span></pre>
+  </div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">
+    <strong>Load Docker Images เข้า k3s (airgap)</strong>
+    <pre><span class="cm"># สำหรับแต่ละ service image</span>
+<span class="cmd">sudo k3s ctr images import kafka.tar
+sudo k3s ctr images import nifi.tar
+sudo k3s ctr images import influxdb.tar
+sudo k3s ctr images import grafana.tar
+sudo k3s ctr images import minio.tar
+sudo k3s ctr images import trino.tar
+sudo k3s ctr images import openmaint.tar</span>
+
+<span class="cm"># ตรวจสอบ images ที่ load แล้ว</span>
+<span class="cmd">sudo k3s ctr images list | grep -E "kafka|nifi|influx|grafana"</span></pre>
+  </div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">
+    <strong>ตั้ง kubeconfig</strong>
+    <pre><span class="cmd">mkdir -p ~/.kube
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chown $USER ~/.kube/config
+export KUBECONFIG=~/.kube/config</span></pre>
+  </div></div>
+</div>
+
+<h3 id="install-infra">Phase 1 — Infrastructure (Namespace, StorageClass, PV)</h3>
+<pre><span class="cm"># สร้าง Namespaces</span>
+<span class="cmd">kubectl create namespace dmz
+kubectl create namespace it</span>
+
+<span class="cm"># StorageClass (local-path หรือ hostPath)</span>
+<span class="kw">cat</span> &lt;&lt;<span class="str">EOF</span> | kubectl apply -f -
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: local-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+<span class="str">EOF</span>
+
+<span class="cm"># PersistentVolumes (ตัวอย่าง Kafka)</span>
+<span class="kw">cat</span> &lt;&lt;<span class="str">EOF</span> | kubectl apply -f -
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-kafka
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes: [ReadWriteOnce]
+  storageClassName: local-storage
+  hostPath:
+    path: /data/kafka
+<span class="str">EOF</span>
+
+<span class="cm"># สร้าง directories บน host</span>
+<span class="cmd">sudo mkdir -p /data/{kafka,minio,influxdb,nifi-core,openmaint}</span></pre>
+
+<h3 id="install-kafka">Phase 2 — Kafka (KRaft) + AKHQ</h3>
+<pre><span class="cm"># Kafka StatefulSet (KRaft mode — ไม่ต้องใช้ ZooKeeper)</span>
+<span class="kw">cat</span> &lt;&lt;<span class="str">EOF</span> | kubectl apply -f -
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+  namespace: dmz
+spec:
+  serviceName: kafka
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka
+        image: confluentinc/cp-kafka:7.5.0
+        env:
+        - name: KAFKA_NODE_ID
+          value: "1"
+        - name: KAFKA_PROCESS_ROLES
+          value: "broker,controller"
+        - name: KAFKA_CONTROLLER_QUORUM_VOTERS
+          value: "1@localhost:9093"
+        - name: KAFKA_LISTENERS
+          value: "PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094"
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: "PLAINTEXT://kafka.dmz.svc:9092,EXTERNAL://10.85.3.104:32092"
+        - name: KAFKA_LOG_RETENTION_HOURS
+          value: "168"
+        ports:
+        - containerPort: 9092
+        - containerPort: 9094
+<span class="str">EOF</span>
+
+<span class="cm"># สร้าง Topics หลังจาก kafka พร้อม</span>
+<span class="cmd">kubectl exec -n dmz kafka-0 -- kafka-topics.sh \
+  --bootstrap-server localhost:9092 \
+  --create --topic opc-raw-data --partitions 1 --replication-factor 1
+
+kubectl exec -n dmz kafka-0 -- kafka-topics.sh \
+  --bootstrap-server localhost:9092 \
+  --create --topic opc-metrics --partitions 1 --replication-factor 1
+
+kubectl exec -n dmz kafka-0 -- kafka-topics.sh \
+  --bootstrap-server localhost:9092 \
+  --create --topic opc-datalake --partitions 1 --replication-factor 1</span>
+
+<span class="cm"># AKHQ deployment</span>
+<span class="cmd">kubectl apply -f akhq-deployment.yaml -n dmz</span></pre>
+
+<h3 id="install-monitoring">Phase 3 — Monitoring Stack (InfluxDB + Telegraf + Grafana)</h3>
+<pre><span class="cm"># InfluxDB — deploy ด้วย Helm chart หรือ manifest</span>
+<span class="kw">cat</span> &lt;&lt;<span class="str">EOF</span> | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+  namespace: it
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    spec:
+      containers:
+      - name: influxdb
+        image: influxdb:2.7
+        env:
+        - name: DOCKER_INFLUXDB_INIT_MODE
+          value: setup
+        - name: DOCKER_INFLUXDB_INIT_USERNAME
+          value: admin
+        - name: DOCKER_INFLUXDB_INIT_PASSWORD
+          value: Influx@mintpower2024
+        - name: DOCKER_INFLUXDB_INIT_ORG
+          value: mintpower
+        - name: DOCKER_INFLUXDB_INIT_BUCKET
+          value: opc-data
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/influxdb2
+<span class="str">EOF</span>
+
+<span class="cm"># Telegraf ConfigMap</span>
+<span class="cmd">kubectl create configmap telegraf-config -n it --from-file=telegraf.conf</span>
+
+<span class="cm"># Grafana — deploy + service NodePort :30300</span>
+<span class="cmd">kubectl apply -f grafana-deployment.yaml -n it</span>
+
+<span class="cm"># Import Grafana dashboard หลังจาก pod พร้อม</span>
+<span class="cmd">curl -X POST http://10.85.3.104:30300/api/dashboards/import \
+  -H "Content-Type: application/json" \
+  -u admin:Grafana@mintpower2024 \
+  -d @opc-dashboard.json</span></pre>
+
+<h3 id="install-datalake">Phase 4 — Data Platform (MinIO + NiFi Core + Trino)</h3>
+<pre><span class="cm"># MinIO deployment</span>
+<span class="kw">cat</span> &lt;&lt;<span class="str">EOF</span> | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: it
+spec:
+  template:
+    spec:
+      containers:
+      - name: minio
+        image: minio/minio:RELEASE.2024-01-01
+        args: ["server", "/data", "--console-address", ":9001"]
+        env:
+        - name: MINIO_ROOT_USER
+          value: minioadmin
+        - name: MINIO_ROOT_PASSWORD
+          value: Minio@mintpower2024
+<span class="str">EOF</span>
+
+<span class="cm"># สร้าง bucket และ Trino schema หลังจาก MinIO พร้อม</span>
+<span class="cmd">kubectl run mc-client -n it --rm -it --image=minio/mc -- /bin/sh -c "
+  mc alias set minio http://minio.it.svc:9000 minioadmin Minio@mintpower2024
+  mc mb minio/opc-raw
+  mc anonymous set none minio/opc-raw
+"</span>
+
+<span class="cm"># NiFi Core deployment</span>
+<span class="cmd">kubectl apply -f nifi-core-deployment.yaml -n it</span>
+
+<span class="cm"># Trino deployment + catalog config</span>
+<span class="cmd">kubectl create configmap trino-catalog -n it \
+  --from-literal=minio.properties="
+connector.name=hive
+hive.metastore=file
+hive.metastore.catalog.dir=s3://opc-raw/
+hive.s3.endpoint=http://minio.it.svc:9000
+hive.s3.path-style-access=true
+hive.s3.aws-access-key=minioadmin
+hive.s3.aws-secret-key=Minio@mintpower2024
+"
+kubectl apply -f trino-deployment.yaml -n it</span>
+
+<span class="cm"># สร้าง Hive schema สำหรับ Trino</span>
+<span class="cmd">kubectl exec -n it deploy/trino -- trino --execute "
+CREATE SCHEMA IF NOT EXISTS minio.opc WITH (location = 's3://opc-raw/data/');
+CREATE TABLE IF NOT EXISTS minio.opc.sensor_data (
+  timestamp VARCHAR,
+  readings MAP(VARCHAR, ROW(value DOUBLE, quality INTEGER)),
+  year VARCHAR,
+  month VARCHAR,
+  day VARCHAR
+) WITH (
+  external_location = 's3://opc-raw/data/',
+  format = 'JSON',
+  partitioned_by = ARRAY['year','month','day']
+);"</span></pre>
+
+<h3 id="install-edge">Phase 5 — Edge Collector + OpenMAINT</h3>
+<pre><span class="cm"># NiFi Edge deployment</span>
+<span class="cmd">kubectl apply -f nifi-edge-deployment.yaml -n it</span>
+
+<span class="cm"># OpenMAINT + PostgreSQL 15</span>
+<span class="cmd">kubectl apply -f postgres-deployment.yaml -n it
+kubectl apply -f openmaint-deployment.yaml -n it</span>
+
+<span class="cm"># รอให้ OpenMAINT init database เสร็จ (ใช้เวลา ~3-5 นาที)</span>
+<span class="cmd">kubectl logs -n it deploy/openmaint -f | grep -i "started\|ready\|error"</span></pre>
+
+<h3 id="install-ingress">Phase 6 — Ingress + DNS</h3>
+<pre><span class="cm"># ติดตั้ง Traefik (หรือใช้ k3s built-in)</span>
+<span class="cmd">kubectl apply -f traefik-deployment.yaml</span>
+
+<span class="cm"># IngressRoute สำหรับแต่ละ service</span>
+<span class="kw">cat</span> &lt;&lt;<span class="str">EOF</span> | kubectl apply -f -
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: grafana-route
+  namespace: it
+spec:
+  entryPoints: [web]
+  routes:
+  - match: Host(`grafana.mintpower.local`)
+    kind: Rule
+    services:
+    - name: grafana
+      port: 3000
+<span class="str">EOF</span>
+
+<span class="cm"># เพิ่ม DNS records ใน /etc/hosts (หรือ local DNS server)</span>
+<span class="cmd">sudo tee -a /etc/hosts &lt;&lt;'EOF'
+10.85.3.104  grafana.mintpower.local
+10.85.3.104  influxdb.mintpower.local
+10.85.3.104  minio.mintpower.local
+10.85.3.104  trino.mintpower.local
+10.85.3.104  akhq.mintpower.local
+10.85.3.104  openmaint.mintpower.local
+EOF</span></pre>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 3: USAGE + CREDENTIALS                  -->
+<!-- ═══════════════════════════════════════════════ -->
+<h2 id="creds">3. วิธีการใช้งาน + Credentials ทุก Service</h2>
+
+<table class="creds">
+  <thead>
+    <tr>
+      <th>Service</th>
+      <th>URL</th>
+      <th>Username</th>
+      <th>Password</th>
+      <th>หมายเหตุ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Grafana</strong></td>
+      <td><a href="http://10.85.3.104:30300">:30300</a></td>
+      <td><span class="key">admin</span></td>
+      <td><span class="key">Grafana@mintpower2024</span></td>
+      <td>OPC Dashboard</td>
+    </tr>
+    <tr>
+      <td><strong>InfluxDB</strong></td>
+      <td><a href="http://10.85.3.104:30086">:30086</a></td>
+      <td><span class="key">admin</span></td>
+      <td><span class="key">Influx@mintpower2024</span></td>
+      <td>bucket: opc-data</td>
+    </tr>
+    <tr>
+      <td><strong>NiFi Edge</strong></td>
+      <td><a href="https://10.85.3.104:31444">:31444</a></td>
+      <td><span class="key">admin</span></td>
+      <td><span class="key">Nifi@mintpower2024!</span></td>
+      <td>HTTPS (self-signed cert)</td>
+    </tr>
+    <tr>
+      <td><strong>NiFi Core</strong></td>
+      <td><a href="https://10.85.3.104:31443">:31443</a></td>
+      <td><span class="key">admin</span></td>
+      <td><span class="key">Nifi@mintpower2024!</span></td>
+      <td>HTTPS (self-signed cert)</td>
+    </tr>
+    <tr>
+      <td><strong>MinIO Console</strong></td>
+      <td><a href="http://10.85.3.104:30901">:30901</a></td>
+      <td><span class="key">minioadmin</span></td>
+      <td><span class="key">Minio@mintpower2024</span></td>
+      <td>bucket: opc-raw</td>
+    </tr>
+    <tr>
+      <td><strong>Trino UI</strong></td>
+      <td><a href="http://10.85.3.104:30800">:30800</a></td>
+      <td><span class="key">admin</span></td>
+      <td><em>ไม่มี password</em></td>
+      <td>Web UI + CLI</td>
+    </tr>
+    <tr>
+      <td><strong>AKHQ</strong></td>
+      <td><a href="http://10.85.3.104:30880">:30880</a></td>
+      <td colspan="2"><em>ไม่มี authentication</em></td>
+      <td>Kafka UI</td>
+    </tr>
+    <tr>
+      <td><strong>OpenMAINT</strong></td>
+      <td><a href="http://10.85.3.104:30885/cmdbuild">:30885/cmdbuild</a></td>
+      <td><span class="key">admin</span></td>
+      <td><span class="key">admin</span></td>
+      <td>CMMS system</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="usage-grafana">การใช้งาน Grafana</h3>
+<div class="steps">
+  <div class="step"><div class="step-num"></div><div class="step-body">
+    เปิด <a href="http://10.85.3.104:30300">http://10.85.3.104:30300</a> → Login ด้วย <code>admin / Grafana@mintpower2024</code>
+  </div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">
+    ไปที่ <strong>Dashboards → Browse</strong> → เลือก <strong>"OPC Sensor Dashboard"</strong> (uid: ffl0uchin1hxcc)
+  </div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">
+    Dashboard จะ refresh อัตโนมัติทุก 5 วินาที เห็น sensor 12 ตัว แบบ real-time
+  </div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">
+    ปรับ Time range ด้านบนขวา เช่น Last 1h, Last 24h สำหรับดูย้อนหลัง
+  </div></div>
+</div>
+<pre><span class="cm"># ตรวจสอบ dashboard ผ่าน API</span>
+<span class="cmd">curl -u admin:Grafana@mintpower2024 \
+  http://10.85.3.104:30300/api/dashboards/uid/ffl0uchin1hxcc | jq .dashboard.title</span></pre>
+
+<h3 id="usage-akhq">การใช้งาน AKHQ (Kafka UI)</h3>
+<div class="steps">
+  <div class="step"><div class="step-num"></div><div class="step-body">เปิด <a href="http://10.85.3.104:30880">http://10.85.3.104:30880</a> ไม่ต้อง login</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">เลือก Cluster → <strong>Topics</strong> เพื่อดู messages และ partition offsets</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">ไปที่ <strong>Consumer Groups</strong> → ดู LAG ของ <code>telegraf-opc-consumer</code> และ <code>nifi-core-consumer</code></div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">คลิก topic <code>opc-raw-data</code> → <strong>Live Tail</strong> เพื่อดู messages real-time</div></div>
+</div>
+
+<h3 id="usage-trino">การใช้งาน Trino SQL</h3>
+<pre><span class="cm"># วิธีที่ 1: Trino Web UI</span>
+<span class="cm"># เปิด http://10.85.3.104:30800 → ดู Query history, Worker status</span>
+
+<span class="cm"># วิธีที่ 2: Trino CLI ผ่าน kubectl</span>
+<span class="cmd">kubectl exec -n it deploy/trino -it -- trino \
+  --server localhost:8080 \
+  --user admin</span>
+
+<span class="cm"># ใน Trino CLI — Query ตัวอย่าง</span>
+trino&gt; <span class="kw">SELECT</span> year, month, day, <span class="fn">COUNT</span>(*) records
+       <span class="kw">FROM</span> minio.opc.sensor_data
+       <span class="kw">GROUP BY ALL ORDER BY</span> year DESC, month DESC, day DESC;
+
+trino&gt; <span class="kw">SELECT</span> timestamp,
+         <span class="fn">ROUND</span>(readings.<span class="str">"Temp_Boiler1"</span>.value, 2) temp_c,
+         <span class="fn">ROUND</span>(readings.<span class="str">"Press_Line1"</span>.value, 3) press_bar
+       <span class="kw">FROM</span> minio.opc.sensor_data
+       <span class="kw">ORDER BY</span> timestamp <span class="kw">DESC LIMIT</span> 10;
+
+<span class="cm"># หากขึ้นวันใหม่ ต้อง sync partition</span>
+trino&gt; <span class="kw">CALL</span> minio.system.sync_partition_metadata(
+         schema_name=&gt;<span class="str">'opc'</span>,
+         table_name=&gt;<span class="str">'sensor_data'</span>,
+         mode=&gt;<span class="str">'ADD'</span>
+       );</pre>
+
+<h3 id="usage-minio">การใช้งาน MinIO</h3>
+<div class="steps">
+  <div class="step"><div class="step-num"></div><div class="step-body">เปิด <a href="http://10.85.3.104:30901">http://10.85.3.104:30901</a> → Login ด้วย <code>minioadmin / Minio@mintpower2024</code></div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">ไปที่ <strong>Buckets → opc-raw</strong> → เข้าไป path <code>data/year=2026/month=05/day=XX/</code></div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body">ดูไฟล์ NDJSON และดาวน์โหลดเพื่อตรวจสอบข้อมูลได้</div></div>
+</div>
+<pre><span class="cm"># ตรวจสอบผ่าน mc CLI</span>
+<span class="cmd">kubectl run mc -n it --rm -it --image=minio/mc -- /bin/sh -c "
+  mc alias set s3 http://minio.it.svc:9000 minioadmin Minio@mintpower2024
+  mc ls s3/opc-raw/data/year=2026/month=05/
+  mc ls s3/opc-raw/data/ --recursive | tail -5
+"</span></pre>
+
+<h3 id="usage-openmaint">การใช้งาน OpenMAINT</h3>
+<div class="steps">
+  <div class="step"><div class="step-num"></div><div class="step-body">เปิด <a href="http://10.85.3.104:30885/cmdbuild">http://10.85.3.104:30885/cmdbuild</a> → Login ด้วย <code>admin / admin</code></div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body"><strong>Asset Registry:</strong> ไปที่ Configuration → Classes → Equipment → สร้าง Asset ใหม่ (เช่น Motor1, Boiler1)</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body"><strong>Work Order:</strong> ไปที่ Maintenance → Work Orders → New → กรอกข้อมูลและ assign ให้ช่าง</div></div>
+  <div class="step"><div class="step-num"></div><div class="step-body"><strong>PM Schedule:</strong> ไปที่ Maintenance → Preventive Maintenance → ตั้ง schedule รายสัปดาห์/รายเดือน</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 4: TROUBLESHOOTING                      -->
+<!-- ═══════════════════════════════════════════════ -->
+<h2 id="trouble">4. เมื่อเกิดปัญหา — วิธีตรวจสอบ</h2>
+
+<div class="alert tip"><div class="alert-icon">✅</div><div><strong>เริ่มต้นตรวจสอบ:</strong> รัน <code>kubectl get pods -A</code> เพื่อดูสถานะ pods ทั้งหมดก่อนเสมอ</div></div>
+
+<div class="accord">
+  <div class="accord-head" onclick="toggleAccord(this)">
+    🔴 Pod ไม่ขึ้น / CrashLoopBackOff
+    <span class="icon">▼</span>
+  </div>
+  <div class="accord-body">
+    <pre><span class="cm"># ดูสถานะ pods ทั้งหมด</span>
+<span class="cmd">kubectl get pods -A -o wide</span>
+
+<span class="cm"># ดู log ของ pod ที่มีปัญหา</span>
+<span class="cmd">kubectl logs -n it &lt;pod-name&gt; --previous
+kubectl logs -n it &lt;pod-name&gt; --tail=50</span>
+
+<span class="cm"># ดู events (มักบอกสาเหตุ)</span>
+<span class="cmd">kubectl describe pod -n it &lt;pod-name&gt; | tail -30</span>
+
+<span class="cm"># กรณี OOMKilled — เพิ่ม memory limit</span>
+<span class="cmd">kubectl set resources deployment/nifi-core -n it \
+  --limits=memory=4Gi --requests=memory=2Gi</span></pre>
+  </div>
+</div>
+
+<div class="accord">
+  <div class="accord-head" onclick="toggleAccord(this)">
+    📭 Kafka Consumer LAG สูงผิดปกติ
+    <span class="icon">▼</span>
+  </div>
+  <div class="accord-body">
+    <pre><span class="cm"># ตรวจสอบ consumer group lag</span>
+<span class="cmd">kubectl exec -n dmz kafka-0 -- kafka-consumer-groups.sh \
+  --bootstrap-server localhost:9092 \
+  --describe --all-groups</span>
+
+<span class="cm"># ตรวจสอบ Telegraf ยังทำงานอยู่ไหม</span>
+<span class="cmd">kubectl logs -n it deploy/telegraf --tail=20
+kubectl top pod -n it | grep telegraf</span>
+
+<span class="cm"># Restart Telegraf หาก stuck</span>
+<span class="cmd">kubectl rollout restart deployment/telegraf -n it
+
+# ตรวจสอบ NiFi Core lag</span>
+<span class="cmd">kubectl logs -n it &lt;nifi-core-pod&gt; | grep -i "kafka\|lag\|error"</span></pre>
+    <div class="alert warn"><div class="alert-icon">⚠️</div><div>LAG ปกติ ≈ 2–10 | LAG &gt; 1000 = มีปัญหา consumer หยุดทำงาน</div></div>
+  </div>
+</div>
+
+<div class="accord">
+  <div class="accord-head" onclick="toggleAccord(this)">
+    📉 Grafana ไม่แสดงข้อมูล / No data
+    <span class="icon">▼</span>
+  </div>
+  <div class="accord-body">
+    <pre><span class="cm"># ตรวจสอบ InfluxDB มีข้อมูลหรือไม่</span>
+<span class="cmd">kubectl exec -n it deploy/influxdb -- influx query \
+  --org mintpower --token $INFLUX_TOKEN \
+  'from(bucket:"opc-data") |> range(start:-5m) |> limit(n:5)'</span>
+
+<span class="cm"># ตรวจสอบ Telegraf เขียนข้อมูลได้ไหม</span>
+<span class="cmd">kubectl logs -n it deploy/telegraf | grep -E "error|write|metric"</span>
+
+<span class="cm"># ใน Grafana UI: Data Sources → InfluxDB → Test</span>
+<span class="cm"># ถ้า connection fail ตรวจสอบ token และ bucket name</span>
+
+<span class="cm"># ตรวจสอบ Grafana configuration</span>
+<span class="cmd">curl -u admin:Grafana@mintpower2024 \
+  http://10.85.3.104:30300/api/datasources | jq '.[].name'</span></pre>
+  </div>
+</div>
+
+<div class="accord">
+  <div class="accord-head" onclick="toggleAccord(this)">
+    🪣 MinIO ไม่รับไฟล์ / NiFi Core error
+    <span class="icon">▼</span>
+  </div>
+  <div class="accord-body">
+    <pre><span class="cm"># ตรวจสอบ NiFi Core logs</span>
+<span class="cmd">kubectl logs -n it &lt;nifi-core-pod&gt; | grep -i "s3\|minio\|error\|fail" | tail -20</span>
+
+<span class="cm"># ทดสอบ MinIO connectivity จากใน cluster</span>
+<span class="cmd">kubectl run test-mc -n it --rm -it --image=minio/mc -- \
+  mc ls s3/opc-raw/ --endpoint http://minio.it.svc:9000</span>
+
+<span class="cm"># ตรวจสอบ bucket policy</span>
+<span class="cmd">kubectl exec -n it deploy/minio -- mc ls local/opc-raw/data/ 2>&amp;1 | head -20</span>
+
+<span class="cm"># ตรวจสอบ PV usage ไม่เต็มหรือไม่</span>
+<span class="cmd">kubectl exec -n it deploy/minio -- df -h /data</span></pre>
+  </div>
+</div>
+
+<div class="accord">
+  <div class="accord-head" onclick="toggleAccord(this)">
+    🔍 Trino ไม่เห็น partition ใหม่
+    <span class="icon">▼</span>
+  </div>
+  <div class="accord-body">
+    <pre><span class="cm"># ขึ้นวันใหม่ต้อง sync partition เสมอ</span>
+<span class="cmd">kubectl exec -n it deploy/trino -- trino --execute "
+CALL minio.system.sync_partition_metadata(
+  schema_name=>'opc',
+  table_name=>'sensor_data',
+  mode=>'ADD'
+);"</span>
+
+<span class="cm"># ตรวจสอบ partition ที่ Trino เห็น</span>
+<span class="cmd">kubectl exec -n it deploy/trino -- trino --execute \
+  "SELECT * FROM minio.opc.\"\$partitions\" ORDER BY year,month,day DESC LIMIT 10;"</span>
+
+<span class="cm"># ตรวจสอบ Trino worker status</span>
+<span class="cmd">curl http://10.85.3.104:30800/v1/info | jq .starting</span></pre>
+    <div class="alert info"><div class="alert-icon">ℹ️</div><div>ควรตั้ง CronJob ให้รัน sync_partition_metadata ทุกวันเที่ยงคืนอัตโนมัติ</div></div>
+  </div>
+</div>
+
+<div class="accord">
+  <div class="accord-head" onclick="toggleAccord(this)">
+    🏗️ OpenMAINT ไม่ขึ้น / ค้างที่ Loading
+    <span class="icon">▼</span>
+  </div>
+  <div class="accord-body">
+    <pre><span class="cm"># ตรวจสอบ PostgreSQL ก่อน (OpenMAINT depend on PG)</span>
+<span class="cmd">kubectl logs -n it &lt;postgres-pod&gt; | tail -20
+kubectl exec -n it &lt;postgres-pod&gt; -- psql -U openmaint -c "\l"</span>
+
+<span class="cm"># ตรวจสอบ OpenMAINT logs</span>
+<span class="cmd">kubectl logs -n it &lt;openmaint-pod&gt; -f | grep -E "ERROR|WARN|Started|ready"</span>
+
+<span class="cm"># OpenMAINT ใช้เวลา init database นาน ~3-5 นาที รอให้ครบก่อน</span>
+<span class="cmd">kubectl events -n it --for=pod/&lt;openmaint-pod&gt;</span>
+
+<span class="cm"># Force restart ถ้า stuck</span>
+<span class="cmd">kubectl rollout restart deployment/openmaint -n it</span></pre>
+    <div class="alert tip"><div class="alert-icon">💡</div><div>ดูรายละเอียดการแก้ปัญหา OpenMAINT เพิ่มเติมใน memory: project_openmaint_fix.md (root cause + ทุก fix)</div></div>
+  </div>
+</div>
+
+<div class="accord">
+  <div class="accord-head" onclick="toggleAccord(this)">
+    🌐 เข้าเว็บไม่ได้ / Connection Refused
+    <span class="icon">▼</span>
+  </div>
+  <div class="accord-body">
+    <pre><span class="cm"># ตรวจสอบ Services ทั้งหมด</span>
+<span class="cmd">kubectl get svc -A | grep NodePort</span>
+
+<span class="cm"># ตรวจสอบ k3s node IP</span>
+<span class="cmd">kubectl get nodes -o wide  # ดู EXTERNAL-IP</span>
+
+<span class="cm"># ตรวจสอบ Traefik ingress</span>
+<span class="cmd">kubectl get pods -n kube-system | grep traefik
+kubectl logs -n kube-system &lt;traefik-pod&gt; | tail -20</span>
+
+<span class="cm"># ทดสอบ port จาก local</span>
+<span class="cmd">nc -zv 10.85.3.104 30300  # Grafana
+nc -zv 10.85.3.104 30086  # InfluxDB
+nc -zv 10.85.3.104 30901  # MinIO</span></pre>
+  </div>
+</div>
+
+<h3>Health Check Script — ตรวจสุขภาพระบบทั้งหมดในคำสั่งเดียว</h3>
+<pre><span class="kw">#!/bin/bash</span>
+<span class="cm"># health-check.sh</span>
+echo <span class="str">"=== k3s Data Platform Health Check ==="</span>
+echo <span class="str">""</span>
+
+echo <span class="str">"[Pods]"</span>
+<span class="cmd">kubectl get pods -A --no-headers | awk '{print $4,$1,$2}' | sort</span>
+
+echo <span class="str">""</span>
+echo <span class="str">"[Kafka Topics]"</span>
+<span class="cmd">kubectl exec -n dmz kafka-0 -- kafka-topics.sh \
+  --bootstrap-server localhost:9092 --list 2>/dev/null</span>
+
+echo <span class="str">""</span>
+echo <span class="str">"[Consumer LAG]"</span>
+<span class="cmd">kubectl exec -n dmz kafka-0 -- kafka-consumer-groups.sh \
+  --bootstrap-server localhost:9092 \
+  --describe --all-groups 2>/dev/null | grep -v "^$"</span>
+
+echo <span class="str">""</span>
+echo <span class="str">"[MinIO Files Today]"</span>
+TODAY=$(date +%Y-%m-%d)
+<span class="cmd">kubectl run mc-hc -n it --rm -q --image=minio/mc -- \
+  mc ls s3/opc-raw/data/year=$(date +%Y)/month=$(date +%m)/day=$(date +%d)/ \
+  --endpoint http://minio.it.svc:9000 2>/dev/null | wc -l</span>
+
+echo <span class="str">"[Resources]"</span>
+<span class="cmd">kubectl top pods -n it 2>/dev/null | head -10</span></pre>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SECTION 5: TIPS                                 -->
+<!-- ═══════════════════════════════════════════════ -->
+<h2 id="tips">5. Tips · ข้อควรระวัง · อะไรที่ดีกว่า</h2>
+
+<div class="tips-grid">
+  <div class="tip-card tip">
+    <h4>✅ Best Practices</h4>
+    <ul style="list-style:none;font-size:.82rem;line-height:2">
+      <li>→ ใช้ KRaft mode (ไม่ต้องใช้ ZooKeeper แยก)</li>
+      <li>→ ตั้ง retention policy ให้ Kafka (7d) เพื่อไม่ให้ disk เต็ม</li>
+      <li>→ batch MinIO ทุก 100 records ลด file overhead</li>
+      <li>→ ใช้ NDJSON (line-delimited JSON) อ่านง่ายกว่า nested JSON</li>
+      <li>→ Hive partitioning year/month/day ช่วย Trino query เร็วขึ้นมาก</li>
+    </ul>
+  </div>
+  <div class="tip-card warn">
+    <h4>⚠️ ข้อควรระวัง</h4>
+    <ul style="list-style:none;font-size:.82rem;line-height:2">
+      <li>→ NiFi Edge/Core ใช้ HTTPS self-signed cert → browser จะ warn</li>
+      <li>→ AKHQ ไม่มี auth → อย่า expose ออก internet</li>
+      <li>→ OpenMAINT init DB นาน 3-5 นาที อย่า restart ระหว่างนั้น</li>
+      <li>→ Trino partition ไม่ auto-sync ต้อง CALL sync_partition_metadata</li>
+      <li>→ NiFi Core RAM สูง (2GB) → monitor OOM เสมอ</li>
+    </ul>
+  </div>
+  <div class="tip-card better">
+    <h4>🚀 อะไรที่ดีกว่า (Future Improvements)</h4>
+    <ul style="list-style:none;font-size:.82rem;line-height:2">
+      <li>→ แทน NiFi Edge ด้วย <strong>Telegraf OPC-UA plugin</strong> (เบากว่ามาก)</li>
+      <li>→ แทน NDJSON ด้วย <strong>Parquet format</strong> → Trino query เร็ว 5-10x</li>
+      <li>→ เพิ่ม <strong>Apache Iceberg</strong> แทน Hive → ACID transactions</li>
+      <li>→ ใช้ <strong>Kafka Schema Registry</strong> → ป้องกัน schema drift</li>
+      <li>→ เพิ่ม <strong>AlertManager + PagerDuty</strong> สำหรับ Grafana alerts</li>
+    </ul>
+  </div>
+  <div class="tip-card warn" style="border-color:#742020;background:#2d1515;color:#e8a0a0">
+    <h4 style="color:#fc8181">🔒 Security Warnings</h4>
+    <ul style="list-style:none;font-size:.82rem;line-height:2">
+      <li>→ เปลี่ยน default password <code>admin/admin</code> ของ OpenMAINT ทันที</li>
+      <li>→ เพิ่ม Network Policy แยก namespace ot/dmz/it</li>
+      <li>→ ใช้ Kubernetes Secrets แทน hardcode credentials ใน env</li>
+      <li>→ เปิด TLS สำหรับ Kafka ก่อน expose :32092 ออกภายนอก</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Resource Sizing แนะนำ</h3>
+<table>
+  <tr><th>Service</th><th>CPU Request</th><th>CPU Limit</th><th>RAM Request</th><th>RAM Limit</th></tr>
+  <tr><td>Kafka</td><td>500m</td><td>2000m</td><td>1Gi</td><td>2Gi</td></tr>
+  <tr><td>NiFi Edge</td><td>250m</td><td>1000m</td><td>512Mi</td><td>1Gi</td></tr>
+  <tr><td>NiFi Core</td><td>500m</td><td>2000m</td><td>2Gi</td><td>4Gi</td></tr>
+  <tr><td>Telegraf</td><td>200m</td><td>500m</td><td>128Mi</td><td>512Mi</td></tr>
+  <tr><td>InfluxDB</td><td>200m</td><td>1000m</td><td>512Mi</td><td>2Gi</td></tr>
+  <tr><td>Grafana</td><td>100m</td><td>500m</td><td>128Mi</td><td>512Mi</td></tr>
+  <tr><td>MinIO</td><td>200m</td><td>1000m</td><td>512Mi</td><td>2Gi</td></tr>
+  <tr><td>Trino</td><td>500m</td><td>2000m</td><td>1Gi</td><td>4Gi</td></tr>
+  <tr><td>OpenMAINT</td><td>250m</td><td>1000m</td><td>512Mi</td><td>2Gi</td></tr>
+  <tr><td>PostgreSQL</td><td>100m</td><td>500m</td><td>256Mi</td><td>1Gi</td></tr>
+</table>
+
+<h3>CronJob — Auto Partition Sync (แนะนำ)</h3>
+<pre><span class="kw">cat</span> &lt;&lt;<span class="str">EOF</span> | kubectl apply -f -
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: trino-partition-sync
+  namespace: it
+spec:
+  schedule: <span class="str">"5 0 * * *"</span>  <span class="cm"># ทุกวัน 00:05</span>
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: trino-sync
+            image: trinodb/trino:latest
+            command:
+            - trino
+            - --server=http://trino.it.svc:8080
+            - --execute
+            - |
+              CALL minio.system.sync_partition_metadata(
+                schema_name=>'opc',
+                table_name=>'sensor_data',
+                mode=>'ADD'
+              );
+<span class="str">EOF</span></pre>
+
+<div class="alert tip"><div class="alert-icon">💡</div><div><strong>Pro Tip:</strong> ใช้คำสั่ง <code>kubectl get events -n it --sort-by='.lastTimestamp' | tail -20</code> เป็นตัวแรกเมื่อเกิดปัญหาใดๆ มักเห็นสาเหตุชัดเจนกว่า logs</div></div>
+
+<div style="text-align:center;padding:32px;color:#4a5568;font-size:.78rem;border-top:1px solid #2d3748;margin-top:40px">
+  k3s Airgap Data Platform · mintpower · คู่มือฉบับสมบูรณ์ · อัปเดต 2026-05-05
+</div>
+
+</main>
+
+<script>
+// Accordion
+function toggleAccord(head){
+  const body=head.nextElementSibling;
+  const icon=head.querySelector('.icon');
+  body.classList.toggle('open');
+  icon.style.transform=body.classList.contains('open')?'rotate(180deg)':'rotate(0deg)';
+}
+
+// Copy buttons
+document.querySelectorAll('pre').forEach(pre=>{
+  const btn=document.createElement('button');
+  btn.className='copy-btn';
+  btn.textContent='Copy';
+  btn.onclick=()=>{
+    navigator.clipboard.writeText(pre.innerText.replace(/^\$\s/gm,''));
+    btn.textContent='✓ Copied';
+    setTimeout(()=>btn.textContent='Copy',1800);
+  };
+  pre.style.position='relative';
+  pre.appendChild(btn);
+});
+
+// Scrollspy
+const sections=document.querySelectorAll('section,[id]');
+const navLinks=document.querySelectorAll('.sidenav a');
+window.addEventListener('scroll',()=>{
+  let current='';
+  sections.forEach(s=>{
+    if(window.scrollY>=s.offsetTop-80)current=s.id;
+  });
+  navLinks.forEach(a=>{
+    a.classList.toggle('active',a.getAttribute('href')==='#'+current);
+  });
+},{passive:true});
+</script>
+</body>
+</html>

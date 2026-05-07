@@ -1,0 +1,210 @@
+# ============================================================
+# PersistentVolumes — NVMe Storage on mintpower
+# ============================================================
+
+# --- Kafka (50Gi) ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-kafka
+  labels:
+    app: kafka
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-nvme
+  local:
+    path: /mnt/nvme-storage/k8s-pv/kafka
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mintpower
+
+---
+# --- InfluxDB (50Gi) ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-influxdb
+  labels:
+    app: influxdb
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-nvme
+  local:
+    path: /mnt/nvme-storage/k8s-pv/influxdb
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mintpower
+
+---
+# --- MinIO (100Gi) ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-minio
+  labels:
+    app: minio
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-nvme
+  local:
+    path: /mnt/nvme-storage/k8s-pv/minio
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mintpower
+
+---
+# --- NIFI Core (20Gi) ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nifi-core
+  labels:
+    app: nifi-core
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-nvme
+  local:
+    path: /mnt/nvme-storage/k8s-pv/nifi-core
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mintpower
+
+---
+# --- NIFI Edge (10Gi) ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nifi-edge
+  labels:
+    app: nifi-edge
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-nvme
+  local:
+    path: /mnt/nvme-storage/k8s-pv/nifi-edge
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mintpower
+
+---
+# --- Grafana (10Gi) ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-grafana
+  labels:
+    app: grafana
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-nvme
+  local:
+    path: /mnt/nvme-storage/k8s-pv/grafana
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mintpower
+
+---
+# --- OpenMAINT (20Gi) ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-openmaint
+  labels:
+    app: openmaint
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-nvme
+  local:
+    path: /mnt/nvme-storage/k8s-pv/openmaint
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mintpower
+
+---
+# --- Trino (20Gi) ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-trino
+  labels:
+    app: trino
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-nvme
+  local:
+    path: /mnt/nvme-storage/k8s-pv/trino
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - mintpower

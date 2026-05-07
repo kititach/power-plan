@@ -1,0 +1,28 @@
+# Install directory (binaries + docker image tarballs — ขนาดใหญ่)
+install/
+data/
+
+# Java JARs
+milo-jars/
+
+# Helm binary
+bin/
+
+# Python venv
+opc-sim/venv/
+opc-sim/__pycache__/
+
+# Kubernetes credentials
+config/kubeconfig.yaml
+config/k3s-config.yaml
+
+# Claude Code settings (contains allowed commands history with credentials)
+.claude/
+
+# Local env file (เก็บ password จริงไว้ที่นี่)
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db

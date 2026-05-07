@@ -1,0 +1,54 @@
+# ============================================================
+# Telegraf Deployment
+# ============================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegraf
+  namespace: it
+  labels:
+    app: telegraf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegraf
+  template:
+    metadata:
+      labels:
+        app: telegraf
+    spec:
+      containers:
+        - name: telegraf
+          image: telegraf:1.32
+          env:
+            - name: INFLUXDB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-secret
+                  key: admin-token
+            - name: INFLUXDB_ORG
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-secret
+                  key: org
+            - name: INFLUXDB_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-secret
+                  key: bucket
+          volumeMounts:
+            - name: config
+              mountPath: /etc/telegraf/telegraf.conf
+              subPath: telegraf.conf
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: "0.25"
+            limits:
+              memory: 512Mi
+              cpu: "1.0"
+      volumes:
+        - name: config
+          configMap:
+            name: telegraf-config

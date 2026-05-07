@@ -1,0 +1,98 @@
+# ============================================================
+# AKHQ — Kafka Web UI v.2
+# ============================================================
+
+# --- ConfigMap ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: akhq-config
+  namespace: dmz
+data:
+  application.yml: |
+    micronaut:
+      security:
+        enabled: false
+      server:
+        port: 8080
+
+    akhq:
+      connections:
+        kafka-cluster:
+          properties:
+            bootstrap.servers: "kafka-cluster-kafka-bootstrap.dmz.svc.cluster.local:9092"
+
+---
+# --- Deployment ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: akhq
+  namespace: dmz
+  labels:
+    app: akhq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: akhq
+  template:
+    metadata:
+      labels:
+        app: akhq
+    spec:
+      containers:
+        - name: akhq
+          image: ghcr.io/tchiotludo/akhq:0.25.1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MICRONAUT_CONFIG_FILES
+              value: /app/config/application.yml
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: "0.25"
+            limits:
+              memory: 512Mi
+              cpu: "0.5"
+          # ใช้ TCPSocket แทน HTTP probe
+          # เพราะ AKHQ 0.25.1 ไม่มี /health endpoint ตรงๆ
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 3
+      volumes:
+        - name: config
+          configMap:
+            name: akhq-config
+
+---
+# --- Service ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: akhq
+  namespace: dmz
+  labels:
+    app: akhq
+spec:
+  type: NodePort
+  selector:
+    app: akhq
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      nodePort: 30880
