@@ -1,7 +1,83 @@
 # แผนรองรับ OPC รูปแบบ API และ Pub/Sub
 
-**วันที่:** 2026-05-07  
+**วันที่:** 2026-05-07 (อัปเดต 2026-05-09)  
 **อ้างอิง:** ระบบปัจจุบันใช้ OPC UA TCP (`opc.tcp://`) + Eclipse Milo + NiFi Edge
+
+---
+
+## 🔍 สถานะ Simulation ปัจจุบัน (ตรวจสอบ 2026-05-09)
+
+Pipeline ทำงานปกติ — **แต่ process tags ทั้งหมดส่งค่าคงที่ตลอดเวลา**
+
+### Tags ที่เปลี่ยนค่า (Prosys built-in signal generators)
+
+| Tag | ลักษณะ |
+|---|---|
+| Counter | นับขึ้น (increment 2 ทุก 2 วินาที) |
+| Random | สุ่ม ±2.0 |
+| Sawtooth / Sinusoid / Square / Triangle | waveform ±2.0 |
+| Constant | คงที่ = 1.0 เสมอ |
+
+### Process tags ทั้งหมด — **คงที่ที่ค่า normal**
+
+| Tag group | ค่าปัจจุบัน | Threshold Max | ผลต่อ alarm |
+|---|---|---|---|
+| Temp_Boiler_* (×20) | 90.0°C | 95°C | ไม่เคย trigger |
+| Temp_HeatEx_* (×10) | 65.0°C | 80°C | ไม่เคย trigger |
+| Press_Line_* (×20) | 6.0 bar | 8.0 bar | ไม่เคย trigger |
+| Flow_Main_* (×15) | 125.0 m³/h | 160 m³/h | ไม่เคย trigger |
+| Vibration_Pump_* (×20) | 7.5 mm/s | 10.0 mm/s | ไม่เคย trigger |
+| RPM_Motor_* (×20) | 1900.0 rpm | 2200 rpm | ไม่เคย trigger |
+| Voltage_Bus_* (×10) | 400.0 V | 440 V | ไม่เคย trigger |
+| ... (ทุก group เหมือนกัน) | ค่า normal | — | ❌ bridge ไม่ทำงาน |
+
+**ผลกระทบ:** `openmaint-bridge` จะไม่สร้าง Alarm หรือ CorrectiveMaint ใด ๆ เลย เพราะค่าทุก tag อยู่ที่ baseline ตลอด
+
+---
+
+## 🛠️ แนวทางแก้ไข Simulation
+
+### Option 1 — แก้ที่ Prosys (กำหนด waveform generator ให้ process tags)
+
+เข้า Prosys OPC UA Simulation Server GUI บน mintserver → เลือก tag ที่ต้องการ → เปลี่ยน node type เป็น Sinusoid หรือ Random พร้อมกำหนด amplitude / mean
+
+**ข้อดี:** ตรงตาม OPC standard ที่สุด  
+**ข้อเสีย:** ต้องเข้า GUI mintserver และกำหนดทีละ tag หรือ import config file
+
+### Option 2 — แก้ที่ Groovy script ใน NiFi Edge (inject noise ก่อน publish)
+
+เพิ่ม drift/noise รอบค่า baseline ในโค้ด Groovy ก่อนส่งเข้า Kafka — **ไม่กระทบ Prosys หรือ downstream เลย**
+
+```groovy
+// เพิ่มใน Groovy script หลังอ่าน tags
+def rand = new Random()
+def noise = { double base, double pct ->
+    base + base * pct * (rand.nextGaussian())   // Gaussian noise ±pct
+}
+
+// ตัวอย่าง: inject noise ±3% + spike โอกาส 0.1%
+tagValues.each { tag, val ->
+    double noisy = noise(val, 0.03)
+    // spike simulation: 0.1% chance per tag per interval
+    if (rand.nextDouble() < 0.001) noisy *= 1.15
+    tagValues[tag] = noisy
+}
+```
+
+**ข้อดี:** แก้ได้ทันที, ควบคุม pattern ได้เอง, ไม่ต้อง restart Prosys  
+**ข้อเสีย:** ค่าใน OPC server ยังคงที่ — noise อยู่แค่ใน Kafka/downstream
+
+### Option 3 — สร้าง standalone Python simulator ส่งตรง Kafka
+
+Python script produce ไปยัง `opc-raw-data` โดยตรง (ไม่ผ่าน OPC UA เลย) ใช้สำหรับ demo/load test เท่านั้น
+
+```bash
+# รันบน mintpower
+python3 tools/opc_simulator.py --tags 307 --interval 2 --noise 0.03
+```
+
+**ข้อดี:** ยืดหยุ่นสูงสุด, simulate scenario ได้ตามต้องการ  
+**ข้อเสีย:** ไม่ผ่าน OPC UA จริง — ใช้ได้แค่ demo
 
 ---
 
