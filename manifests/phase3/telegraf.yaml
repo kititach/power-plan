@@ -37,10 +37,22 @@ spec:
                 secretKeyRef:
                   name: influxdb-secret
                   key: bucket
+            - name: HOST_MOUNT_PREFIX
+              value: /hostfs
+            - name: HOST_PROC
+              value: /hostfs/proc
+            - name: HOST_SYS
+              value: /hostfs/sys
           volumeMounts:
             - name: config
               mountPath: /etc/telegraf/telegraf.conf
               subPath: telegraf.conf
+            - name: hostfs
+              mountPath: /hostfs
+              readOnly: true
+            - name: dev
+              mountPath: /hostfs/dev
+              readOnly: true
           resources:
             requests:
               memory: 256Mi
@@ -52,3 +64,9 @@ spec:
         - name: config
           configMap:
             name: telegraf-config
+        - name: hostfs
+          hostPath:
+            path: /
+        - name: dev
+          hostPath:
+            path: /dev

@@ -16,12 +16,13 @@ data:
 
     [[inputs.kafka_consumer]]
       brokers = ["kafka-cluster-kafka-bootstrap.dmz.svc.cluster.local:9092"]
-      topics = ["opc-metrics"]
+      topics = ["opc-raw-data"]
       consumer_group = "telegraf-opc-consumer"
       offset = "newest"
       data_format = "json"
       json_time_key = "timestamp"
       json_time_format = "2006-01-02T15:04:05.999999999Z07:00"
+      tag_keys = ["source_id", "device_id"]
       name_override = "opc_data"
 
     [[inputs.cpu]]
@@ -29,6 +30,13 @@ data:
       totalcpu = true
 
     [[inputs.mem]]
+
+    [[inputs.disk]]
+      mount_points = ["/", "/mnt/nvme-storage"]
+      ignore_fs = ["tmpfs", "devtmpfs", "overlay", "aufs", "squashfs"]
+
+    [[inputs.diskio]]
+      devices = ["sda", "nvme0n1"]
 
     [[outputs.influxdb_v2]]
       urls = ["http://influxdb.it.svc.cluster.local:8086"]

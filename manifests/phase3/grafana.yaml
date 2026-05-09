@@ -30,7 +30,28 @@ spec:
             - name: GF_SECURITY_ADMIN_USER
               value: "admin"
             - name: GF_SECURITY_ADMIN_PASSWORD
-              value: "CHANGE_ME"
+              value: "admin2026"
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-secret
+                  key: admin-token
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    for i in $(seq 1 30); do
+                      STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/health)
+                      [ "$STATUS" = "200" ] && break
+                      sleep 3
+                    done
+                    curl -s -u "admin:admin2026" \
+                      -X PUT -H "Content-Type: application/json" \
+                      -d "{\"id\":1,\"uid\":\"influxdb-opc\",\"name\":\"InfluxDB-OPC\",\"type\":\"influxdb\",\"access\":\"proxy\",\"url\":\"http://influxdb.it.svc.cluster.local:8086\",\"jsonData\":{\"version\":\"Flux\",\"organization\":\"mintpower-org\",\"defaultBucket\":\"opc-data\",\"tlsSkipVerify\":true},\"secureJsonData\":{\"token\":\"${INFLUX_TOKEN}\"},\"isDefault\":true}" \
+                      "http://localhost:3000/api/datasources/1" || true
           volumeMounts:
             - name: data
               mountPath: /var/lib/grafana
@@ -39,6 +60,10 @@ spec:
               subPath: grafana.ini
             - name: datasources
               mountPath: /etc/grafana/provisioning/datasources
+            - name: dashboard-provisioner
+              mountPath: /etc/grafana/provisioning/dashboards
+            - name: dashboards
+              mountPath: /etc/grafana/dashboards
           resources:
             requests:
               memory: 512Mi
@@ -68,6 +93,12 @@ spec:
         - name: datasources
           configMap:
             name: grafana-datasources
+        - name: dashboard-provisioner
+          configMap:
+            name: grafana-dashboard-provisioner
+        - name: dashboards
+          configMap:
+            name: grafana-dashboards
 ---
 apiVersion: v1
 kind: Service
