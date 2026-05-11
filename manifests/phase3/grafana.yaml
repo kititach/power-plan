@@ -36,6 +36,28 @@ spec:
                 secretKeyRef:
                   name: influxdb-secret
                   key: admin-token
+            # ─── SMTP (alert email) ─────────────────────────────
+            - name: GF_SMTP_ENABLED
+              value: "true"
+            - name: GF_SMTP_HOST
+              valueFrom: { secretKeyRef: { name: grafana-smtp, key: smtp-host } }
+            - name: GF_SMTP_USER
+              valueFrom: { secretKeyRef: { name: grafana-smtp, key: smtp-user } }
+            - name: GF_SMTP_PASSWORD
+              valueFrom: { secretKeyRef: { name: grafana-smtp, key: smtp-password } }
+            - name: GF_SMTP_FROM_ADDRESS
+              valueFrom: { secretKeyRef: { name: grafana-smtp, key: smtp-from-address } }
+            - name: GF_SMTP_FROM_NAME
+              valueFrom: { secretKeyRef: { name: grafana-smtp, key: smtp-from-name } }
+            - name: GF_SMTP_SKIP_VERIFY
+              valueFrom: { secretKeyRef: { name: grafana-smtp, key: smtp-skip-verify } }
+            - name: GF_SMTP_STARTTLS_POLICY
+              valueFrom: { secretKeyRef: { name: grafana-smtp, key: smtp-starttls-policy } }
+            # ─── Unified alerting (Grafana 11 default) ──────────
+            - name: GF_UNIFIED_ALERTING_ENABLED
+              value: "true"
+            - name: GF_ALERTING_ENABLED
+              value: "false"
           lifecycle:
             postStart:
               exec:
@@ -64,6 +86,8 @@ spec:
               mountPath: /etc/grafana/provisioning/dashboards
             - name: dashboards
               mountPath: /etc/grafana/dashboards
+            - name: alerting
+              mountPath: /etc/grafana/provisioning/alerting
           resources:
             requests:
               memory: 512Mi
@@ -99,6 +123,10 @@ spec:
         - name: dashboards
           configMap:
             name: grafana-dashboards
+        - name: alerting
+          configMap:
+            name: grafana-alerting
+            optional: true
 ---
 apiVersion: v1
 kind: Service
