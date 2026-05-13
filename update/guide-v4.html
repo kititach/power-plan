@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K3s Airgap Industrial Data Platform — คู่มือฉบับสมบูรณ์ v4</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0f1117;
+  --bg2:       #1a1d27;
+  --bg3:       #22263a;
+  --border:    #2e3250;
+  --accent:    #4f9cf9;
+  --accent2:   #7ee8a2;
+  --accent3:   #f9c74f;
+  --accent4:   #f4845f;
+  --accent5:   #c792ea;
+  --text:      #d4d8f0;
+  --text-dim:  #8890b0;
+  --sidebar-w: 290px;
+  --code-bg:   #12151f;
+  --radius:    8px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', 'Noto Sans Thai', Tahoma, sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  display: flex;
+}
+
+/* ── Sidebar ── */
+#sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0;
+  overflow-y: auto;
+  z-index: 100;
+  padding-bottom: 40px;
+}
+
+#sidebar-header {
+  padding: 20px 16px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+}
+
+#sidebar-header .version {
+  font-size: 10px;
+  color: var(--accent2);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+#sidebar-header h2 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+#sidebar-header .date {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+#sidebar nav { padding: 10px 0; }
+
+#sidebar nav a {
+  display: block;
+  padding: 6px 16px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+
+#sidebar nav a:hover,
+#sidebar nav a.active {
+  color: var(--accent);
+  background: rgba(79,156,249,0.07);
+  border-left-color: var(--accent);
+}
+
+#sidebar nav .section-group {
+  padding: 14px 16px 4px;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #4a5080;
+  font-weight: 600;
+}
+
+/* ── Main Content ── */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  max-width: 980px;
+  padding: 48px 56px 80px;
+}
+
+/* ── Typography ── */
+h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 12px; line-height: 1.2; }
+h2 { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin: 56px 0 16px;
+     padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.1rem; font-weight: 600; color: var(--accent3); margin: 28px 0 10px; }
+h4 { font-size: 0.95rem; font-weight: 600; color: var(--accent2); margin: 20px 0 8px; }
+
+p { margin-bottom: 14px; }
+strong { color: #fff; font-weight: 600; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+ul, ol { margin: 8px 0 14px 24px; }
+li { margin-bottom: 4px; }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+/* ── Subtitle banner ── */
+.subtitle-banner {
+  background: var(--bg3);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 18px;
+  margin: 16px 0 32px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+/* ── Blockquote / Note ── */
+blockquote {
+  border-left: 4px solid var(--accent3);
+  background: rgba(249,199,79,0.05);
+  padding: 12px 18px;
+  margin: 14px 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 13.5px;
+  color: #c8cce8;
+}
+blockquote strong { color: var(--accent3); }
+.note-blue   { border-left-color: var(--accent);  background: rgba(79,156,249,0.06); }
+.note-green  { border-left-color: var(--accent2); background: rgba(126,232,162,0.06); }
+.note-red    { border-left-color: var(--accent4); background: rgba(244,132,95,0.06); }
+.note-purple { border-left-color: var(--accent5); background: rgba(199,146,234,0.06); }
+
+/* ── Code blocks ── */
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  overflow-x: auto;
+  margin: 14px 0;
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+code {
+  font-family: 'Cascadia Code', 'Consolas', 'Fira Code', monospace;
+  font-size: 12.5px;
+}
+
+p code, li code, td code, blockquote code {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--accent2);
+  font-size: 12px;
+}
+
+.k { color: #c792ea; }
+.s { color: #c3e88d; }
+.c { color: #546e7a; font-style: italic; }
+.n { color: #82aaff; }
+.t { color: var(--accent3); }
+.p { color: #89ddff; }
+
+/* ── Tables ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0 20px;
+  font-size: 13.5px;
+}
+thead th {
+  background: var(--bg3);
+  color: var(--accent);
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.3px;
+}
+tbody td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+tbody tr:hover { background: rgba(255,255,255,0.025); }
+td code { white-space: nowrap; }
+
+/* status badges */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-green { background: rgba(126,232,162,0.15); color: var(--accent2); border: 1px solid rgba(126,232,162,0.3); }
+.badge-red   { background: rgba(244,132,95,0.15); color: var(--accent4); border: 1px solid rgba(244,132,95,0.3); }
+.badge-yellow{ background: rgba(249,199,79,0.15); color: var(--accent3); border: 1px solid rgba(249,199,79,0.3); }
+.badge-blue  { background: rgba(79,156,249,0.15); color: var(--accent); border: 1px solid rgba(79,156,249,0.3); }
+.badge-purple{ background: rgba(199,146,234,0.15); color: var(--accent5); border: 1px solid rgba(199,146,234,0.3); }
+
+/* ── Diagram boxes ── */
+.diagram {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 14px 0;
+  overflow-x: auto;
+}
+.diagram pre {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #b8c0e0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ── Stats bar ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.stat-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  text-align: center;
+}
+.stat-card .val { font-size: 1.4rem; font-weight: 700; color: var(--accent); display: block; }
+.stat-card .lbl { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+/* ── Component cards ── */
+.component-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.component-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.component-card .comp-icon { font-size: 1.4rem; margin-bottom: 6px; }
+.component-card .comp-name { font-weight: 700; color: #fff; font-size: 13px; }
+.component-card .comp-desc { font-size: 12px; color: var(--text-dim); margin-top: 4px; line-height: 1.4; }
+
+.port { color: var(--accent3); font-weight: 600; }
+
+/* ── Top header ── */
+.page-header {
+  margin-bottom: 36px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.page-header .tag-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.tag.hl { background: rgba(79,156,249,0.12); border-color: rgba(79,156,249,0.3); color: var(--accent); }
+.tag.new { background: rgba(126,232,162,0.12); border-color: rgba(126,232,162,0.3); color: var(--accent2); }
+
+/* ── Footer ── */
+.page-footer {
+  margin-top: 60px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* ── TOC inline ── */
+.toc-inline {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 20px 0 32px;
+}
+.toc-inline h4 { color: var(--accent); margin-top: 0; margin-bottom: 8px; }
+.toc-inline ul { columns: 2; margin-left: 20px; }
+.toc-inline a { font-size: 12.5px; }
+
+/* ── Threshold table ── */
+.threshold-table td:nth-child(3),
+.threshold-table td:nth-child(4) { text-align: right; font-family: monospace; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4a5080; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  #sidebar { display: none; }
+  #main { margin-left: 0; padding: 24px 20px 60px; }
+}
+
+/* ───── Pipeline Animation ───── */
+.flow-anim {
+  background: linear-gradient(180deg, rgba(30,40,55,0.7), rgba(20,28,40,0.5));
+  border: 1px solid rgba(126,232,162,0.2);
+  border-radius: 12px;
+  padding: 28px 24px;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+.flow-stage {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.flow-stage:last-child { margin-bottom: 0; }
+.flow-stage-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.flow-block {
+  flex: 1;
+  min-width: 130px;
+  background: rgba(40,55,75,0.75);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 12px 14px;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: help;
+}
+.flow-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(126,232,162,0.15);
+  border-color: rgba(126,232,162,0.45);
+}
+.flow-block .fb-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.flow-block .fb-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+.flow-block .fb-meta {
+  font-size: 10px;
+  color: #7ee8a2;
+  margin-top: 6px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.flow-block.fb-source { border-left: 3px solid #ffd166; }
+.flow-block.fb-edge   { border-left: 3px solid #06d6a0; }
+.flow-block.fb-bus    { border-left: 3px solid #4cc9f0; }
+.flow-block.fb-sink   { border-left: 3px solid #c084fc; }
+
+/* Animated arrow connector */
+.flow-arrow {
+  position: relative;
+  height: 36px;
+  margin: -8px 0;
+  display: flex;
+  justify-content: center;
+}
+.flow-arrow::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, rgba(126,232,162,0.4), transparent);
+  transform: translateX(-50%);
+}
+.flow-arrow::after {
+  content: '●';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  color: var(--accent);
+  font-size: 12px;
+  transform: translateX(-50%);
+  animation: flow-down 1.6s linear infinite;
+  text-shadow: 0 0 8px rgba(126,232,162,0.8);
+}
+@keyframes flow-down {
+  0%   { top: 0%;   opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* Multi-fanout arrow (one source → three sinks) */
+.flow-fanout {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  position: relative;
+  margin: 8px 0;
+}
+.flow-fanout .flow-arrow::after {
+  animation-delay: 0s;
+}
+.flow-fanout .flow-arrow:nth-child(2)::after { animation-delay: 0.5s; }
+.flow-fanout .flow-arrow:nth-child(3)::after { animation-delay: 1.0s; }
+
+.flow-legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(255,255,255,0.1);
+  color: var(--text-dim);
+}
+.flow-legend .leg-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.flow-explain {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+.flow-explain .fe-card {
+  background: rgba(30,40,55,0.55);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.flow-explain .fe-card h4 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--accent2);
+}
+.flow-explain .fe-card p {
+  margin: 4px 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.flow-explain .fe-card code {
+  font-size: 11px;
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════
+     SIDEBAR
+     ════════════════════════════════════════════════════════════ -->
+<aside id="sidebar">
+  <div id="sidebar-header">
+    <div class="version">Version 4 — Detailed</div>
+    <h2>K3s Airgap<br>Industrial Data Platform</h2>
+    <div class="date">อัปเดต: 2026-05-08</div>
+  </div>
+  <nav>
+    <div class="section-group">เริ่มต้น</div>
+    <a href="#s1">1. ภาพรวม + สถานะปัจจุบัน</a>
+    <a href="#s2">2. Quick Start</a>
+    <a href="#s3">3. Credentials &amp; Access</a>
+
+    <div class="section-group">สถาปัตยกรรม</div>
+    <a href="#s4">4. Architecture &amp; Zones</a>
+    <a href="#s5">5. Data Pipeline</a>
+    <a href="#s6">6. Hardware Spec</a>
+
+    <div class="section-group">Components</div>
+    <a href="#s7">7. OPC UA + Prosys</a>
+    <a href="#s8">8. NiFi Edge &amp; Core</a>
+    <a href="#s9">9. Apache Kafka</a>
+    <a href="#s10">10. Telegraf + InfluxDB</a>
+    <a href="#s11">11. Grafana</a>
+    <a href="#s12">12. MinIO + Trino</a>
+    <a href="#s13">13. OpenMAINT (CMMS)</a>
+    <a href="#s14">14. OpenMAINT Bridge ⭐</a>
+
+    <div class="section-group">Operations</div>
+    <a href="#s15">15. การ Start/Stop</a>
+    <a href="#s16">16. Monitoring &amp; Logs</a>
+    <a href="#s17">17. Troubleshooting</a>
+    <a href="#s18">18. Backup &amp; Recovery</a>
+
+    <div class="section-group">การพัฒนา</div>
+    <a href="#s19">19. Backlog &amp; Roadmap</a>
+    <a href="#s20">20. Scale to 10k tags/s</a>
+    <a href="#s21">21. OPC Transport Options</a>
+
+    <div class="section-group">Reference</div>
+    <a href="#s22">22. ประวัติการแก้ไข</a>
+    <a href="#s23">23. ไฟล์สำคัญ</a>
+    <a href="#glossary">Glossary</a>
+  </nav>
+</aside>
+
+<!-- ════════════════════════════════════════════════════════════
+     MAIN
+     ════════════════════════════════════════════════════════════ -->
+<main id="main">
+
+<header class="page-header">
+  <div class="tag-row">
+    <span class="tag hl">k3s v1.31.4</span>
+    <span class="tag">single-node</span>
+    <span class="tag">airgap</span>
+    <span class="tag">307 OPC tags</span>
+    <span class="tag new">+ OpenMAINT Bridge</span>
+    <span class="tag new">+ Auto Work Orders</span>
+  </div>
+  <h1>คู่มือฉบับสมบูรณ์ v4<br>K3s Airgap Industrial Data Platform</h1>
+  <div class="subtitle-banner">
+    เอกสารนี้ครอบคลุมทุกอย่างเกี่ยวกับระบบ — ตั้งแต่ภาพรวม สถาปัตยกรรม การ deploy การ troubleshoot
+    ไปจนถึงแผน scale รองรับ 10,000 tags/s ในอนาคต
+  </div>
+</header>
+
+<!-- ──────────────────────────────────────────────
+     1. ภาพรวม + สถานะปัจจุบัน
+     ────────────────────────────────────────────── -->
+<h2 id="s1">1. ภาพรวม + สถานะปัจจุบัน</h2>
+
+<h3>Project นี้คืออะไร</h3>
+<p>
+ระบบ <strong>Industrial Data Platform</strong> สำหรับโรงงาน — รับข้อมูลจาก OPC UA Server (300+ sensor)
+ส่งผ่าน Kafka แล้วกระจายไปยัง <strong>3 ปลายทาง</strong>:
+</p>
+<ul>
+  <li><strong>InfluxDB + Grafana</strong> — real-time monitoring dashboard</li>
+  <li><strong>MinIO + Trino</strong> — historical data lake (SQL query)</li>
+  <li><strong>OpenMAINT (CMMS)</strong> — auto-create work order เมื่อ sensor ผิดปกติ</li>
+</ul>
+<p>
+รันบน <strong>k3s single-node</strong> (Kubernetes แบบเบา) ในสภาพแวดล้อม <strong>airgap</strong> (ไม่มีอินเทอร์เน็ต)
+— image และ component ทุกตัวถูก import เข้า k3s containerd ล่วงหน้า
+</p>
+
+<h3>ตัวเลขหลัก ณ 2026-05-08</h3>
+<div class="stats-grid">
+  <div class="stat-card"><span class="val">307</span><div class="lbl">OPC Tags</div></div>
+  <div class="stat-card"><span class="val">2s</span><div class="lbl">Polling Interval</div></div>
+  <div class="stat-card"><span class="val">19</span><div class="lbl">Threshold Rules</div></div>
+  <div class="stat-card"><span class="val">~470MB</span><div class="lbl">Data per day</div></div>
+  <div class="stat-card"><span class="val">3 PB+</span><div class="lbl">Storage Capacity (NVMe)</div></div>
+  <div class="stat-card"><span class="val">28</span><div class="lbl">CPU Threads</div></div>
+</div>
+
+<h3>Pipeline ปัจจุบัน</h3>
+<div class="diagram"><pre>
+Prosys OPC UA (mintserver:53530)
+  └─[opc.tcp]─► NiFi Edge (Groovy/Eclipse Milo)
+                     └─► Kafka: opc-raw-data
+                            ├─► Telegraf ──► InfluxDB ──► Grafana          ✅
+                            ├─► NiFi Core ──► MinIO ──► Trino              ✅
+                            └─► OpenMAINT Bridge (systemd)                 ✅
+                                  └─► Alarm + CorrectiveMaint (work order)
+</pre></div>
+
+<h3>Pipeline Animation — Flow การทำงาน</h3>
+<p>ภาพแสดงการไหลของข้อมูลจากต้นทาง <strong>OPC UA Server</strong> ผ่าน <strong>Kafka</strong> ไปยังปลายทาง 3 path
+— เลื่อนเมาส์ทับ block เพื่อดู highlight</p>
+
+<div class="flow-anim" aria-label="OPC pipeline flow animation">
+
+  <!-- ── Stage 1: Source (OT Zone) ── -->
+  <div>
+    <div class="flow-stage-label">① Source — OT Zone</div>
+    <div class="flow-stage">
+      <div class="flow-block fb-source" title="Prosys OPC UA Simulation Server บน mintserver (10.85.3.100), 307 industrial tags, polling 2s">
+        <div class="fb-title">🏭 Prosys OPC UA</div>
+        <div class="fb-sub">PLC/Sensor simulator — 307 tags</div>
+        <div class="fb-meta">mintserver:53530 · 2s poll</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow"></div>
+
+  <!-- ── Stage 2: Edge collector ── -->
+  <div>
+    <div class="flow-stage-label">② Edge collector — DMZ</div>
+    <div class="flow-stage">
+      <div class="flow-block fb-edge" title="NiFi Edge with Eclipse Milo OPC-UA client — Groovy script flatten 307 tags → JSON, push เข้า Kafka producer">
+        <div class="fb-title">📡 NiFi Edge</div>
+        <div class="fb-sub">Eclipse Milo + Groovy script<br>Flatten tags → JSON</div>
+        <div class="fb-meta">opc_reader_final.groovy</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow"></div>
+
+  <!-- ── Stage 3: Message Bus ── -->
+  <div>
+    <div class="flow-stage-label">③ Message bus — DMZ</div>
+    <div class="flow-stage">
+      <div class="flow-block fb-bus" title="Apache Kafka (Strimzi operator) — topic opc-raw-data, 3 partitions, retention 7d. ทำหน้าที่เป็น decoupling layer ระหว่าง producer และ consumer 3 ตัว">
+        <div class="fb-title">⚡ Kafka — opc-raw-data</div>
+        <div class="fb-sub">Strimzi KRaft · 3 partitions · 7d retention<br>~500 msg/วัน, 1 message = 307 fields</div>
+        <div class="fb-meta">kafka-cluster-broker-0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Fan-out (Kafka → 3 consumers in parallel) ── -->
+  <div class="flow-fanout">
+    <div class="flow-arrow"></div>
+    <div class="flow-arrow"></div>
+    <div class="flow-arrow"></div>
+  </div>
+
+  <!-- ── Stage 4: Three consumers ── -->
+  <div>
+    <div class="flow-stage-label">④ Consumers — IT Zone (3 paths แบบขนาน)</div>
+    <div class="flow-stage">
+      <div class="flow-block fb-sink" title="Telegraf consumer → InfluxDB measurement opc_data → Grafana dashboard real-time">
+        <div class="fb-title">📈 Path A · Real-time</div>
+        <div class="fb-sub">Telegraf → InfluxDB → Grafana<br>Dashboard live, lag &lt; 5 msg</div>
+        <div class="fb-meta">bucket: opc-data</div>
+      </div>
+      <div class="flow-block fb-sink" title="NiFi Core consumer → batch 100 msg → JSON file → MinIO object store → Trino SQL query สำหรับ historical analysis">
+        <div class="fb-title">🗄️ Path B · Data Lake</div>
+        <div class="fb-sub">NiFi Core → MinIO → Trino<br>JSON batch 100/file, ~132 files/วัน</div>
+        <div class="fb-meta">bucket: opc-raw</div>
+      </div>
+      <div class="flow-block fb-sink" title="Python systemd bridge — เปรียบเทียบค่าทุก tag กับ 19 threshold rules — ถ้าเกินขีดสร้าง Alarm + CorrectiveMaint work order ใน OpenMAINT อัตโนมัติ">
+        <div class="fb-title">🚨 Path C · Asset Mgmt</div>
+        <div class="fb-sub">OpenMAINT Bridge → OpenMAINT<br>Alarm + auto Work Order</div>
+        <div class="fb-meta">systemd openmaint-bridge</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Legend ── -->
+  <div class="flow-legend">
+    <span><span class="leg-dot" style="background:#ffd166"></span> Source (OT)</span>
+    <span><span class="leg-dot" style="background:#06d6a0"></span> Edge</span>
+    <span><span class="leg-dot" style="background:#4cc9f0"></span> Message bus</span>
+    <span><span class="leg-dot" style="background:#c084fc"></span> Sink (IT)</span>
+    <span><span class="leg-dot" style="background:#7ee8a2"></span> Data flow (animated)</span>
+  </div>
+</div>
+
+<h3>คำอธิบายแต่ละ Block</h3>
+<div class="flow-explain">
+
+  <div class="fe-card">
+    <h4>① Prosys OPC UA Server</h4>
+    <p>OPC UA simulation server รันบนเครื่อง <code>mintserver</code> (10.85.3.100) ผ่าน systemd
+       <code>prosys-opc</code> — exposes 307 simulated industrial tags
+       (Temp, Pressure, Flow, Vibration, Current, ฯลฯ) บน port 53530 ผ่าน <code>opc.tcp</code> protocol</p>
+    <p><strong>หน้าที่:</strong> จำลอง PLC/SCADA จริง เพื่อทดสอบ pipeline ก่อนเชื่อมต่อ OPC UA จริงในโรงงาน</p>
+  </div>
+
+  <div class="fe-card">
+    <h4>② NiFi Edge</h4>
+    <p>Apache NiFi รันใน k3s ns <code>it</code> — ใช้ <strong>Eclipse Milo</strong> OPC UA client (Java library)
+       + custom <strong>Groovy script</strong> (<code>opc_reader_final.groovy</code>) อ่านค่า 307 tags ทุก 2 วินาที</p>
+    <p><strong>Output format:</strong> JSON แบบ <em>flat</em> — 307 field ระดับ top-level + metadata
+       (timestamp, source_id, tag_count, bad_count) → ส่งเข้า Kafka topic <code>opc-raw-data</code></p>
+    <p><strong>Key config:</strong> <code>PublishKafka.Transactions Enabled = false</code></p>
+  </div>
+
+  <div class="fe-card">
+    <h4>③ Apache Kafka</h4>
+    <p>ใช้ <strong>Strimzi operator</strong> deploy Kafka แบบ <strong>KRaft mode</strong>
+       (ไม่ต้องใช้ Zookeeper) — single broker, 3 partitions
+       — ทำหน้าที่เป็น <strong>buffer + fan-out layer</strong> ระหว่าง producer (NiFi Edge)
+       กับ consumer 3 ตัวที่ทำงานขนานกัน</p>
+    <p><strong>ทำไมใช้ Kafka:</strong> ถ้า consumer ตัวใดตัวหนึ่งล้ม producer ไม่เดือดร้อน,
+       ผูก/แตก consumer ใหม่ได้ทันที, ข้อมูลย้อนหลังอ่านได้ภายใน retention window (7 วัน)</p>
+  </div>
+
+  <div class="fe-card">
+    <h4>④A Path A — Real-time (Telegraf → InfluxDB → Grafana)</h4>
+    <p><strong>Telegraf</strong> consumer group <code>telegraf-opc-consumer</code>
+       อ่าน Kafka → parse JSON ผ่าน <code>tag_keys</code> →
+       เขียนเข้า <strong>InfluxDB v2</strong> measurement <code>opc_data</code> (bucket <code>opc-data</code>)</p>
+    <p><strong>Grafana</strong> query Flux ที่ datasource <code>InfluxDB-OPC</code> →
+       แสดง real-time dashboard 12 panels (lag &lt; 5 msg ปกติ)</p>
+  </div>
+
+  <div class="fe-card">
+    <h4>④B Path B — Data Lake (NiFi Core → MinIO → Trino)</h4>
+    <p><strong>NiFi Core</strong> consumer group <code>nifi-core-consumer</code> — ConsumeKafka →
+       <code>MergeRecord</code> รวม 100 messages/file → <code>PutS3Object</code> ไป
+       <strong>MinIO</strong> bucket <code>opc-raw</code> (Parquet-ready folder structure
+       <code>year=YYYY/month=MM/day=DD/</code>)</p>
+    <p><strong>Trino</strong> query เป็น SQL ผ่าน partition ที่ <code>CronJob trino-partition-sync</code>
+       อัปเดต 2x/วัน (00:05, 12:05)</p>
+  </div>
+
+  <div class="fe-card">
+    <h4>④C Path C — Asset Management (OpenMAINT Bridge → OpenMAINT)</h4>
+    <p><strong>Python script</strong> <code>tools/openmaint_bridge.py</code> รันเป็น systemd service
+       บน host (ไม่ใช่ใน k8s) — consumer group <code>openmaint-consumer</code>
+       อ่าน Kafka → ตรวจค่าทุก tag กับ <strong>19 threshold rules</strong>
+       (cooldown 5 นาที/tag กัน spam)</p>
+    <p>เมื่อ violation: <strong>สร้าง Alarm</strong> ใน OpenMAINT
+       + <strong>CorrectiveMaint work order</strong> อัตโนมัติ (มอบหมายช่างได้ทันที)</p>
+    <p><strong>ทำไม systemd ไม่ใช่ pod:</strong> ใช้ Python venv local + Kafka access ตรง
+       — ไม่ต้องสร้าง container image เพิ่ม, debug ง่าย, restart เร็ว</p>
+  </div>
+</div>
+
+<h3>Component Status</h3>
+<table>
+<thead><tr><th>Component</th><th>Status</th><th>หมายเหตุ</th></tr></thead>
+<tbody>
+<tr><td>Prosys OPC UA Server</td><td><span class="badge badge-green">✅ Running</span></td><td>systemd <code>prosys-opc</code> บน mintserver, 307 tags</td></tr>
+<tr><td>NiFi Edge</td><td><span class="badge badge-green">✅ Running</span></td><td>Groovy script + Eclipse Milo, polling 2s</td></tr>
+<tr><td>Kafka <code>opc-raw-data</code></td><td><span class="badge badge-green">✅ Active</span></td><td>3 partitions, 7-day retention</td></tr>
+<tr><td>Telegraf → InfluxDB</td><td><span class="badge badge-green">✅ Active</span></td><td>lag &lt; 5 messages</td></tr>
+<tr><td>NiFi Core → MinIO</td><td><span class="badge badge-green">✅ Active</span></td><td>JSON files batched 100/file</td></tr>
+<tr><td>Grafana</td><td><span class="badge badge-green">✅ Running</span></td><td>dashboard <code>mintpower-combined-v1</code></td></tr>
+<tr><td>InfluxDB</td><td><span class="badge badge-green">✅ Running</span></td><td>bucket <code>opc-data</code>, no retention</td></tr>
+<tr><td>OpenMAINT (CMMS)</td><td><span class="badge badge-green">✅ Running</span></td><td>CMDBuild om-2.3-3.4.1-d</td></tr>
+<tr><td>OpenMAINT Bridge ⭐</td><td><span class="badge badge-green">✅ Running</span></td><td>systemd <code>openmaint-bridge</code> (ใหม่ 2026-05-08)</td></tr>
+<tr><td>Trino</td><td><span class="badge badge-green">✅ Running</span></td><td>partition sync 2x/วัน</td></tr>
+<tr><td>MinIO</td><td><span class="badge badge-green">✅ Running</span></td><td>bucket <code>opc-raw</code></td></tr>
+</tbody>
+</table>
+
+<h3>สิ่งที่เพิ่งทำเสร็จ (2026-05-08)</h3>
+<ul>
+  <li>✅ <strong>Grafana datasource token</strong> — แก้ถาวรด้วย <code>lifecycle.postStart</code> hook (ไม่ต้องตั้ง token ทุกครั้งที่ restart pod)</li>
+  <li>✅ <strong>Trino partition sync</strong> — เปลี่ยนจาก 1x/วัน → 2x/วัน (00:05, 12:05 Bangkok)</li>
+  <li>✅ <strong>OpenMAINT Kafka integration</strong> — bridge service สร้าง Alarm + work order อัตโนมัติ</li>
+  <li>✅ <strong>ลบ Kafka topics เก่า</strong> — <code>opc-metrics</code>, <code>opc-datalake</code> ทิ้ง</li>
+</ul>
+
+<!-- ──────────────────────────────────────────────
+     2. Quick Start
+     ────────────────────────────────────────────── -->
+<h2 id="s2">2. Quick Start</h2>
+
+<h3>เปิด UI ทุกตัว</h3>
+<table>
+<thead><tr><th>Service</th><th>URL</th><th>ทำอะไรได้</th></tr></thead>
+<tbody>
+<tr><td>Grafana</td><td><code>http://10.85.3.104:30300</code></td><td>ดู dashboard sensor real-time</td></tr>
+<tr><td>OpenMAINT</td><td><code>http://10.85.3.104:30885/cmdbuild</code></td><td>ดู Alarm + Work Order</td></tr>
+<tr><td>AKHQ (Kafka UI)</td><td><code>http://10.85.3.104:30880</code></td><td>ดู Kafka topic + message</td></tr>
+<tr><td>MinIO Console</td><td><code>http://10.85.3.104:30901</code></td><td>ดูไฟล์ใน data lake</td></tr>
+<tr><td>NiFi Edge</td><td><code>https://10.85.3.104:31444</code></td><td>OPC reader flow</td></tr>
+<tr><td>NiFi Core</td><td><code>https://10.85.3.104:31443</code></td><td>Kafka → MinIO flow</td></tr>
+<tr><td>Trino UI</td><td><code>http://10.85.3.104:30800</code></td><td>SQL query data lake</td></tr>
+<tr><td>InfluxDB UI</td><td><code>http://10.85.3.104:30086</code></td><td>Flux query</td></tr>
+</tbody>
+</table>
+
+<h3>ตรวจสุขภาพระบบใน 30 วินาที</h3>
+<pre><span class="c"># 1. ดู pod ทั้งหมด</span>
+<span class="k">kubectl</span> get pods -A --no-headers | <span class="k">awk</span> <span class="s">'{print $1,$2,$3,$4,$5}'</span>
+
+<span class="c"># 2. ดู Kafka offset (ดูข้อมูลไหลอยู่ไหม)</span>
+<span class="k">kubectl</span> exec -n dmz kafka-cluster-broker-0 -c kafka -- bash -c \
+  <span class="s">"bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic opc-raw-data 2>/dev/null"</span>
+
+<span class="c"># 3. ดู bridge log</span>
+<span class="k">sudo</span> journalctl -u openmaint-bridge -n 20 --no-pager
+
+<span class="c"># 4. ดู OpenMAINT</span>
+<span class="k">curl</span> -s <span class="s">"http://10.85.3.104:30885/cmdbuild/services/rest/v3/boot/status"</span></pre>
+
+<!-- ──────────────────────────────────────────────
+     3. Credentials & Access
+     ────────────────────────────────────────────── -->
+<h2 id="s3">3. Credentials &amp; Access</h2>
+
+<blockquote class="note-red">
+<strong>⚠️ ระวัง:</strong> Password อยู่ในไฟล์นี้ — อย่า commit ขึ้น public repo
+อ่านก่อนเสมอ ไม่ลอง password มั่ว (ถ้า lock จะแก้ยาก — ดู Section 17)
+</blockquote>
+
+<table>
+<thead><tr><th>Service</th><th>URL</th><th>User</th><th>Password / Token</th></tr></thead>
+<tbody>
+<tr><td>Grafana</td><td><code>http://10.85.3.104:30300</code></td><td><code>admin</code></td><td><code>admin2026</code> ⚠️</td></tr>
+<tr><td>InfluxDB</td><td><code>http://10.85.3.104:30086</code></td><td><code>admin</code></td><td>token: <code>influx-super-secret-token-mintpower</code></td></tr>
+<tr><td>MinIO</td><td><code>http://10.85.3.104:30901</code></td><td><code>minioadmin</code></td><td><code>minioadmin</code></td></tr>
+<tr><td>NiFi Edge</td><td><code>https://10.85.3.104:31444</code></td><td><code>admin</code></td><td><code>Nifi@mintpower2024!</code></td></tr>
+<tr><td>NiFi Core</td><td><code>https://10.85.3.104:31443</code></td><td><code>admin</code></td><td><code>Nifi@mintpower2024!</code></td></tr>
+<tr><td>OpenMAINT</td><td><code>http://10.85.3.104:30885</code></td><td><code>admin</code></td><td><code>admin</code></td></tr>
+<tr><td>AKHQ</td><td><code>http://10.85.3.104:30880</code></td><td>—</td><td>—</td></tr>
+<tr><td>mintserver SSH</td><td><code>10.85.3.100</code></td><td><code>demo</code> / <code>root</code></td><td><code>@123456789</code></td></tr>
+<tr><td>mintpower SSH</td><td><code>10.85.3.104</code></td><td><code>mintpower</code> / <code>root</code></td><td><code>@123456789</code></td></tr>
+</tbody>
+</table>
+
+<blockquote class="note-blue">
+<strong>หมายเหตุ Grafana password:</strong> เปลี่ยนเป็น <code>admin2026</code> เมื่อ 2026-05-08
+(เดิมเป็น <code>Grafana@mintpower2024</code>) — ถ้า postStart hook ทำงาน password นี้จะอยู่ตลอด
+</blockquote>
+
+<!-- ──────────────────────────────────────────────
+     4. Architecture & Zones
+     ────────────────────────────────────────────── -->
+<h2 id="s4">4. Architecture &amp; Zones</h2>
+
+<h3>3-Zone Architecture</h3>
+<div class="diagram"><pre>
+┌─────────────────────┐  ┌─────────────────────┐  ┌──────────────────────────────┐
+│      OT ZONE        │  │      DMZ ZONE       │  │           IT ZONE            │
+│   (mintserver)      │  │     (k3s: dmz/)     │  │         (k3s: it/)           │
+│                     │  │                     │  │                              │
+│  Prosys OPC UA      │  │   Kafka Cluster     │  │   Telegraf  → InfluxDB       │
+│  Server :53530      │  │   (Strimzi KRaft)   │  │      ↓                       │
+│        │            │  │                     │  │   Grafana                    │
+│        │ opc.tcp    │──┼──► opc-raw-data     │  │                              │
+│        ▼            │  │   3 partitions      │──┼──► NiFi Core → MinIO → Trino │
+│  NiFi Edge          │  │   7-day retention   │  │                              │
+│  (k3s pod)          │  │                     │  │   OpenMAINT Bridge (host)    │
+│                     │  │   AKHQ (Kafka UI)   │  │      ↓                       │
+└─────────────────────┘  └─────────────────────┘  │   OpenMAINT + PostgreSQL     │
+                                                  └──────────────────────────────┘
+</pre></div>
+
+<h3>Namespace แยกตาม Zone</h3>
+<table>
+<thead><tr><th>Namespace</th><th>Components</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>dmz</code></td><td>Kafka, Strimzi Operator, AKHQ</td><td>Buffer ระหว่าง OT/IT — ป้องกัน OT crash ทำ IT พัง</td></tr>
+<tr><td><code>it</code></td><td>NiFi Edge, NiFi Core, Telegraf, InfluxDB, Grafana, MinIO, Trino, OpenMAINT, PostgreSQL</td><td>ระบบประมวลผลและจัดเก็บข้อมูลทั้งหมด</td></tr>
+<tr><td><code>kube-system</code></td><td>k3s internal (CoreDNS, Traefik, etc.)</td><td>Cluster operations</td></tr>
+</tbody>
+</table>
+
+<h3>Storage Layout</h3>
+<p>PersistentVolumes อยู่บน <code>/mnt/nvme-storage/k8s-pv/</code> (NVMe 469GB, ใช้ 1%)</p>
+<table>
+<thead><tr><th>PV</th><th>Size</th><th>ใช้โดย</th></tr></thead>
+<tbody>
+<tr><td><code>pv-kafka</code></td><td>50Gi</td><td>Kafka broker logs</td></tr>
+<tr><td><code>pv-influxdb2</code></td><td>50Gi</td><td>InfluxDB time-series</td></tr>
+<tr><td><code>pv-minio</code></td><td>100Gi</td><td>Data lake (JSON files)</td></tr>
+<tr><td><code>pv-nifi-core</code></td><td>20Gi</td><td>NiFi Core flow + content repo</td></tr>
+<tr><td><code>pv-nifi-edge</code></td><td>10Gi</td><td>NiFi Edge flow</td></tr>
+<tr><td><code>pv-grafana</code></td><td>10Gi</td><td>Grafana SQLite + dashboards</td></tr>
+<tr><td><code>pv-openmaint</code></td><td>20Gi</td><td>OpenMAINT + PostgreSQL</td></tr>
+<tr><td><code>pv-trino</code></td><td>20Gi</td><td>Trino metadata cache</td></tr>
+</tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────
+     5. Data Pipeline
+     ────────────────────────────────────────────── -->
+<h2 id="s5">5. Data Pipeline (รายละเอียด)</h2>
+
+<h3>5.1 รูปแบบ JSON ที่ส่งเข้า Kafka (Flat Format)</h3>
+<p>หลัง Phase 5 (2026-05-06) — Groovy script flatten <code>tags{}</code> เป็น top-level fields เพื่อให้ Telegraf/InfluxDB ใช้ง่าย</p>
+<pre><span class="p">{</span>
+  <span class="s">"timestamp"</span><span class="p">:</span> <span class="s">"2026-05-08T10:25:00.000Z"</span><span class="p">,</span>   <span class="c">// ISO 8601</span>
+  <span class="s">"source_id"</span><span class="p">:</span> <span class="s">"mintserver-prosys"</span><span class="p">,</span>
+  <span class="s">"device_id"</span><span class="p">:</span> <span class="s">"opc-prosys-300tags"</span><span class="p">,</span>
+  <span class="s">"tag_count"</span><span class="p">:</span> <span class="n">307</span><span class="p">,</span>
+  <span class="s">"bad_count"</span><span class="p">:</span> <span class="n">0</span><span class="p">,</span>
+  <span class="s">"Temp_Boiler_01"</span><span class="p">:</span> <span class="n">90.0</span><span class="p">,</span>      <span class="c">// flatten: ไม่อยู่ใน tags{}</span>
+  <span class="s">"Press_Line_01"</span><span class="p">:</span> <span class="n">6.0</span><span class="p">,</span>
+  <span class="s">"CO2_Zone_01"</span><span class="p">:</span> <span class="n">800.0</span><span class="p">,</span>
+  <span class="c">// ... 304 more tags top-level</span>
+<span class="p">}</span></pre>
+
+<h3>5.2 หมวดหมู่ Tag (307 ตัว)</h3>
+<table>
+<thead><tr><th>Category</th><th>Count</th><th>ตัวอย่าง</th><th>Unit</th></tr></thead>
+<tbody>
+<tr><td>Boiler Temperature</td><td>20</td><td><code>Temp_Boiler_01..20</code></td><td>°C</td></tr>
+<tr><td>Heat Exchanger</td><td>10</td><td><code>Temp_HeatEx_01..10</code></td><td>°C</td></tr>
+<tr><td>Oil Temperature</td><td>10</td><td><code>Temp_Oil_01..10</code></td><td>°C</td></tr>
+<tr><td>Cooling Temperature</td><td>10</td><td><code>Temp_Cooling_01..10</code></td><td>°C</td></tr>
+<tr><td>Pump Vibration</td><td>20</td><td><code>Vibration_Pump_01..20</code></td><td>mm/s</td></tr>
+<tr><td>Line Pressure</td><td>20</td><td><code>Press_Line_01..20</code></td><td>bar</td></tr>
+<tr><td>Tank Pressure</td><td>10</td><td><code>Press_Tank_01..10</code></td><td>bar</td></tr>
+<tr><td>Hydraulic Pressure</td><td>10</td><td><code>Press_Hydraulic_01..10</code></td><td>bar</td></tr>
+<tr><td>Tank Level</td><td>20</td><td><code>Level_Tank_01..20</code></td><td>%</td></tr>
+<tr><td>Drive Current</td><td>20</td><td><code>Current_Drive_01..20</code></td><td>A</td></tr>
+<tr><td>Motor Torque</td><td>20</td><td><code>Torque_Motor_01..20</code></td><td>Nm</td></tr>
+<tr><td>Motor RPM</td><td>20</td><td><code>RPM_Motor_01..20</code></td><td>rpm</td></tr>
+<tr><td>Motor Power</td><td>20</td><td><code>Power_Motor_01..20</code></td><td>kW</td></tr>
+<tr><td>Bus Voltage</td><td>10</td><td><code>Voltage_Bus_01..10</code></td><td>V</td></tr>
+<tr><td>CO2 Zone</td><td>10</td><td><code>CO2_Zone_01..10</code></td><td>ppm</td></tr>
+<tr><td>Room Humidity</td><td>10</td><td><code>Humidity_Room_01..10</code></td><td>%</td></tr>
+<tr><td>Main Flow</td><td>15</td><td><code>Flow_Main_01..15</code></td><td>m³/h</td></tr>
+<tr><td>Branch Flow</td><td>15</td><td><code>Flow_Branch_01..15</code></td><td>m³/h</td></tr>
+<tr><td>Coolant Flow</td><td>10</td><td><code>Flow_Coolant_01..10</code></td><td>m³/h</td></tr>
+<tr><td>Misc (Counter, Constant, etc.)</td><td>~27</td><td>—</td><td>—</td></tr>
+</tbody>
+</table>
+
+<h3>5.3 Throughput ปัจจุบัน</h3>
+<div class="stats-grid">
+  <div class="stat-card"><span class="val">154</span><div class="lbl">tag-values/s</div></div>
+  <div class="stat-card"><span class="val">43,200</span><div class="lbl">messages/วัน</div></div>
+  <div class="stat-card"><span class="val">285 MB</span><div class="lbl">MinIO/วัน</div></div>
+  <div class="stat-card"><span class="val">45 MB</span><div class="lbl">InfluxDB/วัน</div></div>
+</div>
+
+<!-- ──────────────────────────────────────────────
+     6. Hardware Spec
+     ────────────────────────────────────────────── -->
+<h2 id="s6">6. Hardware Spec</h2>
+
+<table>
+<thead><tr><th>ส่วน</th><th>Spec</th><th>หมายเหตุ</th></tr></thead>
+<tbody>
+<tr><td>CPU</td><td>Intel i7-14700K</td><td>20 cores / 28 threads</td></tr>
+<tr><td>RAM</td><td>31 GB</td><td>ใช้ ~14GB, เหลือ ~16GB</td></tr>
+<tr><td>System Disk (SSD)</td><td>219 GB</td><td>OS + system, ใช้ 25%</td></tr>
+<tr><td>Data Disk (NVMe)</td><td>469 GB</td><td>k8s PV ทั้งหมด, ใช้ 1% (~2.2 GB)</td></tr>
+<tr><td>Network</td><td>1 GbE</td><td>local LAN</td></tr>
+</tbody>
+</table>
+
+<h3>RAM ที่ใช้ต่อ pod</h3>
+<table>
+<thead><tr><th>Pod</th><th>RAM ใช้</th><th>หมายเหตุ</th></tr></thead>
+<tbody>
+<tr><td>Kafka broker</td><td>~2.3 GB</td><td>JVM heap + page cache</td></tr>
+<tr><td>NiFi Core</td><td>~2.1 GB</td><td>JVM heap 2g</td></tr>
+<tr><td>NiFi Edge</td><td>~1.3 GB</td><td>JVM heap 1g + Eclipse Milo</td></tr>
+<tr><td>Trino</td><td>~1.4 GB</td><td>JVM heap 2g</td></tr>
+<tr><td>OpenMAINT (Tomcat)</td><td>~1.2 GB</td><td>CMDBuild + DMS disabled</td></tr>
+<tr><td>PostgreSQL</td><td>~500 MB</td><td>OpenMAINT backend</td></tr>
+<tr><td>MinIO</td><td>~400 MB</td><td>—</td></tr>
+<tr><td>InfluxDB</td><td>~127 MB</td><td>เล็กสำหรับ scale ปัจจุบัน</td></tr>
+<tr><td>AKHQ</td><td>~340 MB</td><td>Kafka UI</td></tr>
+<tr><td>Strimzi Operator</td><td>~314 MB</td><td>—</td></tr>
+<tr><td>Telegraf, Grafana, อื่นๆ</td><td>~250 MB</td><td>—</td></tr>
+</tbody>
+</table>
+
+<h3>เก็บข้อมูลได้นานเท่าไร</h3>
+<table>
+<thead><tr><th>Component</th><th>PV Size</th><th>Growth</th><th>อายุข้อมูล</th></tr></thead>
+<tbody>
+<tr><td>MinIO</td><td>100 GB</td><td>~285 MB/วัน</td><td><strong>~350 วัน</strong> (ขยายเป็น NVMe 443GB ได้ → <strong>3.8 ปี</strong>)</td></tr>
+<tr><td>InfluxDB</td><td>50 GB</td><td>~45 MB/วัน</td><td><strong>~3 ปี</strong></td></tr>
+<tr><td>Kafka</td><td>50 GB</td><td>—</td><td>7 วัน (retention.ms ตั้งไว้)</td></tr>
+</tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────
+     7. OPC UA + Prosys
+     ────────────────────────────────────────────── -->
+<h2 id="s7">7. OPC UA + Prosys Server</h2>
+
+<h3>OPC UA คืออะไร</h3>
+<p>
+<strong>OPC UA (Unified Architecture)</strong> คือ standard สื่อสารระหว่าง <em>OT equipment</em> (PLC, SCADA, sensor)
+กับ <em>IT systems</em> — เป็น protocol ที่ใช้กันทั่วโลกในโรงงานอุตสาหกรรม
+</p>
+
+<h3>Polling Model ปัจจุบัน</h3>
+<p>NiFi Edge ใช้ <strong>Eclipse Milo</strong> (Java OPC UA library) เรียก <code>readValues()</code> ทุก 2 วินาที
+อ่านค่า 307 tags ในรอบเดียว (~0.3-0.5 วินาที)</p>
+
+<div class="diagram"><pre>
+NiFi Edge (Groovy)
+   │ readValues([nodeId1, nodeId2, ..., nodeId307])
+   ▼
+Prosys OPC UA Server (mintserver:53530)
+   │ ส่งค่ากลับใน 1 response
+   ▼
+NiFi Edge รับ → flatten → publish Kafka
+</pre></div>
+
+<h3>Prosys Server บน mintserver</h3>
+<p>รันเป็น <strong>systemd service</strong> ชื่อ <code>prosys-opc</code></p>
+<pre><span class="c"># SSH เข้า mintserver</span>
+<span class="k">ssh</span> demo@10.85.3.100   <span class="c"># password: @123456789</span>
+
+<span class="c"># คำสั่งจัดการ</span>
+<span class="k">sudo</span> systemctl status prosys-opc       <span class="c"># ดูสถานะ</span>
+<span class="k">sudo</span> systemctl start prosys-opc        <span class="c"># เริ่ม</span>
+<span class="k">sudo</span> systemctl stop prosys-opc         <span class="c"># หยุด</span>
+<span class="k">sudo</span> systemctl restart prosys-opc      <span class="c"># รีสตาร์ท</span>
+<span class="k">sudo</span> journalctl -u prosys-opc -f       <span class="c"># ดู log realtime</span></pre>
+
+<blockquote class="note-yellow">
+<strong>ทำไมต้องใช้ wrapper script:</strong> Prosys ใช้ install4j launcher ที่ fork Java แล้ว exit ทันที
+ทำให้ <code>Type=simple</code> ของ systemd คิดว่า service จบแล้ว — wrapper script
+<code>/usr/local/bin/prosys-start.sh</code> ใช้ <code>kill -0</code> loop รอ Java process แทน <code>wait</code>
+</blockquote>
+
+<!-- ──────────────────────────────────────────────
+     8. NiFi Edge & Core
+     ────────────────────────────────────────────── -->
+<h2 id="s8">8. NiFi Edge &amp; Core</h2>
+
+<h3>NiFi Edge — OPC Reader</h3>
+<p>Flow ที่ทำงานใน NiFi Edge:</p>
+<div class="diagram"><pre>
+ExecuteGroovyScript (opc_reader_final.groovy)
+   │ - ใช้ Eclipse Milo library
+   │ - read 307 tags ทุก 2 วินาที
+   │ - flatten format + ISO8601 timestamp
+   ▼
+PublishKafka
+   │ - bootstrap: kafka-cluster-kafka-bootstrap.dmz.svc.cluster.local:9092
+   │ - topic: opc-raw-data
+   │ - Transactions Enabled = false  (สำคัญ: ถ้า true จะ fail)
+</pre></div>
+
+<h3>โครงสร้าง Groovy Script</h3>
+<p>ไฟล์: <code>/home/mintpower/lab/k3s/tools/opc_reader_final.groovy</code></p>
+<p>ฟังก์ชันหลัก:</p>
+<ul>
+  <li><strong>Connect:</strong> สร้าง <code>OpcUaClient</code> ไปที่ <code>opc.tcp://mintserver:53530/...</code></li>
+  <li><strong>BrowseAndRead:</strong> อ่าน 307 nodeId ใน batch เดียว</li>
+  <li><strong>Flatten:</strong> แตก <code>tags{}</code> เป็น top-level field แล้วใส่ใน FlowFile</li>
+  <li><strong>Reconnect:</strong> auto-reconnect ถ้า server หาย</li>
+</ul>
+
+<h3>NiFi Core — Kafka → MinIO</h3>
+<div class="diagram"><pre>
+ConsumeKafka
+   │ - topic: opc-raw-data
+   │ - group: nifi-core-consumer
+   ▼
+MergeContent (batch 100 messages → 1 file)
+   ▼
+PutS3Object (MinIO)
+   │ - bucket: opc-raw
+   │ - path: data/year={YYYY}/month={MM}/day={DD}/{uuid}.json
+</pre></div>
+
+<h3>Deploy Groovy Script</h3>
+<p>เมื่อแก้ <code>opc_reader_final.groovy</code> ต้อง deploy ขึ้น NiFi:</p>
+<pre><span class="k">python3</span> /home/mintpower/lab/k3s/tools/deploy_opc_script.py</pre>
+
+<!-- ──────────────────────────────────────────────
+     9. Apache Kafka
+     ────────────────────────────────────────────── -->
+<h2 id="s9">9. Apache Kafka</h2>
+
+<h3>Strimzi KRaft Mode</h3>
+<p>
+ใช้ <strong>Strimzi 0.43.0</strong> (Kafka operator) บน k3s — KRaft mode (ไม่มี Zookeeper)
+</p>
+
+<h3>Topic ปัจจุบัน</h3>
+<table>
+<thead><tr><th>Topic</th><th>Partitions</th><th>Replicas</th><th>Retention</th><th>Consumers</th></tr></thead>
+<tbody>
+<tr>
+<td><code>opc-raw-data</code></td>
+<td>3</td>
+<td>1</td>
+<td>7 วัน</td>
+<td><code>telegraf-opc-consumer</code><br><code>nifi-core-consumer</code><br><code>openmaint-consumer</code> ⭐</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote class="note-green">
+<strong>Kafka Fan-out:</strong> Consumer แต่ละ group มี offset แยกกัน — เพิ่ม consumer ใหม่
+(เช่น openmaint-consumer) ไม่กระทบ consumer เดิม
+</blockquote>
+
+<h3>คำสั่ง Kafka ที่ใช้บ่อย</h3>
+<pre><span class="c"># List topics</span>
+<span class="k">kubectl</span> exec -n dmz kafka-cluster-broker-0 -c kafka -- \
+  bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+
+<span class="c"># Describe topic</span>
+<span class="k">kubectl</span> exec -n dmz kafka-cluster-broker-0 -c kafka -- \
+  bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic opc-raw-data
+
+<span class="c"># ดู offset (rate การไหลของข้อมูล)</span>
+<span class="k">kubectl</span> exec -n dmz kafka-cluster-broker-0 -c kafka -- \
+  bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic opc-raw-data
+
+<span class="c"># ดู consumer lag</span>
+<span class="k">kubectl</span> exec -n dmz kafka-cluster-broker-0 -c kafka -- \
+  bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
+  --describe --all-groups
+
+<span class="c"># Consume 1 message ดู</span>
+<span class="k">kubectl</span> exec -n dmz kafka-cluster-broker-0 -c kafka -- \
+  bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 \
+  --topic opc-raw-data --max-messages 1 --timeout-ms 5000</pre>
+
+<!-- ──────────────────────────────────────────────
+     10. Telegraf + InfluxDB
+     ────────────────────────────────────────────── -->
+<h2 id="s10">10. Telegraf + InfluxDB</h2>
+
+<h3>Telegraf Config</h3>
+<p>ConfigMap: <code>telegraf-config</code> (namespace: it)</p>
+<pre><span class="p">[[</span><span class="t">inputs.kafka_consumer</span><span class="p">]]</span>
+  <span class="k">brokers</span> <span class="p">=</span> <span class="p">[</span><span class="s">"kafka-cluster-kafka-bootstrap.dmz.svc.cluster.local:9092"</span><span class="p">]</span>
+  <span class="k">topics</span> <span class="p">=</span> <span class="p">[</span><span class="s">"opc-raw-data"</span><span class="p">]</span>
+  <span class="k">consumer_group</span> <span class="p">=</span> <span class="s">"telegraf-opc-consumer"</span>
+  <span class="k">offset</span> <span class="p">=</span> <span class="s">"newest"</span>
+  <span class="k">data_format</span> <span class="p">=</span> <span class="s">"json"</span>
+  <span class="k">json_time_key</span> <span class="p">=</span> <span class="s">"timestamp"</span>
+  <span class="k">json_time_format</span> <span class="p">=</span> <span class="s">"2006-01-02T15:04:05.999999999Z07:00"</span>
+  <span class="k">tag_keys</span> <span class="p">=</span> <span class="p">[</span><span class="s">"source_id"</span><span class="p">,</span> <span class="s">"device_id"</span><span class="p">]</span>
+  <span class="k">name_override</span> <span class="p">=</span> <span class="s">"opc_data"</span>
+
+<span class="p">[[</span><span class="t">outputs.influxdb_v2</span><span class="p">]]</span>
+  <span class="k">urls</span> <span class="p">=</span> <span class="p">[</span><span class="s">"http://influxdb.it.svc.cluster.local:8086"</span><span class="p">]</span>
+  <span class="k">token</span> <span class="p">=</span> <span class="s">"$INFLUX_TOKEN"</span>
+  <span class="k">organization</span> <span class="p">=</span> <span class="s">"mintpower-org"</span>
+  <span class="k">bucket</span> <span class="p">=</span> <span class="s">"opc-data"</span></pre>
+
+<h3>InfluxDB Schema</h3>
+<table>
+<thead><tr><th>Field</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Measurement</td><td><code>opc_data</code></td></tr>
+<tr><td>Tags</td><td><code>source_id=mintserver-prosys</code>, <code>device_id=opc-prosys-300tags</code>, <code>host=...</code></td></tr>
+<tr><td>Fields</td><td>307 tags (Temp_Boiler_01, Press_Line_01, ...) + tag_count, bad_count</td></tr>
+<tr><td>Time</td><td>จาก OPC UA timestamp (ISO8601)</td></tr>
+</tbody>
+</table>
+
+<h3>Flux Query ตัวอย่าง</h3>
+<pre><span class="c">// Temp_Boiler_01 ใน 1 ชั่วโมงล่าสุด</span>
+from<span class="p">(</span>bucket<span class="p">:</span> <span class="s">"opc-data"</span><span class="p">)</span>
+  |&gt; range<span class="p">(</span>start<span class="p">:</span> -<span class="n">1h</span><span class="p">)</span>
+  |&gt; filter<span class="p">(</span>fn<span class="p">:</span> <span class="p">(</span>r<span class="p">)</span> =&gt; r<span class="p">.</span>_measurement <span class="p">==</span> <span class="s">"opc_data"</span><span class="p">)</span>
+  |&gt; filter<span class="p">(</span>fn<span class="p">:</span> <span class="p">(</span>r<span class="p">)</span> =&gt; r<span class="p">.</span>_field <span class="p">==</span> <span class="s">"Temp_Boiler_01"</span><span class="p">)</span></pre>
+
+<!-- ──────────────────────────────────────────────
+     11. Grafana
+     ────────────────────────────────────────────── -->
+<h2 id="s11">11. Grafana</h2>
+
+<h3>Dashboard ปัจจุบัน</h3>
+<table>
+<thead><tr><th>Field</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Name</td><td>System &amp; OPC — mintpower</td></tr>
+<tr><td>UID</td><td><code>mintpower-combined-v1</code></td></tr>
+<tr><td>URL</td><td><code>http://10.85.3.104:30300/d/mintpower-combined-v1</code></td></tr>
+<tr><td>Provisioned via</td><td>ConfigMap <code>grafana-dashboards</code></td></tr>
+</tbody>
+</table>
+
+<h3>Panel ใน Dashboard</h3>
+<ul>
+  <li><strong>System Overview:</strong> CPU %, Memory %, Disk / %, Disk NVMe %</li>
+  <li><strong>CPU &amp; Memory:</strong> timeseries</li>
+  <li><strong>Storage:</strong> Disk Used % + I/O bytes/s</li>
+  <li><strong>OPC Sensors:</strong> Temperature, Pressure, Flow, Vibration, Power/Voltage/Current</li>
+</ul>
+
+<h3>Datasource — แก้ถาวรแล้ว ✅</h3>
+<p>เดิมต้อง set token ทุกครั้งที่ restart pod — แก้ด้วย <code>lifecycle.postStart</code> hook</p>
+<pre><span class="c"># manifests/phase3/grafana.yaml — postStart hook</span>
+<span class="k">lifecycle</span><span class="p">:</span>
+  <span class="k">postStart</span><span class="p">:</span>
+    <span class="k">exec</span><span class="p">:</span>
+      <span class="k">command</span><span class="p">:</span>
+        - <span class="s">/bin/sh</span>
+        - <span class="s">-c</span>
+        - <span class="p">|</span>
+          for i in $(seq 1 30); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/health)
+            [ "$STATUS" = "200" ] &amp;&amp; break
+            sleep 3
+          done
+          curl -s -u "admin:admin2026" \
+            -X PUT -H "Content-Type: application/json" \
+            -d "{...datasource JSON with $INFLUX_TOKEN...}" \
+            "http://localhost:3000/api/datasources/1" || true</pre>
+
+<blockquote class="note-red">
+<strong>⚠️ Grafana Account Lock:</strong> ถ้าลอง password ผิดหลายครั้ง account จะ lock
+ไม่หายแม้ restart pod (เพราะเก็บใน SQLite PVC)
+<br><br>
+<strong>วิธีแก้:</strong> exec เข้า pod → SQLite DB → ลบ <code>login_attempt</code> table records
+</blockquote>
+
+<!-- ──────────────────────────────────────────────
+     12. MinIO + Trino
+     ────────────────────────────────────────────── -->
+<h2 id="s12">12. MinIO + Trino</h2>
+
+<h3>MinIO — Data Lake</h3>
+<table>
+<thead><tr><th>Field</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Bucket</td><td><code>opc-raw</code></td></tr>
+<tr><td>Path Pattern</td><td><code>data/year=YYYY/month=MM/day=DD/{uuid}.json</code></td></tr>
+<tr><td>Batch Size</td><td>100 messages → 1 file</td></tr>
+<tr><td>Format</td><td>JSON (1 message ต่อ 1 line)</td></tr>
+</tbody>
+</table>
+
+<h3>Trino — SQL Query</h3>
+<p>Catalog <code>minio</code>, schema <code>opc</code>, table <code>sensor_data</code></p>
+<pre><span class="c">-- ดูรอบ 5 นาทีล่าสุด</span>
+<span class="k">SELECT</span> <span class="s">"timestamp"</span>, <span class="t">"Temp_Boiler_01"</span>, <span class="t">"Press_Line_01"</span>
+<span class="k">FROM</span> minio.opc.sensor_data
+<span class="k">WHERE</span> year=<span class="s">'2026'</span> <span class="k">AND</span> month=<span class="s">'05'</span> <span class="k">AND</span> day=<span class="s">'08'</span>
+<span class="k">ORDER BY</span> <span class="s">"timestamp"</span> <span class="k">DESC</span>
+<span class="k">LIMIT</span> <span class="n">10</span>;
+
+<span class="c">-- นับ records ต่อวัน</span>
+<span class="k">SELECT</span> year, month, day, <span class="t">COUNT</span>(*) <span class="k">AS</span> rows
+<span class="k">FROM</span> minio.opc.sensor_data
+<span class="k">GROUP BY</span> year, month, day
+<span class="k">ORDER BY</span> year <span class="k">DESC</span>, month <span class="k">DESC</span>, day <span class="k">DESC</span>;</pre>
+
+<h3>Partition Sync (CronJob) ✅ Updated 2026-05-08</h3>
+<pre><span class="c"># manifests/phase4/trino-partition-sync-cronjob.yaml</span>
+<span class="k">spec</span><span class="p">:</span>
+  <span class="k">schedule</span><span class="p">:</span> <span class="s">"5 0,12 * * *"</span>   <span class="c"># 2x/วัน (00:05, 12:05 Bangkok)</span>
+  <span class="k">timeZone</span><span class="p">:</span> <span class="s">Asia/Bangkok</span>
+  <span class="k">jobTemplate</span><span class="p">:</span>
+    ...
+        <span class="k">command</span><span class="p">:</span>
+          - <span class="s">trino</span>
+          - <span class="s">--execute</span>
+          - <span class="p">|</span>
+            CALL minio.system.sync_partition_metadata(
+              schema_name =&gt; 'opc',
+              table_name  =&gt; 'sensor_data',
+              mode        =&gt; 'ADD'
+            );</pre>
+
+<!-- ──────────────────────────────────────────────
+     13. OpenMAINT (CMMS)
+     ────────────────────────────────────────────── -->
+<h2 id="s13">13. OpenMAINT (CMMS)</h2>
+
+<h3>OpenMAINT คืออะไร</h3>
+<p>
+<strong>OpenMAINT</strong> = Computerized Maintenance Management System (CMMS)
+สำหรับจัดการ asset, work order, preventive maintenance, spare parts
+สร้างจาก <strong>CMDBuild 3.4.1</strong> framework
+</p>
+
+<h3>เข้าใช้งาน</h3>
+<p>URL: <code>http://10.85.3.104:30885/cmdbuild</code> (admin / admin)</p>
+
+<h3>โครงสร้างเมนูหลัก</h3>
+<table>
+<thead><tr><th>เมนู</th><th>ใช้ทำอะไร</th></tr></thead>
+<tbody>
+<tr><td>Facilities and assets</td><td>จัดการ asset (Boiler, Pump, Motor, Building)</td></tr>
+<tr><td>Maintenance management</td><td>งานบำรุงรักษา</td></tr>
+<tr><td>↳ Corrective maintenance</td><td>Work order แก้ไขฉุกเฉิน ⭐ (bridge สร้างให้อัตโนมัติ)</td></tr>
+<tr><td>↳ Preventive maintenance</td><td>แผนบำรุงรักษาตามกำหนด</td></tr>
+<tr><td>↳ Alarms</td><td>Alarm log ⭐ (bridge สร้างให้อัตโนมัติ)</td></tr>
+<tr><td>Inventory</td><td>Spare parts, stock</td></tr>
+<tr><td>Configurations</td><td>Setup users, lookup, workflow</td></tr>
+</tbody>
+</table>
+
+<h3>CorrectiveMaint Workflow</h3>
+<div class="diagram"><pre>
+Opening → Assignment → Management → Estimate → Control → Execution → Accounting → Closure
+   ↑          ↑                                              ↑              ↑
+bridge    advance อัตโนมัติ                          ช่างซ่อม         ปิดงาน
+สร้าง    (ผ่าน _advance: True)                    update status   ใส่ค่าใช้จ่าย
+</pre></div>
+
+<h3>การ Advance Activity</h3>
+<ol>
+  <li>คลิก work order → กด <strong>✏️ Edit</strong></li>
+  <li>กรอกข้อมูล required (Site, Category, Team, Priority)</li>
+  <li>กด <strong>Execute</strong> (มุมขวาล่าง) → workflow เลื่อนไป step ถัดไป</li>
+</ol>
+
+<blockquote class="note-yellow">
+<strong>DMS Disabled:</strong> เราปิด CMIS/Alfresco DMS ไปแล้ว (ไม่มีในระบบ airgap)
+ใน <code>_SystemConfig</code> table set <code>org.cmdbuild.dms.enabled = false</code>
+ก่อนหน้านี้ทำให้ Execute step ขึ้น "Generic error"
+</blockquote>
+
+<h3>REST API ที่ใช้บ่อย</h3>
+<pre><span class="c"># Login</span>
+TOKEN=$(<span class="k">curl</span> -s -X POST <span class="s">"http://10.85.3.104:30885/cmdbuild/services/rest/v3/sessions?scope=service&amp;returnId=true"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{"username":"admin","password":"admin"}'</span> | \
+  <span class="k">python3</span> -c <span class="s">"import sys,json; print(json.load(sys.stdin)['data']['_id'])"</span>)
+
+<span class="c"># List Alarm cards</span>
+<span class="k">curl</span> -s -H <span class="s">"CMDBuild-Authorization: $TOKEN"</span> \
+  <span class="s">"http://10.85.3.104:30885/cmdbuild/services/rest/v3/classes/Alarm/cards"</span>
+
+<span class="c"># Create CorrectiveMaint instance + advance Opening</span>
+<span class="k">curl</span> -s -H <span class="s">"CMDBuild-Authorization: $TOKEN"</span> \
+  -X POST -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{"ShortDescr":"...", "_advance":true}'</span> \
+  <span class="s">"http://10.85.3.104:30885/cmdbuild/services/rest/v3/processes/CorrectiveMaint/instances"</span></pre>
+
+<!-- ──────────────────────────────────────────────
+     14. OpenMAINT Bridge ⭐ NEW
+     ────────────────────────────────────────────── -->
+<h2 id="s14">14. OpenMAINT Bridge ⭐</h2>
+
+<blockquote class="note-purple">
+<strong>ใหม่ 2026-05-08:</strong> Python service เชื่อม Kafka → OpenMAINT — เมื่อ sensor ผิดปกติ
+สร้าง Alarm + Work Order อัตโนมัติ พร้อม cooldown 5 นาที/tag กัน spam
+</blockquote>
+
+<h3>Architecture</h3>
+<div class="diagram"><pre>
+Kafka: opc-raw-data
+  └─► openmaint-bridge (systemd, on host)
+        ├─ kafka-python consumer group: openmaint-consumer
+        ├─ ตรวจ 19 threshold rules
+        ├─ Cooldown 300s/tag
+        └─► REST API → OpenMAINT
+              ├─ POST /classes/Alarm/cards
+              └─ POST /processes/CorrectiveMaint/instances
+                    (with _advance: True → ผ่าน Opening ไป Assignment)
+</pre></div>
+
+<h3>ทำไมรันบน host ไม่ใช่ k3s pod</h3>
+<p>
+ระบบเป็น <strong>airgap</strong> — ไม่มี Python image ใน k3s containerd
+แต่ host มี Python 3.12 + venv ที่มี <code>kafka-python</code> อยู่แล้ว
+จึง deploy เป็น systemd service บนเครื่อง <code>mintpower</code> ตรงๆ
+</p>
+
+<h3>Threshold Rules (19 ตัว)</h3>
+<table class="threshold-table">
+<thead><tr><th>Tag Pattern</th><th>Normal</th><th>Max</th><th>Min</th><th>Unit</th><th>Severity</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td><code>Temp_Boiler_*</code></td><td>90</td><td><strong>95</strong></td><td>—</td><td>°C</td><td><span class="badge badge-red">Critical</span></td><td>Boiler overheat</td></tr>
+<tr><td><code>Temp_HeatEx_*</code></td><td>65</td><td><strong>80</strong></td><td>—</td><td>°C</td><td><span class="badge badge-yellow">High</span></td><td>Heat exchanger fouling</td></tr>
+<tr><td><code>Temp_Oil_*</code></td><td>70</td><td><strong>85</strong></td><td>—</td><td>°C</td><td><span class="badge badge-yellow">High</span></td><td>Oil lubrication</td></tr>
+<tr><td><code>Temp_Cooling_*</code></td><td>20</td><td><strong>30</strong></td><td>—</td><td>°C</td><td><span class="badge badge-yellow">High</span></td><td>Cooling failure</td></tr>
+<tr><td><code>Vibration_Pump_*</code></td><td>7.5</td><td><strong>10.0</strong></td><td>—</td><td>mm/s</td><td><span class="badge badge-yellow">High</span></td><td>ISO 10816 bearing</td></tr>
+<tr><td><code>Press_Line_*</code></td><td>6.0</td><td><strong>8.0</strong></td><td><strong>2.0</strong></td><td>bar</td><td><span class="badge badge-yellow">High</span></td><td>Line pressure</td></tr>
+<tr><td><code>Press_Tank_*</code></td><td>4.5</td><td><strong>6.0</strong></td><td><strong>1.0</strong></td><td>bar</td><td><span class="badge badge-yellow">High</span></td><td>Tank relief valve</td></tr>
+<tr><td><code>Press_Hydraulic_*</code></td><td>125</td><td><strong>160</strong></td><td><strong>50</strong></td><td>bar</td><td><span class="badge badge-red">Critical</span></td><td>Hydraulic integrity</td></tr>
+<tr><td><code>Level_Tank_*</code></td><td>57.5</td><td><strong>90</strong></td><td><strong>10</strong></td><td>%</td><td><span class="badge badge-yellow">High</span></td><td>Overflow / dry-run</td></tr>
+<tr><td><code>Current_Drive_*</code></td><td>42.5</td><td><strong>60</strong></td><td>—</td><td>A</td><td><span class="badge badge-yellow">High</span></td><td>Motor overload</td></tr>
+<tr><td><code>Torque_Motor_*</code></td><td>255</td><td><strong>350</strong></td><td>—</td><td>Nm</td><td><span class="badge badge-yellow">High</span></td><td>Mechanical overload</td></tr>
+<tr><td><code>RPM_Motor_*</code></td><td>1900</td><td><strong>2200</strong></td><td><strong>500</strong></td><td>rpm</td><td><span class="badge badge-blue">Medium</span></td><td>Speed range</td></tr>
+<tr><td><code>Power_Motor_*</code></td><td>77.5</td><td><strong>100</strong></td><td>—</td><td>kW</td><td><span class="badge badge-blue">Medium</span></td><td>Power consumption</td></tr>
+<tr><td><code>Voltage_Bus_*</code></td><td>400</td><td><strong>440</strong></td><td><strong>350</strong></td><td>V</td><td><span class="badge badge-red">Critical</span></td><td>Electrical fault</td></tr>
+<tr><td><code>CO2_Zone_*</code></td><td>800</td><td><strong>1000</strong></td><td>—</td><td>ppm</td><td><span class="badge badge-blue">Medium</span></td><td>ASHRAE 62.1</td></tr>
+<tr><td><code>Humidity_Room_*</code></td><td>55</td><td><strong>80</strong></td><td><strong>20</strong></td><td>%</td><td><span class="badge badge-blue">Medium</span></td><td>Comfort/equipment</td></tr>
+<tr><td><code>Flow_Main_*</code></td><td>125</td><td><strong>160</strong></td><td><strong>30</strong></td><td>m³/h</td><td><span class="badge badge-yellow">High</span></td><td>Pipeline anomaly</td></tr>
+<tr><td><code>Flow_Branch_*</code></td><td>45</td><td><strong>60</strong></td><td><strong>10</strong></td><td>m³/h</td><td><span class="badge badge-blue">Medium</span></td><td>Branch flow</td></tr>
+<tr><td><code>Flow_Coolant_*</code></td><td>27.5</td><td><strong>40</strong></td><td><strong>10</strong></td><td>m³/h</td><td><span class="badge badge-yellow">High</span></td><td>Cooling effectiveness</td></tr>
+</tbody>
+</table>
+
+<h3>คำสั่ง systemd</h3>
+<pre><span class="c"># สถานะ</span>
+<span class="k">sudo</span> systemctl status openmaint-bridge
+
+<span class="c"># ดู log realtime</span>
+<span class="k">sudo</span> journalctl -u openmaint-bridge -f
+
+<span class="c"># Restart (เช่น หลังแก้ rules)</span>
+<span class="k">sudo</span> systemctl restart openmaint-bridge
+
+<span class="c"># ดู violation log ย้อนหลัง</span>
+<span class="k">sudo</span> journalctl -u openmaint-bridge --since <span class="s">"1 hour ago"</span> | <span class="k">grep</span> VIOLATION</pre>
+
+<h3>ตัวอย่าง log เมื่อเกิด violation</h3>
+<pre><span class="c">May 08 15:07:19 [BRIDGE] WARNING VIOLATION Vibration_Pump_03 | HIGH | 12.8000 mm/s | threshold(HIGH)=10.0 | severity=High</span>
+<span class="c">May 08 15:07:19 [BRIDGE] INFO    Alarm created: ALARM-Vibration_Pump_03-20260508080719 (id=629457)</span>
+<span class="c">May 08 15:07:20 [BRIDGE] INFO    CorrectiveMaint created: id=629460 for tag=Vibration_Pump_03</span></pre>
+
+<h3>การปรับ Threshold</h3>
+<p>แก้ที่ <code>/home/mintpower/lab/k3s/tools/openmaint_bridge.py</code> → list <code>RULES</code></p>
+<pre><span class="k">RULES</span> = [
+    {<span class="s">"prefix"</span>: <span class="s">"Temp_Boiler_"</span>,   <span class="s">"max"</span>: <span class="n">95.0</span>,  <span class="s">"unit"</span>: <span class="s">"°C"</span>,   <span class="s">"severity"</span>: <span class="s">"Critical"</span>,
+     <span class="s">"description"</span>: <span class="s">"Boiler temperature overheat — risk of pressure vessel failure"</span>},
+    <span class="c"># ... เพิ่ม/แก้ rule ตามต้องการ</span>
+]
+<span class="c"># แล้ว restart service</span>
+<span class="k">sudo</span> systemctl restart openmaint-bridge</pre>
+
+<!-- ──────────────────────────────────────────────
+     15. การ Start/Stop
+     ────────────────────────────────────────────── -->
+<h2 id="s15">15. การ Start / Stop ระบบ</h2>
+
+<h3>ลำดับ Restart ที่ถูกต้อง</h3>
+<pre><span class="c"># 1. Kafka ก่อน (ถ้าจำเป็น)</span>
+<span class="k">kubectl</span> rollout restart statefulset/kafka-cluster-broker -n dmz
+<span class="k">kubectl</span> wait pod -n dmz -l strimzi.io/name=kafka-cluster-kafka \
+  --for=condition=Ready --timeout=120s
+
+<span class="c"># 2. Producer (NiFi Edge)</span>
+<span class="k">kubectl</span> rollout restart deployment/nifi-edge -n it
+
+<span class="c"># 3. Consumers (หลัง Kafka ready)</span>
+<span class="k">kubectl</span> rollout restart deployment/telegraf -n it
+<span class="k">kubectl</span> rollout restart deployment/nifi-core -n it
+<span class="k">sudo</span> systemctl restart openmaint-bridge</pre>
+
+<h3>Start Prosys OPC UA</h3>
+<pre><span class="k">ssh</span> demo@10.85.3.100
+<span class="k">sudo</span> systemctl start prosys-opc
+
+<span class="c"># รอ ~15-30 วิ แล้วเช็ค port</span>
+<span class="k">ss</span> -tlnp | <span class="k">grep</span> 53530
+
+<span class="c"># เช็ค NiFi reconnect (จาก mintpower)</span>
+<span class="k">kubectl</span> exec -n dmz kafka-cluster-broker-0 -c kafka -- bash -c \
+  <span class="s">"bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic opc-raw-data 2>/dev/null"</span></pre>
+
+<h3>Stop ระบบทั้งหมด (graceful)</h3>
+<pre><span class="c"># หยุด producer ก่อน</span>
+<span class="k">ssh</span> demo@10.85.3.100 <span class="s">"sudo systemctl stop prosys-opc"</span>
+<span class="k">kubectl</span> scale deployment/nifi-edge -n it --replicas=0
+
+<span class="c"># รอ consumer ดูดข้อมูลที่เหลือ ~30 วิ</span>
+<span class="k">sleep</span> 30
+
+<span class="c"># หยุด consumers</span>
+<span class="k">sudo</span> systemctl stop openmaint-bridge
+<span class="k">kubectl</span> scale deployment/telegraf -n it --replicas=0
+<span class="k">kubectl</span> scale deployment/nifi-core -n it --replicas=0</pre>
+
+<!-- ──────────────────────────────────────────────
+     16. Monitoring & Logs
+     ────────────────────────────────────────────── -->
+<h2 id="s16">16. Monitoring &amp; Logs</h2>
+
+<h3>Health Check Script</h3>
+<pre><span class="c">#!/bin/bash
+# 1. ทุก pod ต้อง Running 1/1</span>
+<span class="k">kubectl</span> get pods -A --no-headers | <span class="k">awk</span> <span class="s">'$3 != "Running" || $4 != "1/1" {print}'</span>
+
+<span class="c"># 2. Kafka offset ต้องเพิ่มขึ้น</span>
+<span class="k">kubectl</span> exec -n dmz kafka-cluster-broker-0 -c kafka -- bash -c \
+  <span class="s">"bin/kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic opc-raw-data"</span>
+
+<span class="c"># 3. Consumer lag ต้อง &lt; 1000</span>
+<span class="k">kubectl</span> exec -n dmz kafka-cluster-broker-0 -c kafka -- bash -c \
+  <span class="s">"bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --all-groups"</span>
+
+<span class="c"># 4. OpenMAINT ตอบ READY</span>
+<span class="k">curl</span> -s <span class="s">"http://10.85.3.104:30885/cmdbuild/services/rest/v3/boot/status"</span>
+
+<span class="c"># 5. Bridge ทำงาน</span>
+<span class="k">sudo</span> systemctl is-active openmaint-bridge</pre>
+
+<h3>Lag เกณฑ์ปกติ</h3>
+<table>
+<thead><tr><th>Consumer Group</th><th>ปกติ</th><th>ต้องตรวจสอบ</th></tr></thead>
+<tbody>
+<tr><td><code>telegraf-opc-consumer</code></td><td>&lt; 10</td><td>&gt; 1,000</td></tr>
+<tr><td><code>nifi-core-consumer</code></td><td>&lt; 10</td><td>&gt; 1,000</td></tr>
+<tr><td><code>openmaint-consumer</code></td><td>&lt; 10</td><td>&gt; 1,000</td></tr>
+</tbody>
+</table>
+
+<h3>ดู Log ของแต่ละ Component</h3>
+<pre><span class="c"># NiFi Edge (Groovy + Eclipse Milo)</span>
+<span class="k">kubectl</span> logs -n it -l app=nifi-edge --since=10m | <span class="k">grep</span> <span class="s">"\[OPC\]"</span>
+
+<span class="c"># Telegraf</span>
+<span class="k">kubectl</span> logs -n it -l app=telegraf --since=10m
+
+<span class="c"># InfluxDB</span>
+<span class="k">kubectl</span> logs -n it -l app=influxdb --since=10m | <span class="k">grep</span> -i error
+
+<span class="c"># OpenMAINT (cmdbuild.log อยู่ใน container)</span>
+<span class="k">kubectl</span> exec -n it deployment/openmaint -- \
+  tail -100 /usr/local/tomcat/logs/cmdbuild.log
+
+<span class="c"># OpenMAINT Bridge</span>
+<span class="k">sudo</span> journalctl -u openmaint-bridge -f
+
+<span class="c"># Prosys (บน mintserver)</span>
+<span class="k">ssh</span> demo@10.85.3.100 <span class="s">"sudo journalctl -u prosys-opc -f"</span></pre>
+
+<!-- ──────────────────────────────────────────────
+     17. Troubleshooting
+     ────────────────────────────────────────────── -->
+<h2 id="s17">17. Troubleshooting (ปัญหาที่เคยเจอ)</h2>
+
+<h3>🔴 OPC data หยุดไหลเข้า Kafka</h3>
+<ol>
+  <li>เช็ค Prosys: <code>ssh demo@10.85.3.100 "sudo systemctl status prosys-opc"</code></li>
+  <li>เช็ค NiFi Edge log: <code>kubectl logs -n it -l app=nifi-edge --since=5m | grep -i "opc\|error"</code></li>
+  <li>เช็ค disk NiFi: <code>kubectl exec -n it deployment/nifi-edge -- df -h /opt/nifi</code></li>
+  <li>Restart NiFi Edge: <code>kubectl rollout restart deployment/nifi-edge -n it</code></li>
+</ol>
+
+<h3>🔴 OpenMAINT ล่ม / ตอบ Connection refused</h3>
+<p><strong>อาการ:</strong> pod READY 1/1 แต่ <code>curl</code> ไม่ตอบ, RAM ใช้แค่ 2Mi</p>
+<p><strong>สาเหตุ:</strong> Tomcat process ตายใน container แต่ entrypoint script ยังรันอยู่ (sleep loop)</p>
+<pre><span class="c"># เช็ค process ใน pod</span>
+<span class="k">kubectl</span> exec -n it deployment/openmaint -- ps aux
+
+<span class="c"># ถ้าเห็นแค่ sleep 15 — Tomcat ตาย</span>
+<span class="k">kubectl</span> rollout restart deployment/openmaint -n it
+
+<span class="c"># รอ ~5 นาที</span>
+<span class="k">until</span> <span class="k">curl</span> -s <span class="s">"http://10.85.3.104:30885/cmdbuild/services/rest/v3/boot/status"</span> | <span class="k">grep</span> -q READY; <span class="k">do</span>
+  <span class="k">sleep</span> 10
+<span class="k">done</span></pre>
+
+<h3>🟡 Grafana account locked</h3>
+<p><strong>อาการ:</strong> "too many consecutive incorrect login attempts"</p>
+<blockquote class="note-red">
+<strong>อย่า restart pod!</strong> lockout เก็บใน SQLite PVC — restart ไม่ช่วย แต่ทำให้ datasource token หายแทน
+</blockquote>
+<p><strong>วิธีแก้:</strong></p>
+<pre><span class="c"># exec เข้า pod</span>
+GRAFANA_POD=$(<span class="k">kubectl</span> get pods -n it -l app=grafana -o jsonpath=<span class="s">'{.items[0].metadata.name}'</span>)
+<span class="k">kubectl</span> exec -n it $GRAFANA_POD -- \
+  sqlite3 /var/lib/grafana/grafana.db <span class="s">"DELETE FROM login_attempt;"</span></pre>
+
+<h3>🟡 Grafana datasource token หาย</h3>
+<p>ปกติ <code>postStart</code> hook ตั้ง token ให้แล้ว ถ้าไม่ทำงาน:</p>
+<pre>INFLUX_TOKEN=$(<span class="k">kubectl</span> get secret -n it influxdb-secret -o jsonpath=<span class="s">'{.data.admin-token}'</span> | base64 -d)
+<span class="k">curl</span> -s -u <span class="s">"admin:admin2026"</span> \
+  -X PUT -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">"{\"id\":1,\"uid\":\"influxdb-opc\",...,\"secureJsonData\":{\"token\":\"$INFLUX_TOKEN\"}}"</span> \
+  <span class="s">"http://10.85.3.104:30300/api/datasources/1"</span></pre>
+
+<h3>🔴 Trino ไม่เห็น partition ใหม่</h3>
+<p><strong>อาการ:</strong> วันนี้มีไฟล์ใน MinIO แต่ Trino query ไม่เห็น</p>
+<p><strong>แก้:</strong> trigger sync manual</p>
+<pre><span class="k">kubectl</span> create job trino-sync-manual-$(date +%Y%m%d%H%M) -n it \
+  --from=cronjob/trino-partition-sync</pre>
+
+<h3>🟡 Bridge ขาดการเชื่อมต่อ Kafka</h3>
+<pre><span class="c"># เช็ค consumer group active</span>
+<span class="k">kubectl</span> exec -n dmz kafka-cluster-broker-0 -c kafka -- bash -c \
+  <span class="s">"bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group openmaint-consumer"</span>
+
+<span class="c"># ถ้า "Inactive" → restart bridge</span>
+<span class="k">sudo</span> systemctl restart openmaint-bridge</pre>
+
+<!-- ──────────────────────────────────────────────
+     18. Backup & Recovery
+     ────────────────────────────────────────────── -->
+<h2 id="s18">18. Backup &amp; Recovery</h2>
+
+<blockquote class="note-red">
+<strong>⚠️ ปัจจุบันไม่มี backup อัตโนมัติ</strong> — ทุกอย่างเก็บใน NVMe local
+ถ้า disk เสีย = ข้อมูลหาย ควรเพิ่ม backup ในแผน (ดู Section 19)
+</blockquote>
+
+<h3>Backup Manual</h3>
+<h4>1. OpenMAINT PostgreSQL</h4>
+<pre><span class="k">kubectl</span> exec -n it deployment/postgres-openmaint -- \
+  pg_dump -U postgres openmaint | <span class="k">gzip</span> &gt; openmaint-$(date +%Y%m%d).sql.gz</pre>
+
+<h4>2. InfluxDB</h4>
+<pre>INFLUX_TOKEN=$(<span class="k">kubectl</span> get secret -n it influxdb-secret -o jsonpath=<span class="s">'{.data.admin-token}'</span> | base64 -d)
+<span class="k">kubectl</span> exec -n it deployment/influxdb -- \
+  influx backup --token <span class="s">"$INFLUX_TOKEN"</span> --org mintpower-org /tmp/backup
+<span class="k">kubectl</span> cp it/$(<span class="k">kubectl</span> get pod -n it -l app=influxdb -o jsonpath=<span class="s">'{.items[0].metadata.name}'</span>):/tmp/backup ./influx-backup-$(date +%Y%m%d)</pre>
+
+<h4>3. NiFi Flow</h4>
+<pre><span class="c"># flow.json.gz อยู่ใน PVC</span>
+<span class="k">kubectl</span> cp it/$(<span class="k">kubectl</span> get pod -n it -l app=nifi-edge -o jsonpath=<span class="s">'{.items[0].metadata.name}'</span>):/opt/nifi/nifi-current/conf/flow.json.gz ./nifi-edge-flow-$(date +%Y%m%d).json.gz</pre>
+
+<h4>4. Grafana SQLite</h4>
+<pre><span class="k">kubectl</span> exec -n it deployment/grafana -- \
+  sqlite3 /var/lib/grafana/grafana.db <span class="s">".backup /tmp/grafana.db.bak"</span>
+<span class="k">kubectl</span> cp it/$(<span class="k">kubectl</span> get pod -n it -l app=grafana -o jsonpath=<span class="s">'{.items[0].metadata.name}'</span>):/tmp/grafana.db.bak ./grafana-$(date +%Y%m%d).db</pre>
+
+<!-- ──────────────────────────────────────────────
+     19. Backlog & Roadmap
+     ────────────────────────────────────────────── -->
+<h2 id="s19">19. Backlog &amp; Roadmap</h2>
+
+<h3>✅ เสร็จแล้ว</h3>
+<table>
+<thead><tr><th>งาน</th><th>วันที่</th></tr></thead>
+<tbody>
+<tr><td>OPC UA TCP pipeline — 307 tags, NiFi Edge + Eclipse Milo</td><td>2026-05-06</td></tr>
+<tr><td>Kafka architecture fix — consumers อ่าน <code>opc-raw-data</code> โดยตรง</td><td>2026-05-06</td></tr>
+<tr><td>Grafana datasource token permanent fix — postStart hook</td><td>2026-05-08</td></tr>
+<tr><td>Trino partition sync — เปลี่ยนเป็น 2x/วัน</td><td>2026-05-08</td></tr>
+<tr><td>OpenMAINT Kafka integration — bridge + auto work order</td><td>2026-05-08</td></tr>
+</tbody>
+</table>
+
+<h3>📋 ระยะสั้น (ทำได้ทันที ไม่ต้องซื้อ hardware)</h3>
+<ul>
+  <li><strong>Alerting</strong> — Grafana alert rules → Line Notify / Email</li>
+  <li><strong>OpenMAINT dashboard ใน Grafana</strong> — datasource: PostgreSQL</li>
+  <li><strong>pg_dump cronjob</strong> — auto backup OpenMAINT</li>
+</ul>
+
+<h3>📋 ระยะกลาง</h3>
+<ul>
+  <li><strong>Data retention policies</strong> — InfluxDB 90d + MinIO lifecycle 5y</li>
+  <li><strong>OPC Scenario B (MQTT)</strong> — ถ้าต้องการ latency &lt; 100ms</li>
+</ul>
+
+<h3>📋 ระยะยาว</h3>
+<ul>
+  <li><strong>HA</strong> — multi-node k3s</li>
+  <li><strong>Security hardening</strong> — Vault, proper TLS cert</li>
+</ul>
+
+<!-- ──────────────────────────────────────────────
+     20. Scale to 10k tags/s
+     ────────────────────────────────────────────── -->
+<h2 id="s20">20. Scale to 10,000 tags/s (อนาคต)</h2>
+
+<p>รายละเอียดเต็มอยู่ที่ <code>plan/scale-10k-tags-plan.md</code></p>
+
+<h3>Storage Requirements</h3>
+<table>
+<thead><tr><th>Layer</th><th>Format</th><th>Retention</th><th>Total</th><th>หมายเหตุ</th></tr></thead>
+<tbody>
+<tr><td>MinIO (cold)</td><td>JSON</td><td>5 ปี</td><td>32.5 TB</td><td>❌ ใหญ่เกิน</td></tr>
+<tr><td>MinIO (cold)</td><td>Parquet (8:1)</td><td>5 ปี</td><td><strong>4.1 TB</strong></td><td>✅ ใช้ NAS/SAN HDD</td></tr>
+<tr><td>InfluxDB (hot)</td><td>TSM compressed</td><td>3 เดือน</td><td><strong>246 GB</strong></td><td>NVMe local</td></tr>
+<tr><td>Kafka (buffer)</td><td>LZ4</td><td>7 วัน</td><td>127.5 GB</td><td>NVMe local</td></tr>
+</tbody>
+</table>
+
+<h3>Lifecycle Management</h3>
+<table>
+<thead><tr><th>Layer</th><th>วิธี</th><th>คำสั่ง</th></tr></thead>
+<tbody>
+<tr><td>InfluxDB</td><td>Built-in retention</td><td><code>influx bucket update --retention 2160h</code></td></tr>
+<tr><td>MinIO</td><td>Object Lifecycle</td><td><code>mc ilm import local/opc-raw &lt; lifecycle.json</code></td></tr>
+<tr><td>Trino</td><td>sync mode FULL</td><td><code>CALL sync_partition_metadata(mode=&gt;'FULL')</code></td></tr>
+<tr><td>Kafka</td><td>topic retention</td><td><code>retention.ms = 604800000</code></td></tr>
+</tbody>
+</table>
+
+<h3>Implementation Phases</h3>
+<div class="component-grid">
+  <div class="component-card">
+    <div class="comp-icon">🟢</div>
+    <div class="comp-name">Phase 1 — ไม่ต้องซื้อ HW</div>
+    <div class="comp-desc">
+      OPC Subscription, Kafka 3→12 partitions, JVM tuning, lifecycle setup
+      <br>→ <strong>3,000-5,000 tags/s</strong>
+    </div>
+  </div>
+  <div class="component-card">
+    <div class="comp-icon">🟡</div>
+    <div class="comp-name">Phase 2 — ซื้อ NAS/HDD</div>
+    <div class="comp-desc">
+      6TB NAS + Parquet format + MinIO cache
+      <br>→ Retention 5 ปีจริง
+    </div>
+  </div>
+  <div class="component-card">
+    <div class="comp-icon">🔴</div>
+    <div class="comp-name">Phase 3 — Scale Out</div>
+    <div class="comp-desc">
+      RAM 64GB + Kafka 3 brokers + multi-node k3s
+      <br>→ <strong>10,000 tags/s + HA</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────────────────────────────────────────
+     21. OPC Transport Options
+     ────────────────────────────────────────────── -->
+<h2 id="s21">21. OPC Transport Options</h2>
+
+<p>รายละเอียดเต็มอยู่ที่ <code>plan/OPC-plan.md</code> — หลักการ: เปลี่ยนแค่ก่อน Kafka, downstream ไม่ต้องแก้</p>
+
+<table>
+<thead><tr><th>Scenario</th><th>วิธี</th><th>Latency</th><th>เพิ่มอะไร</th><th>ความซับซ้อน</th></tr></thead>
+<tbody>
+<tr><td><strong>ปัจจุบัน</strong></td><td>OPC UA TCP + Eclipse Milo (poll 2s)</td><td>2s</td><td>—</td><td>กลาง</td></tr>
+<tr><td>A</td><td>REST API → InvokeHTTP → Kafka</td><td>2s+</td><td>—</td><td>ต่ำ</td></tr>
+<tr><td>B</td><td>MQTT Pub/Sub → ConsumeMQTT → Kafka</td><td>&lt; 100ms</td><td>MQTT Broker</td><td>กลาง</td></tr>
+<tr><td>C</td><td>OPC UA PubSub Part 14 → MQTT → Kafka</td><td>&lt; 100ms</td><td>MQTT Broker</td><td>สูง</td></tr>
+</tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────
+     22. ประวัติการแก้ไข
+     ────────────────────────────────────────────── -->
+<h2 id="s22">22. ประวัติการแก้ไข</h2>
+
+<h3>2026-05-08 — OpenMAINT + Kafka Integration ⭐</h3>
+<ul>
+  <li>สร้าง <code>tools/openmaint_bridge.py</code> + systemd service <code>openmaint-bridge</code></li>
+  <li>19 threshold rules + cooldown 5 นาที/tag + auto Alarm + CorrectiveMaint</li>
+  <li>install kafka-python 2.3.1 จาก opc-sim venv → system Python (airgap)</li>
+  <li>เพิ่ม <code>_advance: True</code> ให้ work order ผ่าน Opening → Assignment ทันที</li>
+  <li>ปิด DMS ใน OpenMAINT (Alfresco ไม่มีในระบบ): <code>UPDATE _SystemConfig SET Value='false' WHERE Code='org.cmdbuild.dms.enabled'</code></li>
+</ul>
+
+<h3>2026-05-08 — Trino partition sync 2x/วัน</h3>
+<p>Schedule <code>5 0 * * *</code> → <code>5 0,12 * * *</code> + manual sync ทันที, lag 24h → 12h</p>
+
+<h3>2026-05-08 — Grafana datasource token postStart hook</h3>
+<p>แก้ใน <code>manifests/phase3/grafana.yaml</code>:</p>
+<ul>
+  <li><code>env.INFLUX_TOKEN</code> ดึงจาก Secret <code>influxdb-secret</code></li>
+  <li><code>lifecycle.postStart</code> รัน curl loop รอ <code>/api/health</code> → PUT datasource</li>
+  <li>password <code>Grafana@mintpower2024</code> → <code>admin2026</code></li>
+</ul>
+
+<h3>2026-05-08 — ลบ Kafka topics เก่า</h3>
+<p><code>opc-metrics</code>, <code>opc-datalake</code> — ไม่มี producer/consumer แล้ว</p>
+
+<h3>2026-05-08 — Grafana incident</h3>
+<p>ลอง password ผิด → lock → restart pod → datasource token หาย → แก้ SQLite DB</p>
+
+<h3>2026-05-06 — Phase 5: systemd + Flatten + Telegraf</h3>
+<ul>
+  <li>systemd <code>prosys-opc</code> + wrapper <code>prosys-start.sh</code></li>
+  <li>Groovy: Unix timestamp → ISO8601, <code>tags{}</code> → top-level fields</li>
+  <li>Telegraf: <code>opc-metrics</code> → <code>opc-raw-data</code> + <code>tag_keys</code></li>
+</ul>
+
+<h3>2026-05-06 — Phase 4: NiFi Edge OPC UA Connection</h3>
+<ul>
+  <li>แก้ Eclipse Milo missing Guava JAR</li>
+  <li>k3s hostAliases สำหรับ <code>mintserver</code></li>
+  <li>PublishKafka <code>Transactions Enabled = false</code></li>
+  <li>307 OPC tags ไหลเข้า Kafka ทุก 2 วินาที ✅</li>
+</ul>
+
+<h3>2026-05-03 to 05-04 — Initial Setup</h3>
+<ul>
+  <li>Deploy k3s single-node airgap</li>
+  <li>OpenMAINT 7 ปัญหา (PG15, container restart loop) — แก้หมดแล้ว</li>
+  <li>Kafka, NiFi, Telegraf, InfluxDB, Grafana, MinIO, Trino</li>
+  <li>Python OPC simulator (ยกเลิกแล้ว)</li>
+</ul>
+
+<!-- ──────────────────────────────────────────────
+     23. ไฟล์สำคัญ
+     ────────────────────────────────────────────── -->
+<h2 id="s23">23. ไฟล์สำคัญ</h2>
+
+<h3>Tools</h3>
+<table>
+<thead><tr><th>ไฟล์</th><th>หน้าที่</th></tr></thead>
+<tbody>
+<tr><td><code>tools/opc_reader_final.groovy</code></td><td>Groovy script ใน NiFi Edge (OPC UA reader)</td></tr>
+<tr><td><code>tools/deploy_opc_script.py</code></td><td>Deploy/update Groovy script ขึ้น NiFi</td></tr>
+<tr><td><code>tools/openmaint_bridge.py</code> ⭐</td><td>Kafka→OpenMAINT bridge</td></tr>
+<tr><td><code>tools/browse_opc.py</code></td><td>Browse OPC tags (development tool)</td></tr>
+<tr><td><code>tools/gen_300tags.py</code></td><td>Generator สำหรับ Prosys 300 tags</td></tr>
+</tbody>
+</table>
+
+<h3>Plan / Documentation</h3>
+<table>
+<thead><tr><th>ไฟล์</th><th>หน้าที่</th></tr></thead>
+<tbody>
+<tr><td><code>STATUS.md</code></td><td>สถานะระบบ + ประวัติ — <strong>อ่านก่อนเสมอ</strong></td></tr>
+<tr><td><code>plan/plan.md</code></td><td>System overview + restart procedures</td></tr>
+<tr><td><code>plan/OPC-plan.md</code></td><td>OPC Transport scenarios (REST, MQTT, PubSub)</td></tr>
+<tr><td><code>plan/grafana-notes.md</code></td><td>Grafana known issues + datasource workaround</td></tr>
+<tr><td><code>plan/scale-10k-tags-plan.md</code> ⭐</td><td>แผน scale 10,000 tags/s</td></tr>
+</tbody>
+</table>
+
+<h3>Updates / Guides</h3>
+<table>
+<thead><tr><th>ไฟล์</th><th>หน้าที่</th></tr></thead>
+<tbody>
+<tr><td><code>update/update-2026-05-06-phase4.md</code></td><td>Phase 4 log (NiFi + OPC UA)</td></tr>
+<tr><td><code>update/update-2026-05-06-phase5.md</code></td><td>Phase 5 log (systemd + flatten)</td></tr>
+<tr><td><code>update/guide-start-stop-opc.md</code></td><td>คู่มือ start/stop Prosys</td></tr>
+<tr><td><code>update/guide-change-opc-tags.md</code></td><td>คู่มือเปลี่ยน OPC tag</td></tr>
+<tr><td><code>update/guide-v3.html</code></td><td>คู่มือฉบับเดิม v3</td></tr>
+<tr><td><code>update/guide-v4.html</code> ⭐</td><td><strong>คู่มือเล่มนี้</strong></td></tr>
+</tbody>
+</table>
+
+<h3>k3s Manifests</h3>
+<table>
+<thead><tr><th>โฟลเดอร์</th><th>หน้าที่</th></tr></thead>
+<tbody>
+<tr><td><code>manifests/phase1/</code></td><td>Namespace + Storage</td></tr>
+<tr><td><code>manifests/phase2/</code></td><td>Kafka (Strimzi)</td></tr>
+<tr><td><code>manifests/phase3/</code></td><td>InfluxDB + Grafana + Telegraf</td></tr>
+<tr><td><code>manifests/phase4/</code></td><td>MinIO + Trino + NiFi Core</td></tr>
+<tr><td><code>manifests/phase5/</code></td><td>NiFi Edge + OpenMAINT</td></tr>
+</tbody>
+</table>
+
+<!-- ──────────────────────────────────────────────
+     Glossary
+     ────────────────────────────────────────────── -->
+<h2 id="glossary">Glossary ศัพท์เทคนิค</h2>
+
+<table>
+<thead><tr><th>คำ</th><th>คำอธิบาย</th></tr></thead>
+<tbody>
+<tr><td><strong>airgap</strong></td><td>สภาพแวดล้อมที่ไม่มีอินเทอร์เน็ต — image และ package ต้อง import ล่วงหน้า</td></tr>
+<tr><td><strong>BPMN / Bonita</strong></td><td>workflow engine ที่ CMDBuild ใช้จัดการ process (Opening → Assignment → ...)</td></tr>
+<tr><td><strong>CMDBuild</strong></td><td>Open-source CMDB framework ที่ OpenMAINT สร้างต่อจากมัน</td></tr>
+<tr><td><strong>CMIS</strong></td><td>Content Management Interoperability Services — ใช้คุยกับ Alfresco DMS (เราปิดไป)</td></tr>
+<tr><td><strong>CMMS</strong></td><td>Computerized Maintenance Management System — ระบบจัดการงานซ่อมบำรุง</td></tr>
+<tr><td><strong>CRD</strong></td><td>Custom Resource Definition — k8s API ที่ third-party operator เพิ่มเข้ามา (เช่น KafkaTopic)</td></tr>
+<tr><td><strong>DMS</strong></td><td>Document Management System — ในระบบนี้ไม่มี Alfresco/CMIS</td></tr>
+<tr><td><strong>DMZ</strong></td><td>Demilitarized Zone — namespace กลางระหว่าง OT/IT (Kafka อยู่นี่)</td></tr>
+<tr><td><strong>Eclipse Milo</strong></td><td>Java OPC UA client/server library ที่ NiFi Edge ใช้</td></tr>
+<tr><td><strong>Fan-out</strong></td><td>1 producer กระจายไปหลาย consumer — Kafka ทำได้โดย consumer group แยกกัน</td></tr>
+<tr><td><strong>Flat JSON</strong></td><td>JSON ที่ไม่มี nested object — ทุก field อยู่ top-level (Telegraf ชอบ)</td></tr>
+<tr><td><strong>Flux</strong></td><td>InfluxDB v2 query language</td></tr>
+<tr><td><strong>FlowFile</strong></td><td>หน่วยข้อมูลใน NiFi (= 1 record + metadata)</td></tr>
+<tr><td><strong>Groovy</strong></td><td>JVM scripting language ที่ NiFi ExecuteGroovyScript รัน</td></tr>
+<tr><td><strong>install4j</strong></td><td>Java launcher ที่ Prosys ใช้ — fork process แล้ว exit (ทำให้ systemd งง)</td></tr>
+<tr><td><strong>KRaft</strong></td><td>Kafka mode ใหม่ — ไม่ต้องใช้ Zookeeper</td></tr>
+<tr><td><strong>OPC UA</strong></td><td>Open Platform Communications Unified Architecture — standard อุตสาหกรรม</td></tr>
+<tr><td><strong>Parquet</strong></td><td>Columnar storage format — เล็กกว่า JSON ~8 เท่า, query เร็วกว่า</td></tr>
+<tr><td><strong>postStart hook</strong></td><td>k8s lifecycle event — รันคำสั่งทันทีหลัง container start</td></tr>
+<tr><td><strong>Prosys</strong></td><td>OPC UA simulation server (Java) ที่เราใช้สร้าง 307 tags</td></tr>
+<tr><td><strong>PVC / PV</strong></td><td>PersistentVolumeClaim / PersistentVolume — storage k8s</td></tr>
+<tr><td><strong>Strimzi</strong></td><td>Kafka operator ที่ deploy Kafka บน k8s</td></tr>
+<tr><td><strong>systemd</strong></td><td>service manager ของ Linux — เราใช้กับ prosys-opc + openmaint-bridge</td></tr>
+<tr><td><strong>Telegraf</strong></td><td>Metrics collector — input Kafka, output InfluxDB</td></tr>
+<tr><td><strong>TSM</strong></td><td>Time-Structured Merge tree — InfluxDB storage engine</td></tr>
+</tbody>
+</table>
+
+<!-- Footer -->
+<div class="page-footer">
+  คู่มือฉบับสมบูรณ์ v4 — k3s Airgap Industrial Data Platform<br>
+  อัปเดตล่าสุด: 2026-05-08 — รวม OpenMAINT Bridge, Threshold Rules, แผน Scale 10k tags/s<br>
+  สำหรับ status ปัจจุบันดูที่ <code>STATUS.md</code> ก่อนเสมอ
+</div>
+
+</main>
+
+<!-- Smooth scroll active state -->
+<script>
+const sections = document.querySelectorAll('h2[id]');
+const navLinks = document.querySelectorAll('#sidebar nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    if (window.scrollY >= section.offsetTop - 120) current = section.id;
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href').slice(1) === current) link.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

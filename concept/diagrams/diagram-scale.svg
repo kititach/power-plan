@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1640" height="940" viewBox="0 0 1640 940">
+  <rect width="100%" height="100%" fill="#f8f9fa"/>
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="116%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#00000022"/>
+    </filter>
+    <filter id="shadow-sm" x="-2%" y="-2%" width="104%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#00000018"/>
+    </filter>
+  </defs>
+  <rect x="0" y="0" width="1640" height="72" rx="0" ry="0" fill="#263238" stroke="none" stroke-width="1"/>
+  <text x="820" y="26" font-family="DejaVu Sans, Arial, sans-serif" font-size="21" font-weight="bold" font-style="normal" fill="#eceff1" text-anchor="middle" dominant-baseline="central">Scale-Up Plan — Industrial IoT Data Platform</text>
+  <text x="820" y="52" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#90a4ae" text-anchor="middle" dominant-baseline="central">100 tag/s  →  1,000 tag/s  →  10,000 tag/s   |   Normal load + Peak 3× burst</text>
+  <rect x="248" y="150" width="444" height="800" rx="0" ry="0" fill="#eceff1" stroke="none" stroke-width="1"/>
+  <rect x="702" y="150" width="444" height="800" rx="0" ry="0" fill="#f1f8e9" stroke="none" stroke-width="1"/>
+  <rect x="1156" y="150" width="444" height="800" rx="0" ry="0" fill="#e3f2fd" stroke="none" stroke-width="1"/>
+  <rect x="248" y="72" width="444" height="78" rx="0" ry="0" fill="#455a64" filter="url(#shadow)"/>
+  <text x="470" y="94" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="middle" dominant-baseline="central">ระดับ 1</text>
+  <text x="470" y="114" font-family="DejaVu Sans, Arial, sans-serif" font-size="15" font-weight="bold" font-style="normal" fill="#ffffffcc" text-anchor="middle" dominant-baseline="central">100 tag/s</text>
+  <text x="470" y="132" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" fill="#ffffff88" text-anchor="middle" dominant-baseline="central">Peak 300 tag/s</text>
+  <rect x="702" y="72" width="444" height="78" rx="0" ry="0" fill="#2e7d32" filter="url(#shadow)"/>
+  <text x="924" y="94" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="middle" dominant-baseline="central">ระดับ 2</text>
+  <text x="924" y="114" font-family="DejaVu Sans, Arial, sans-serif" font-size="15" font-weight="bold" font-style="normal" fill="#ffffffcc" text-anchor="middle" dominant-baseline="central">1,000 tag/s</text>
+  <text x="924" y="132" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" fill="#ffffff88" text-anchor="middle" dominant-baseline="central">Peak 3,000 tag/s</text>
+  <rect x="1156" y="72" width="444" height="78" rx="0" ry="0" fill="#1565c0" filter="url(#shadow)"/>
+  <text x="1378" y="94" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="middle" dominant-baseline="central">ระดับ 3</text>
+  <text x="1378" y="114" font-family="DejaVu Sans, Arial, sans-serif" font-size="15" font-weight="bold" font-style="normal" fill="#ffffffcc" text-anchor="middle" dominant-baseline="central">10,000 tag/s</text>
+  <text x="1378" y="132" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" font-style="normal" fill="#ffffff88" text-anchor="middle" dominant-baseline="central">Peak 30,000 tag/s</text>
+  <rect x="28" y="72" width="210" height="78" rx="0" ry="0" fill="#37474f" stroke="none" stroke-width="1"/>
+  <text x="133" y="111" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" font-style="normal" fill="#eceff1" text-anchor="middle" dominant-baseline="central">ตัวชี้วัด</text>
+  <rect x="28" y="154" width="1572" height="0" rx="0" ry="0" fill="#cfd8dc" stroke="none" stroke-width="1"/>
+  <rect x="28" y="156" width="210" height="62" rx="0" ry="0" fill="#ffffff" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="228" y="187" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#37474f" text-anchor="end" dominant-baseline="central">OPC Transport</text>
+  <rect x="254" y="160" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="470" y="187" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">Polling</text>
+  <rect x="708" y="160" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="924" y="187" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">Polling 1s</text>
+  <rect x="1162" y="160" width="432" height="54" rx="7" ry="7" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="1378" y="187" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1b5e20" text-anchor="middle" dominant-baseline="central">Subscription (push)</text>
+  <line x1="28" y1="218" x2="1600" y2="218" stroke="#e0e0e0" stroke-width="0.5"/>
+  <rect x="28" y="223" width="210" height="62" rx="0" ry="0" fill="#f5f7f8" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="228" y="254" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#37474f" text-anchor="end" dominant-baseline="central">Data rate · Normal</text>
+  <rect x="254" y="227" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="470" y="254" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">2.2 KB/s</text>
+  <rect x="708" y="227" width="432" height="54" rx="7" ry="7" fill="#fffde7" stroke="#f9a825" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="924" y="254" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#e65100" text-anchor="middle" dominant-baseline="central">22 KB/s</text>
+  <rect x="1162" y="227" width="432" height="54" rx="7" ry="7" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="1378" y="254" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1b5e20" text-anchor="middle" dominant-baseline="central">220 KB/s</text>
+  <line x1="28" y1="285" x2="1600" y2="285" stroke="#e0e0e0" stroke-width="0.5"/>
+  <rect x="28" y="290" width="210" height="62" rx="0" ry="0" fill="#ffffff" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="228" y="321" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#37474f" text-anchor="end" dominant-baseline="central">Data rate · Peak (3×)</text>
+  <rect x="254" y="294" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="470" y="321" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">6.6 KB/s</text>
+  <rect x="708" y="294" width="432" height="54" rx="7" ry="7" fill="#fffde7" stroke="#f9a825" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="924" y="321" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#e65100" text-anchor="middle" dominant-baseline="central">66 KB/s</text>
+  <rect x="1162" y="294" width="432" height="54" rx="7" ry="7" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="1378" y="321" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1b5e20" text-anchor="middle" dominant-baseline="central">660 KB/s</text>
+  <line x1="28" y1="352" x2="1600" y2="352" stroke="#e0e0e0" stroke-width="0.5"/>
+  <rect x="28" y="359" width="1572" height="12" rx="0" ry="0" fill="#cfd8dc" stroke="none" stroke-width="1"/>
+  <text x="34" y="366" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" font-weight="bold" font-style="normal" fill="#546e7a" text-anchor="start" dominant-baseline="central">Message Pipeline</text>
+  <rect x="28" y="371" width="210" height="62" rx="0" ry="0" fill="#f5f7f8" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="228" y="402" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#37474f" text-anchor="end" dominant-baseline="central">NiFi Edge JVM</text>
+  <rect x="254" y="375" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="470" y="402" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">2 GB</text>
+  <rect x="708" y="375" width="432" height="54" rx="7" ry="7" fill="#fffde7" stroke="#f9a825" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="924" y="402" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#e65100" text-anchor="middle" dominant-baseline="central">4 GB</text>
+  <rect x="1162" y="375" width="432" height="54" rx="7" ry="7" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="1378" y="402" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1b5e20" text-anchor="middle" dominant-baseline="central">8 GB</text>
+  <line x1="28" y1="433" x2="1600" y2="433" stroke="#e0e0e0" stroke-width="0.5"/>
+  <rect x="28" y="438" width="210" height="62" rx="0" ry="0" fill="#ffffff" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="228" y="469" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#37474f" text-anchor="end" dominant-baseline="central">Kafka  Brokers / Partitions</text>
+  <rect x="254" y="442" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="470" y="469" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">1 / 3</text>
+  <rect x="708" y="442" width="432" height="54" rx="7" ry="7" fill="#fffde7" stroke="#f9a825" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="924" y="469" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#e65100" text-anchor="middle" dominant-baseline="central">1 / 6</text>
+  <rect x="1162" y="442" width="432" height="54" rx="7" ry="7" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="1378" y="469" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1b5e20" text-anchor="middle" dominant-baseline="central">3 / 12</text>
+  <line x1="28" y1="500" x2="1600" y2="500" stroke="#e0e0e0" stroke-width="0.5"/>
+  <rect x="28" y="505" width="210" height="62" rx="0" ry="0" fill="#f5f7f8" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="228" y="536" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#37474f" text-anchor="end" dominant-baseline="central">Telegraf replicas</text>
+  <rect x="254" y="509" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="470" y="536" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">1</text>
+  <rect x="708" y="509" width="432" height="54" rx="7" ry="7" fill="#fffde7" stroke="#f9a825" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="924" y="536" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#e65100" text-anchor="middle" dominant-baseline="central">2</text>
+  <rect x="1162" y="509" width="432" height="54" rx="7" ry="7" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="1378" y="536" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1b5e20" text-anchor="middle" dominant-baseline="central">3</text>
+  <line x1="28" y1="567" x2="1600" y2="567" stroke="#e0e0e0" stroke-width="0.5"/>
+  <rect x="28" y="574" width="1572" height="12" rx="0" ry="0" fill="#cfd8dc" stroke="none" stroke-width="1"/>
+  <text x="34" y="581" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" font-weight="bold" font-style="normal" fill="#546e7a" text-anchor="start" dominant-baseline="central">Hot Storage</text>
+  <rect x="28" y="586" width="210" height="62" rx="0" ry="0" fill="#ffffff" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="228" y="617" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#37474f" text-anchor="end" dominant-baseline="central">InfluxDB  RAM / Disk (90 วัน)</text>
+  <rect x="254" y="590" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="470" y="617" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">2 GB / 17 GB</text>
+  <rect x="708" y="590" width="432" height="54" rx="7" ry="7" fill="#fffde7" stroke="#f9a825" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="924" y="617" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#e65100" text-anchor="middle" dominant-baseline="central">4 GB / 170 GB</text>
+  <rect x="1162" y="590" width="432" height="54" rx="7" ry="7" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="1378" y="617" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1b5e20" text-anchor="middle" dominant-baseline="central">8 GB / 340 GB</text>
+  <line x1="28" y1="648" x2="1600" y2="648" stroke="#e0e0e0" stroke-width="0.5"/>
+  <rect x="28" y="655" width="1572" height="12" rx="0" ry="0" fill="#cfd8dc" stroke="none" stroke-width="1"/>
+  <text x="34" y="662" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" font-weight="bold" font-style="normal" fill="#546e7a" text-anchor="start" dominant-baseline="central">Cold Storage  (MinIO)</text>
+  <rect x="28" y="667" width="210" height="62" rx="0" ry="0" fill="#f5f7f8" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="228" y="698" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#37474f" text-anchor="end" dominant-baseline="central">MinIO / ปี  (format)</text>
+  <rect x="254" y="671" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="470" y="698" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">68 GB  (JSON)</text>
+  <rect x="708" y="671" width="432" height="54" rx="7" ry="7" fill="#fffde7" stroke="#f9a825" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="924" y="698" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#e65100" text-anchor="middle" dominant-baseline="central">680 GB  (JSON)</text>
+  <rect x="1162" y="671" width="432" height="54" rx="7" ry="7" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="1378" y="698" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1b5e20" text-anchor="middle" dominant-baseline="central">850 GB  (Parquet)</text>
+  <line x1="28" y1="729" x2="1600" y2="729" stroke="#e0e0e0" stroke-width="0.5"/>
+  <rect x="28" y="734" width="210" height="62" rx="0" ry="0" fill="#ffffff" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="228" y="765" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#37474f" text-anchor="end" dominant-baseline="central">MinIO  5 ปี</text>
+  <rect x="254" y="738" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="470" y="765" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">~340 GB</text>
+  <rect x="708" y="738" width="432" height="54" rx="7" ry="7" fill="#fffde7" stroke="#f9a825" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="924" y="765" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#e65100" text-anchor="middle" dominant-baseline="central">~3.4 TB</text>
+  <rect x="1162" y="738" width="432" height="54" rx="7" ry="7" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="1378" y="765" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1b5e20" text-anchor="middle" dominant-baseline="central">~4.25 TB  ✓</text>
+  <line x1="28" y1="796" x2="1600" y2="796" stroke="#e0e0e0" stroke-width="0.5"/>
+  <rect x="28" y="801" width="210" height="62" rx="0" ry="0" fill="#f5f7f8" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="228" y="832" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#37474f" text-anchor="end" dominant-baseline="central">MinIO  storage</text>
+  <rect x="254" y="805" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="470" y="832" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">NVMe  100 GB</text>
+  <rect x="708" y="805" width="432" height="54" rx="7" ry="7" fill="#fffde7" stroke="#f9a825" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="924" y="832" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#e65100" text-anchor="middle" dominant-baseline="central">NVMe  1 TB</text>
+  <rect x="1162" y="805" width="432" height="54" rx="7" ry="7" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="1378" y="832" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1b5e20" text-anchor="middle" dominant-baseline="central">NAS/HDD  6 TB+</text>
+  <line x1="28" y1="863" x2="1600" y2="863" stroke="#e0e0e0" stroke-width="0.5"/>
+  <rect x="28" y="870" width="1572" height="12" rx="0" ry="0" fill="#cfd8dc" stroke="none" stroke-width="1"/>
+  <text x="34" y="877" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" font-weight="bold" font-style="normal" fill="#546e7a" text-anchor="start" dominant-baseline="central">Infrastructure</text>
+  <rect x="28" y="882" width="210" height="62" rx="0" ry="0" fill="#ffffff" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="228" y="913" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#37474f" text-anchor="end" dominant-baseline="central">k3s  topology / Server RAM</text>
+  <rect x="254" y="886" width="432" height="54" rx="7" ry="7" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="470" y="913" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="normal" font-style="normal" fill="#888" text-anchor="middle" dominant-baseline="central">Single-node / 16 GB</text>
+  <rect x="708" y="886" width="432" height="54" rx="7" ry="7" fill="#fffde7" stroke="#f9a825" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="924" y="913" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#e65100" text-anchor="middle" dominant-baseline="central">Single-node / 32 GB</text>
+  <rect x="1162" y="886" width="432" height="54" rx="7" ry="7" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5" filter="url(#shadow-sm)"/>
+  <text x="1378" y="913" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" font-style="normal" fill="#1b5e20" text-anchor="middle" dominant-baseline="central">3 nodes HA / 64 GB</text>
+  <line x1="28" y1="944" x2="1600" y2="944" stroke="#e0e0e0" stroke-width="0.5"/>
+  <rect x="28" y="963" width="210" height="44" rx="0" ry="0" fill="#263238" stroke="none" stroke-width="1"/>
+  <text x="133" y="985" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" fill="#eceff1" text-anchor="middle" dominant-baseline="central">งบ + เวลา</text>
+  <rect x="248" y="963" width="444" height="44" rx="0" ry="0" fill="#455a64" stroke="none" stroke-width="1" opacity="0.85"/>
+  <text x="470" y="985" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="middle" dominant-baseline="central">0 บาท · 1 วัน</text>
+  <rect x="702" y="963" width="444" height="44" rx="0" ry="0" fill="#2e7d32" stroke="none" stroke-width="1" opacity="0.85"/>
+  <text x="924" y="985" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="middle" dominant-baseline="central">~15k–30k บาท · 1–2 สัปดาห์</text>
+  <rect x="1156" y="963" width="444" height="44" rx="0" ry="0" fill="#1565c0" stroke="none" stroke-width="1" opacity="0.85"/>
+  <text x="1378" y="985" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="middle" dominant-baseline="central">~130k–260k บาท · 3–5 เดือน</text>
+  <rect x="28" y="1021" width="20" height="20" rx="5" ry="5" fill="#fafafa" stroke="#bdbdbd" stroke-width="1.5"/>
+  <text x="54" y="1031" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#546e7a" text-anchor="start" dominant-baseline="central">ไม่เปลี่ยน</text>
+  <rect x="248" y="1021" width="20" height="20" rx="5" ry="5" fill="#fffde7" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="274" y="1031" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#546e7a" text-anchor="start" dominant-baseline="central">ปรับ config / scale up</text>
+  <rect x="468" y="1021" width="20" height="20" rx="5" ry="5" fill="#f1f8e9" stroke="#43a047" stroke-width="1.5"/>
+  <text x="494" y="1031" font-family="DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="normal" font-style="normal" fill="#546e7a" text-anchor="start" dominant-baseline="central">ใหม่ / อัปเกรด hardware</text>
+</svg>

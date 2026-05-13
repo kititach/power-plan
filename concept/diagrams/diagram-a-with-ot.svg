@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1100" viewBox="0 0 1800 1100">
+  <rect width="100%" height="100%" fill="white"/>
+  <text x="900" y="32" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">Industrial IoT Data Platform — Block Diagram (Current)</text>
+  <rect x="40" y="90" width="320" height="610" rx="14" ry="14" fill="white" stroke="black" stroke-width="2"/>
+  <text x="54" y="108" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="black" text-anchor="start" dominant-baseline="alphabetic">OT Zone (external host)</text>
+  <rect x="70" y="380" width="260" height="80" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="200" y="420" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">Prosys OPC UA</text>
+  <text x="200" y="500" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">systemd: prosys-opc</text>
+  <line x1="364" y1="420" x2="420" y2="420" stroke="black" stroke-width="3"/>
+  <polygon points="420,412 438,420 420,428" fill="black" stroke="none"/>
+  <text x="366" y="406" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#333" text-anchor="start" dominant-baseline="alphabetic">opc.tcp</text>
+  <rect x="450" y="90" width="950" height="610" rx="16" ry="16" fill="white" stroke="black" stroke-width="2"/>
+  <text x="466" y="112" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" font-weight="bold" fill="black" text-anchor="start" dominant-baseline="alphabetic">Server</text>
+  <rect x="470" y="134" width="910" height="546" rx="14" ry="14" fill="white" stroke="black" stroke-width="2"/>
+  <text x="484" y="152" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="black" text-anchor="start" dominant-baseline="alphabetic">Linux OS</text>
+  <rect x="486" y="174" width="878" height="386" rx="14" ry="14" fill="white" stroke="black" stroke-width="2"/>
+  <text x="500" y="192" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="black" text-anchor="start" dominant-baseline="alphabetic">K8s</text>
+  <rect x="502" y="216" width="360" height="330" rx="14" ry="14" fill="white" stroke="black" stroke-width="2"/>
+  <text x="516" y="234" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="black" text-anchor="start" dominant-baseline="alphabetic">DMZ Zone</text>
+  <rect x="518" y="308" width="328" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="682" y="325" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">NiFi Edge</text>
+  <text x="682" y="343" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">OPC UA → Kafka</text>
+  <rect x="518" y="370" width="328" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="682" y="387" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">Kafka</text>
+  <text x="682" y="405" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">Strimzi KRaft</text>
+  <rect x="518" y="432" width="328" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="682" y="449" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">AKHQ</text>
+  <text x="682" y="467" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">Kafka UI</text>
+  <rect x="880" y="216" width="468" height="330" rx="14" ry="14" fill="white" stroke="black" stroke-width="2"/>
+  <text x="894" y="234" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="bold" fill="black" text-anchor="start" dominant-baseline="alphabetic">IT Zone</text>
+  <rect x="896" y="277" width="211" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="1001" y="294" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">Telegraf</text>
+  <text x="1001" y="312" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">Kafka → InfluxDB</text>
+  <rect x="1121" y="277" width="211" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="1226" y="294" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">InfluxDB</text>
+  <text x="1226" y="312" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">bucket: opc-data</text>
+  <rect x="896" y="339" width="211" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="1001" y="356" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">Grafana</text>
+  <text x="1001" y="374" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">dashboards + alert</text>
+  <rect x="1121" y="339" width="211" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="1226" y="356" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">NiFi Core</text>
+  <text x="1226" y="374" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">Kafka → MinIO</text>
+  <rect x="896" y="401" width="211" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="1001" y="418" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">MinIO</text>
+  <text x="1001" y="436" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">S3 data lake</text>
+  <rect x="1121" y="401" width="211" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="1226" y="418" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">Trino</text>
+  <text x="1226" y="436" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">SQL query</text>
+  <rect x="896" y="463" width="211" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="1001" y="480" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">OpenMAINT</text>
+  <text x="1001" y="498" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">CMMS / work order</text>
+  <rect x="1121" y="463" width="211" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="1226" y="480" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">PostgreSQL 15</text>
+  <text x="1226" y="498" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">OpenMAINT DB</text>
+  <rect x="486" y="574" width="878" height="92" rx="12" ry="12" fill="white" stroke="#444" stroke-width="2"/>
+  <text x="498" y="588" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" font-weight="bold" fill="#444" text-anchor="start" dominant-baseline="alphabetic">Host services (systemd)</text>
+  <rect x="498" y="606" width="419" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="707" y="623" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">openmaint-bridge</text>
+  <text x="707" y="641" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">systemd · Kafka→OpenMAINT</text>
+  <rect x="933" y="606" width="419" height="50" rx="10" ry="10" fill="white" stroke="black" stroke-width="2"/>
+  <text x="1142" y="623" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="central">k3s-backup.timer</text>
+  <text x="1142" y="641" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="normal" fill="#555" text-anchor="middle" dominant-baseline="central">Backup</text>
+</svg>

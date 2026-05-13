@@ -1,0 +1,26 @@
+---
+# Step 1: สร้าง MinIO buckets (run once)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: downsample-setup-buckets
+  namespace: it
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: mc
+          image: quay.io/minio/mc:latest
+          env:
+            - name: MC_HOST_local
+              value: "http://minioadmin:Minio@mintpower2024@minio.it.svc.cluster.local:9000"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mc mb --ignore-existing local/opc-1h
+              mc mb --ignore-existing local/opc-1d
+              echo "Buckets ready:"
+              mc ls local/

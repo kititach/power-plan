@@ -1,0 +1,73 @@
+---
+# CronJob: Downsample 1h — รันทุกชั่วโมง +5 นาที (Bangkok = UTC+7)
+# 5 * * * * = ทุกชั่วโมงที่นาทีที่ 5
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: downsample-1h
+  namespace: it
+spec:
+  schedule: "5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+            - name: sql
+              configMap:
+                name: downsample-sql
+                defaultMode: 0755
+          containers:
+            - name: trino
+              image: docker.io/trinodb/trino:463
+              command: ["/bin/sh", "/sql/run-1h.sh"]
+              volumeMounts:
+                - name: sql
+                  mountPath: /sql
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "200m"
+                limits:
+                  memory: "512Mi"
+                  cpu: "500m"
+---
+# CronJob: Downsample 1d — รันทุกวัน 00:10 UTC (07:10 Bangkok)
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: downsample-1d
+  namespace: it
+spec:
+  schedule: "10 0 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+            - name: sql
+              configMap:
+                name: downsample-sql
+                defaultMode: 0755
+          containers:
+            - name: trino
+              image: docker.io/trinodb/trino:463
+              command: ["/bin/sh", "/sql/run-1d.sh"]
+              volumeMounts:
+                - name: sql
+                  mountPath: /sql
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "200m"
+                limits:
+                  memory: "512Mi"
+                  cpu: "500m"
