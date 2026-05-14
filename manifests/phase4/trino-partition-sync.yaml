@@ -4,7 +4,7 @@ metadata:
   name: trino-partition-sync
   namespace: it
 spec:
-  schedule: "5 0 * * *"
+  schedule: "5 0,12 * * *"
   timeZone: "Asia/Bangkok"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
@@ -25,6 +25,6 @@ spec:
             - |
               CALL minio.system.sync_partition_metadata(
                 schema_name => 'opc',
-                table_name  => 'sensor_data',
+                table_name  => 'sensor_data_flat',
                 mode        => 'ADD'
               );

@@ -18,10 +18,7 @@ spec:
               mc alias set myminio http://minio.it.svc.cluster.local:9000 \
                 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
               mc mb myminio/opc-raw --ignore-existing
-              mc mb myminio/opc-parquet --ignore-existing
-              mc mb myminio/opc-archive --ignore-existing
               mc version enable myminio/opc-raw
-              mc version enable myminio/opc-parquet
               mc ls myminio
               echo "MinIO init completed"
           env:
