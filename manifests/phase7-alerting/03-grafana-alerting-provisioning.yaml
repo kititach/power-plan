@@ -1,0 +1,262 @@
+# Grafana Alerting Provisioning Files
+# Mount ที่ /etc/grafana/provisioning/alerting/
+# Reload เมื่อ Grafana restart หรือ POST /api/admin/provisioning/alerting/reload
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-alerting
+  namespace: it
+data:
+  # ─── Contact Points (ปลายทาง notification) ──────────────────
+  contact-points.yaml: |
+    apiVersion: 1
+    contactPoints:
+      - orgId: 1
+        name: email-default
+        receivers:
+          - uid: email_default
+            type: email
+            settings:
+              addresses: ops@k3s.local
+              singleEmail: false
+              subject: '[k3s alert] {{ .GroupLabels.alertname }}'
+              message: |
+                **Alert:** {{ .GroupLabels.alertname }}
+                **Severity:** {{ .CommonLabels.severity }}
+                **Time:** {{ .Alerts.Firing | len }} firing, {{ .Alerts.Resolved | len }} resolved
+
+                {{ range .Alerts }}
+                  - **Pod/Service:** {{ .Labels.pod }}{{ .Labels.service }}
+                  - **Detail:** {{ .Annotations.description }}
+                  - **Started:** {{ .StartsAt }}
+                  - **Dashboard:** http://10.85.3.104:30300{{ .Annotations.dashboardUrl }}
+                {{ end }}
+
+      # Fallback webhook → log file ใน Grafana pod (สำหรับ debug)
+      - orgId: 1
+        name: webhook-debug
+        receivers:
+          - uid: webhook_debug
+            type: webhook
+            settings:
+              url: http://localhost:3000/api/health
+              httpMethod: POST
+
+  # ─── Notification Policies (routing) ────────────────────────
+  policies.yaml: |
+    apiVersion: 1
+    policies:
+      - orgId: 1
+        receiver: email-default
+        group_by: ['alertname', 'severity']
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 4h
+        routes:
+          # Critical → ส่งทันที ไม่รวมกลุ่ม
+          - receiver: email-default
+            object_matchers:
+              - ['severity', '=', 'critical']
+            group_wait: 0s
+            repeat_interval: 1h
+          # Warning → รวมกลุ่ม 5 นาที
+          - receiver: email-default
+            object_matchers:
+              - ['severity', '=', 'warning']
+            group_wait: 1m
+            repeat_interval: 6h
+
+  # ─── Mute Timings (เวลาที่ไม่ต้องส่ง) ───────────────────────
+  mute-timings.yaml: |
+    apiVersion: 1
+    muteTimes:
+      - orgId: 1
+        name: maintenance-window
+        time_intervals:
+          - times:
+              - start_time: '01:50'
+                end_time: '02:30'
+            location: 'Asia/Bangkok'
+
+  # ─── Alert Rules ─────────────────────────────────────────────
+  rules.yaml: |
+    apiVersion: 1
+    groups:
+      # ════════════════════════════════════════════════════════
+      # CRITICAL INFRASTRUCTURE
+      # ════════════════════════════════════════════════════════
+      - orgId: 1
+        name: critical-infra
+        folder: k3s-alerts
+        interval: 1m
+        rules:
+          # OPC ingest หยุด — ไม่มี message ใหม่ใน opc-data > 2 นาที
+          - uid: opc_ingest_stopped
+            title: OPC ingest stopped
+            condition: A
+            data:
+              - refId: A
+                relativeTimeRange: { from: 120, to: 0 }
+                datasourceUid: influxdb-opc
+                model:
+                  refId: A
+                  query: |
+                    from(bucket: "opc-data")
+                      |> range(start: -2m)
+                      |> filter(fn: (r) => r._measurement == "opc_data")
+                      |> count()
+                      |> map(fn: (r) => ({r with _value: if r._value < 1 then 1.0 else 0.0}))
+            noDataState: Alerting
+            execErrState: Alerting
+            for: 1m
+            labels:
+              severity: critical
+              component: opc-ingest
+            annotations:
+              summary: "OPC ingest หยุด — ไม่มีข้อมูลเข้า InfluxDB ใน 2 นาทีล่าสุด"
+              description: "Prosys OPC UA / NiFi Edge / Telegraf / Kafka มีปัญหา ตรวจสอบ pod nifi-edge และ telegraf"
+              dashboardUrl: "/d/mintpower-combined-v1"
+
+          # Tag count ไม่ครบ 307 (sensor หาย)
+          - uid: opc_tag_count_low
+            title: OPC tag count below 307
+            condition: A
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: influxdb-opc
+                model:
+                  refId: A
+                  query: |
+                    from(bucket: "opc-data")
+                      |> range(start: -5m)
+                      |> filter(fn: (r) => r._field == "tag_count")
+                      |> last()
+                      |> map(fn: (r) => ({r with _value: if r._value < 307.0 then 1.0 else 0.0}))
+            noDataState: NoData
+            execErrState: Error
+            for: 3m
+            labels:
+              severity: warning
+              component: opc-ingest
+            annotations:
+              summary: "Tag count < 307 — sensor บางตัวหาย"
+              description: "OPC UA browse ได้น้อยกว่า 307 tags — ตรวจ Prosys และ Groovy script"
+
+          # Bad value rate สูง — sensor พังหรือ network issue
+          - uid: opc_bad_value_high
+            title: OPC bad value count high
+            condition: A
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: influxdb-opc
+                model:
+                  refId: A
+                  query: |
+                    from(bucket: "opc-data")
+                      |> range(start: -5m)
+                      |> filter(fn: (r) => r._field == "bad_count")
+                      |> mean()
+                      |> map(fn: (r) => ({r with _value: if r._value > 10.0 then 1.0 else 0.0}))
+            noDataState: OK
+            execErrState: Error
+            for: 5m
+            labels:
+              severity: warning
+              component: opc-ingest
+            annotations:
+              summary: "Bad value count เฉลี่ย > 10/sample"
+              description: "Sensor หลายตัวอ่านค่าไม่ได้ ตรวจอุปกรณ์ฝั่ง OT"
+
+      # ════════════════════════════════════════════════════════
+      # DATA QUALITY (Threshold violations)
+      # ════════════════════════════════════════════════════════
+      - orgId: 1
+        name: data-quality
+        folder: k3s-alerts
+        interval: 1m
+        rules:
+          # Boiler temperature critical
+          - uid: boiler_temp_critical
+            title: Boiler temperature > 95°C
+            condition: A
+            data:
+              - refId: A
+                relativeTimeRange: { from: 120, to: 0 }
+                datasourceUid: influxdb-opc
+                model:
+                  refId: A
+                  query: |
+                    from(bucket: "opc-data")
+                      |> range(start: -2m)
+                      |> filter(fn: (r) => r._measurement == "opc_data")
+                      |> filter(fn: (r) => r._field =~ /^Temp_Boiler_/)
+                      |> max()
+                      |> map(fn: (r) => ({r with _value: if r._value > 95.0 then 1.0 else 0.0}))
+            noDataState: OK
+            execErrState: Error
+            for: 1m
+            labels:
+              severity: critical
+              component: process
+              category: temperature
+            annotations:
+              summary: "Boiler temperature เกิน 95°C"
+              description: "ตรวจ Temp_Boiler_* — risk overheat / safety"
+              dashboardUrl: "/d/mintpower-combined-v1"
+
+          # Hydraulic pressure critical
+          - uid: hydraulic_pressure_critical
+            title: Hydraulic pressure out of safe range
+            condition: A
+            data:
+              - refId: A
+                relativeTimeRange: { from: 120, to: 0 }
+                datasourceUid: influxdb-opc
+                model:
+                  refId: A
+                  query: |
+                    from(bucket: "opc-data")
+                      |> range(start: -2m)
+                      |> filter(fn: (r) => r._field =~ /^Press_Hydraulic_/)
+                      |> last()
+                      |> map(fn: (r) => ({r with _value: if r._value > 160.0 or r._value < 50.0 then 1.0 else 0.0}))
+            noDataState: OK
+            execErrState: Error
+            for: 1m
+            labels:
+              severity: critical
+              component: process
+              category: pressure
+            annotations:
+              summary: "Hydraulic pressure อยู่นอกช่วงปลอดภัย (50-160 bar)"
+              description: "ตรวจ Press_Hydraulic_* — risk integrity failure"
+
+          # Vibration warning
+          - uid: vibration_high
+            title: Pump vibration > 10 mm/s (ISO 10816)
+            condition: A
+            data:
+              - refId: A
+                relativeTimeRange: { from: 300, to: 0 }
+                datasourceUid: influxdb-opc
+                model:
+                  refId: A
+                  query: |
+                    from(bucket: "opc-data")
+                      |> range(start: -5m)
+                      |> filter(fn: (r) => r._field =~ /^Vibration_Pump_/)
+                      |> max()
+                      |> map(fn: (r) => ({r with _value: if r._value > 10.0 then 1.0 else 0.0}))
+            noDataState: OK
+            execErrState: Error
+            for: 2m
+            labels:
+              severity: warning
+              component: process
+              category: vibration
+            annotations:
+              summary: "Vibration > 10 mm/s — bearing wear (ISO 10816)"
+              description: "ตรวจ Vibration_Pump_* — แนะนำตรวจ bearing"
